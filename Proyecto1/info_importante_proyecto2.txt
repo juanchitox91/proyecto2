@@ -1,0 +1,11 @@
+crud operation with mongodb
+https://www.c-sharpcorner.com/article/simple-crud-operation-using-asp-net-mvc-and-mongodb/
+
+.net core ejemplo
+https://docs.microsoft.com/es-es/aspnet/core/tutorials/first-mvc-app/start-mvc?view=aspnetcore-2.1&tabs=aspnetcore2x
+
+explicacion .net core
+https://docs.microsoft.com/en-us/dotnet/standard/choosing-core-framework-server
+
+hospedaje de asp.net core en windows con iis
+https://docs.microsoft.com/es-es/aspnet/core/host-and-deploy/iis/?view=aspnetcore-2.1&tabs=aspnetcore2x
