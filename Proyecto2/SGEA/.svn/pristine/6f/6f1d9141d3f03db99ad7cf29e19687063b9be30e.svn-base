@@ -1,0 +1,11 @@
+-- Drop table
+
+-- DROP TABLE dbo.grupofamiliar
+
+CREATE TABLE dbo.grupofamiliar (
+	id serial NOT NULL,
+	apellidos varchar(50) NOT NULL,
+	observacion varchar(150) NULL,
+	fecha_alta timestamp NOT NULL DEFAULT now(),
+	CONSTRAINT grupofamiliar_pk PRIMARY KEY (id)
+);

@@ -1,0 +1,123 @@
+﻿using SGEA.Filters;
+using System.Web.Mvc;
+using SGEA.Repository;
+using System.Collections.Generic;
+using SGEA.Models;
+using System.Linq;
+using System;
+
+namespace SGEA.Areas.Datos.Controllers
+{
+    [Autenticado]
+    public class UnidadController : Controller
+    {
+        [Permiso(permiso = "verUnidades")]
+        public ActionResult Index()
+        {
+            List<Unidad> unidades = UnidadRepository.getUnidades(HttpContext.Session["institucion"].ToString());
+            Session["unidades"] = unidades;
+            ViewBag.Unidades = unidades;
+            return View();
+        }
+
+        [HttpGet]
+        [Permiso(permiso = "crearUnidad")]
+        public ActionResult Crear()
+        {
+            ViewBag.planillas = ObtenerPlanillasSelect("0");
+
+            return View();
+        }
+
+        [HttpPost]
+        [Permiso(permiso = "crearUnidad")]
+        public ActionResult Crear(Unidad unidad)
+        {
+            unidad.InstitucionID = Convert.ToInt64(HttpContext.Session["institucion"].ToString());
+            var mensaje = UnidadRepository.createUnidad(unidad);
+            if (mensaje == "OK")
+            {
+                ViewBag.mensaje = "La carga se realizó exitosamente.";
+            }
+            else
+            {
+                ViewBag.error = mensaje;
+            }
+
+            ViewBag.planillas = ObtenerPlanillasSelect("0");
+            return View();
+        }
+
+        [HttpGet]
+        [Permiso(permiso = "editarUnidad")]
+        public ActionResult Editar(string id)
+        {
+            var longid = Convert.ToInt64(id);
+            List<Unidad> unidades = (List<Unidad>)Session["unidades"];
+            Unidad unidad = unidades.Where(x => x.ID == longid).SingleOrDefault();
+
+            ViewBag.planillas = ObtenerPlanillasSelect(unidad.PlanillaID.ToString());
+
+            return View(unidad);
+        }
+
+        [HttpPost]
+        [Permiso(permiso = "editarUnidad")]
+        public ActionResult Editar(Unidad unidad)
+        {
+            unidad.InstitucionID = Convert.ToInt64(HttpContext.Session["institucion"].ToString());
+            var mensaje = UnidadRepository.updateUnidad(unidad);
+            if (mensaje == "OK")
+            {
+                ViewBag.mensaje = "La carga se editó exitosamente.";
+            }
+            else
+            {
+                ViewBag.error = mensaje;
+            }
+
+            return RedirectToAction("Index");
+        }
+
+        [Permiso(permiso = "verDetalleUnidad")]
+        public ActionResult VerDetalle(string id)
+        {
+            var longid = Convert.ToInt64(id);
+            List<Unidad> unidades = (List<Unidad>)Session["unidades"];
+            Unidad unidad = unidades.Where(x => x.ID == longid).SingleOrDefault();
+            return View(unidad);
+        }
+
+        [Permiso(permiso = "eliminarUnidad")]
+        public ActionResult Eliminar(string id)
+        {
+            var longid = Convert.ToInt64(id);
+            List<Unidad> unidades = (List<Unidad>)Session["unidades"];
+            Unidad unidad = unidades.Where(x => x.ID == longid).SingleOrDefault();
+            return View(unidad);
+        }
+
+        [HttpPost]
+        [Permiso(permiso = "eliminarUnidad")]
+        public ActionResult Eliminar(Unidad unidad)
+        {
+            var mensaje = UnidadRepository.deleteUnidad(unidad.ID);
+            if (mensaje == "OK")
+            {
+                ViewBag.mensaje = "La unidad se eliminó exitosamente.";
+            }
+            else
+            {
+                ViewBag.error = mensaje;
+            }
+
+            return RedirectToAction("Index");
+        }
+
+        public List<SelectListItem> ObtenerPlanillasSelect(string id)
+        {
+            var result = PlanillaRepository.getPlanillasSelect2(HttpContext.Session["institucion"].ToString(), id);
+            return result;
+        }   
+    }
+}

@@ -1,0 +1,243 @@
+﻿@model SGEA.Models.Inscripcion
+
+
+@{
+    ViewBag.Title = "Crear";
+    var contador = 0;
+}
+
+<div class="page-title">
+    <div class="title_left" style="margin-left:10px;">
+        <h1>Crear Inscripcion - Paso 2</h1>
+    </div>
+    <div class="title_right">
+    </div>
+</div>
+
+
+<div class="col-md-12 col-sm-12 col-xs-12">
+    <div class="x_panel">
+        <div class="x_content">
+            <br>
+
+            <div id="form_error" class="alert" hidden>
+                <span class="closebtn">&times;</span>
+                <strong>Error!</strong> Ha habido un error al insertar el campo.
+            </div>
+
+            <div id="form_exit" class="alert success" style="text-align:center" hidden>
+                <span class="closebtn">&times;</span>
+                <strong>Éxito!</strong> El campo se insertó correctamente.
+            </div>
+
+            @using (Html.BeginForm("Paso2", "Inscripcion", FormMethod.Post, new { @class = "form-horizontal form-label-left", @data_parsley_validate = "" }))
+            {
+                @Html.AntiForgeryToken()
+
+                <div class="form-group">
+                    @Html.LabelFor(x => x.AlumnoID, new { @class = "control-label col-md-3 col-sm-3 col-xs-12" })
+                    <div class="col-md-6 col-sm-6 col-xs-12">
+                        @Html.DropDownListFor(n => n.AlumnoID, (List<SelectListItem>)ViewBag.alumnos, new { @id = "txtIDAlumno", @required = "required", @class = "form-control col-md-7 col-xs-12", @disabled = "true" })
+                    </div>
+                </div>
+                <div class="form-group">
+                    @Html.LabelFor(x => x.CursoID, new { @class = "control-label col-md-3 col-sm-3 col-xs-12" })
+                    <div class="col-md-6 col-sm-6 col-xs-12">
+                        @Html.DropDownListFor(n => n.CursoID, (List<SelectListItem>)ViewBag.cursos, new { @id = "txtIDCurso", @required = "required", @class = "form-control col-md-7 col-xs-12", @disabled = "true" })
+                    </div>
+                </div>
+                <div class="form-group">
+                    @Html.LabelFor(x => x.ArancelID, new { @class = "control-label col-md-3 col-sm-3 col-xs-12" })
+                    <div class="col-md-6 col-sm-6 col-xs-12">
+                        @Html.DropDownListFor(n => n.ArancelID, (List<SelectListItem>)ViewBag.aranceles, new { @id = "txtIDArancel", @required = "required", @class = "form-control col-md-7 col-xs-12", @disabled = "true" })
+                    </div>
+                </div>
+                <div class="form-group">
+                    @Html.LabelFor(x => x.MesDesde, new { @class = "control-label col-md-3 col-sm-3 col-xs-12" })
+                    <div class="col-md-6 col-sm-6 col-xs-12">
+                        @Html.DropDownListFor(n => n.MesDesde, (List<SelectListItem>)ViewBag.meses, new { @id = "txtMesDesde", @required = "required", @class = "form-control col-md-7 col-xs-12", @disabled = "true" })
+                    </div>
+                </div>
+                <div class="form-group">
+                    @Html.LabelFor(x => x.MesHasta, new { @class = "control-label col-md-3 col-sm-3 col-xs-12" })
+                    <div class="col-md-6 col-sm-6 col-xs-12">
+                        @Html.DropDownListFor(n => n.MesHasta, (List<SelectListItem>)ViewBag.meses, new { @id = "txtMesHasta", @required = "required", @class = "form-control col-md-7 col-xs-12", @disabled = "true" })
+                    </div>
+                </div>
+                <div class="form-group">
+                    @Html.LabelFor(x => x.CantidadCuotas, new { @class = "control-label col-md-3 col-sm-3 col-xs-12" })
+                    <div class="col-md-6 col-sm-6 col-xs-12">
+                        @Html.DropDownListFor(n => n.CantidadCuotas, (List<SelectListItem>)ViewBag.cantidadcuotas, new { @id = "txtCantidadCuotas", @required = "required", @class = "form-control col-md-7 col-xs-12", @disabled = "true" })
+                    </div>
+                </div>
+                <div class="form-group">
+                    @Html.LabelFor(x => x.NroComprobante, new { @class = "control-label col-md-3 col-sm-3 col-xs-12" })
+                    <div class="col-md-6 col-sm-6 col-xs-12">
+                        @Html.TextBoxFor(x => x.NroComprobante, new { @class = "form-control col-md-7 col-xs-12", @required = "required", @type = "text", @disabled = "true" })
+                    </div>
+                </div>
+
+                <div class="title_left" style="margin-left:10px;">
+                    <h1>Pagares</h1>
+                </div>
+
+                <div id="wizard" class="form_wizard wizard_horizontal">
+                    @{
+                        contador = 0;
+                    }
+                    <ul class="wizard_steps anchor">
+
+                        @foreach (var item in Model.listaPagares)
+                        {
+                            contador++;
+                            <li>
+                                <a href="#step-@contador">
+                                    <span class="step_no">@contador</span>
+                                    <span class="step_descr">
+                                        @(contador == 1 ? "Inscripcion" : "Cuota" + (contador - 1) + "/" + Model.listaPagares.Count)<br>
+                                        <small></small>
+                                    </span>
+                                </a>
+                            </li>
+                        }
+                    </ul>
+                    @{
+                        contador = 0;
+                    }
+
+                    @foreach (var item in Model.listaPagares)
+                    {
+                        contador++;
+
+                    <div id="step-@contador">
+                        <h2 class="StepTitle">@(contador == 1 ? "Inscripcion" : "Cuota" + (contador - 1) + "/" + Model.listaPagares.Count)</h2>
+                        <div class="form-group row">
+                            <label class="col-form-label col-md-3 col-sm-3 label-align">
+                                Descripcion <span class="required">*</span>
+                            </label>
+                            <div class="col-md-6 col-sm-6 ">
+                                <input type="text" required="required" class="form-control" value="@item.Descripcion" disabled>
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
+                            <label class="col-form-label col-md-3 col-sm-3 label-align">
+                                Monto <span class="required">*</span>
+                            </label>
+                            <div class="col-md-6 col-sm-6 ">
+                                <input type="text" required="required" class="form-control " value="@item.Monto" disabled>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label class="col-form-label col-md-3 col-sm-3 label-align">
+                                Tipo Pagare <span class="required">*</span>
+                            </label>
+                            <div class="col-md-6 col-sm-6 ">
+                                <input type="text" required="required" class="form-control" value="@item.TipoPagare" disabled>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label class="col-form-label col-md-3 col-sm-3 label-align" for="last-name">
+                                Fecha de Pago <span class="required">*</span>
+                            </label>
+                            <div class="col-md-6 col-sm-6 ">
+                                <input type="text" id="@("fecha-pago")" required="required" class="form-control FechaString">
+                            </div>
+                        </div>
+                    </div>
+
+                        @*<section>
+
+                            <div class="form-group row">
+                                <label class="col-form-label col-md-3 col-sm-3 label-align">
+                                    Descripcion <span class="required">*</span>
+                                </label>
+                                <div class="col-md-6 col-sm-6 ">
+                                    <input type="text" required="required" class="form-control" value="@item.Descripcion" disabled>
+                                </div>
+                            </div>
+
+                            <div class="form-group row">
+                                <label class="col-form-label col-md-3 col-sm-3 label-align">
+                                    Monto <span class="required">*</span>
+                                </label>
+                                <div class="col-md-6 col-sm-6 ">
+                                    <input type="text" required="required" class="form-control " value="@item.Monto" disabled>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label class="col-form-label col-md-3 col-sm-3 label-align">
+                                    Tipo Pagare <span class="required">*</span>
+                                </label>
+                                <div class="col-md-6 col-sm-6 ">
+                                    <input type="text" required="required" class="form-control" value="@item.TipoPagare" disabled>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label class="col-form-label col-md-3 col-sm-3 label-align" for="last-name">
+                                    Fecha de Pago <span class="required">*</span>
+                                </label>
+                                <div class="col-md-6 col-sm-6 ">
+                                    <input type="text" id="@("fecha-pago")" required="required" class="form-control FechaString">
+                                </div>
+                            </div>
+                        </section>*@
+                    }
+
+                </div>
+
+                <div class="ln_solid"></div>
+                <div class="form-group">
+                    <div class="col-md-6 col-sm-6 col-xs-12 col-md-offset-3">
+                        <a href="@Url.Action("Crear","Inscripcion")" class="btn btn-primary" type="button"> < Volver</a>
+                        <button type="submit" class="btn btn-success">Confirmar</button>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@Scripts.Render("~/bundles/jquery")
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('.numberformat').mask("0.###.###.###.###", { reverse: true });
+
+        $('.FechaString').datetimepicker({
+            format: 'DD/MM/YYYY'
+        });
+
+        // Initialize Smart Wizard
+        $('#wizard').smartWizard({
+            onFinish: onFinishCallback
+        });
+
+
+    });
+
+    function onFinishCallback(objs, context) {
+        guardarFechas();
+    }
+
+    function guardarFechas() {
+
+        var lista = $('.FechaString');
+        var lista2 = [];
+
+        $.each(lista, function (key, value) {
+            lista2[key] = lista[key].value;
+        });
+
+        $.ajax({
+            type: "POST",
+            url: "@Url.Action("CargarFechas", "Inscripcion")",
+            data: { lista: lista2 },
+            success: function (msg) {
+                // Replace the div's content with the page method's return.
+                alert(lista2);
+
+            }
+        });
+
+    };
+</script>

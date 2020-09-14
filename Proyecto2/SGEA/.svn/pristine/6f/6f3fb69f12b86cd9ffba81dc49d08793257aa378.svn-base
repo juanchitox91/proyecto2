@@ -1,0 +1,81 @@
+﻿@{
+    ViewBag.Title = "Home Page";
+}
+@{
+
+    List<SGEA.Models.Inscripcion> modelo = (List<SGEA.Models.Inscripcion>)ViewBag.Inscripciones;
+}
+
+@Scripts.Render("~/bundles/jquery")
+@Styles.Render("~/Datatable/css")
+
+
+<div class="page-title">
+    <div class="title_left" style="margin-left:10px;">
+        <h1>Inscripcion</h1>
+    </div>
+    <div class="title_right">
+    </div>
+</div>
+
+<div class="col-md-12 col-sm-12 col-xs-12">
+    <div class="x_panel">
+
+        <div id="buttonset" style="margin-top:5px;margin-bottom:5px;">
+            <a class="btn btn-primary" href="@Url.Action("Crear","Inscripcion")">Cargar Nueva Inscripcion</a>
+        </div>
+        <div class="x_content">
+          
+            <div>
+                <div class="row">
+                    <div class="col-sm-12">
+                        <table id="example" class="table table-striped table-bordered dataTable no-footer" style="width:100%">
+                            <thead>
+                                <tr>
+                                    <th>Alumno</th>
+                                    <th>Curso</th>
+                                    <th>Nombre Arancel</th>
+                                    <th>Estado</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @{
+                                    foreach (var u in modelo)
+                                    {
+                                    <tr>
+                                        <td>@u.NombreAlumno</td>
+                                        <td>@u.NombreCurso</td>
+                                        <td>@u.NombreArancel</td>
+                                        <td>@u.Estado</td>
+                                        <td>
+                                            <a href="@Url.Action("VerDetalle","Inscripcion", new { id = u.ID})"><span class="fa fa-search"></span></a>
+                                            <a href="@Url.Action("Editar","Inscripcion", new { id = u.ID})"><span class="fa fa-pencil"></span></a>
+                                            <a href="@Url.Action("Eliminar","Inscripcion", new { id = u.ID})"><span class="fa fa-trash"></span></a>
+                                        </td>
+                                    </tr>
+                                    };
+                                }
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <th>Alumno</th>
+                                    <th>Curso</th>
+                                    <th>Nombre Arancel</th>
+                                    <th>Estado</th>
+                                    <th></th>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#example').DataTable();
+        });
+    </script>

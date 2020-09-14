@@ -1,0 +1,21 @@
+﻿using System;
+using System.ComponentModel;
+
+namespace SGEA.Models
+{
+    public class Evaluacion
+    {
+        [DisplayName("Evaluación")]
+        public long ID { get; set; }
+        [DisplayName("Item")]
+        public string NombreTipoItem { get; set; }
+        [DisplayName("Item")]
+        public long ItemID { get; set; }
+        [DisplayName("Alumno")]
+        public string NombreAlumno { get; set; }
+        [DisplayName("Alumno")]
+        public long AlumnoID { get; set; }
+        [DisplayName("Puntaje Alcanzado")]
+        public long PuntajeAlcanzado { get; set; }
+    }
+}

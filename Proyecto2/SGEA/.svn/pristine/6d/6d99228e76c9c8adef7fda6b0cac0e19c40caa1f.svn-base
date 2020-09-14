@@ -1,0 +1,86 @@
+﻿@{
+    ViewBag.Title = "Home Page";
+}
+@{
+
+    List<SGEA.Models.Alumno> modelo = (List<SGEA.Models.Alumno>)ViewBag.Alumnos;
+}
+
+@Scripts.Render("~/bundles/jquery")
+@Styles.Render("~/Datatable/css")
+
+
+<div class="page-title">
+    <div class="title_left" style="margin-left:10px;">
+        <h1>Alumnos</h1>
+    </div>
+    <div class="title_right">
+    </div>
+</div>
+
+<div class="col-md-12 col-sm-12 col-xs-12">
+    <div class="x_panel">
+
+        <div id="buttonset" style="margin-top:5px;margin-bottom:5px;">
+            <a class="btn btn-primary" href="@Url.Action("Crear","Alumno")">Cargar Nuevo Alumno</a>
+        </div>
+        <div class="x_content">
+          
+            <div @*id="datatable_wrapper" class="dataTables_wrapper form-inline dt-bootstrap no-footer"*@>
+                <div class="row">
+                    <div class="col-sm-12">
+                        <table id="example" class="table table-striped table-bordered dataTable no-footer" style="width:100%">
+                            <thead>
+                                <tr>
+                                    <th>Cedula</th>
+                                    <th>Nombre</th>
+                                    <th>Apellido</th>
+                                    <th>Contacto Principal</th>
+                                    <th>Telefono Contacto Principal</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @{
+                                    foreach (var u in modelo)
+                                    {
+                                <tr>
+                                    <td>@u.Cedula.ToString("#,###,###,###").Replace(",",".")</td>
+                                    <td>@u.Nombre</td>
+                                    <td>@u.Apellido</td>
+                                    <td>@u.PersonaContacto1</td>
+                                    <td>@u.TelefonoContacto1</td>
+
+                                    <td>
+                                        <a href="@Url.Action("VerDetalle","Alumno", new { id = u.ID})"><span class="fa fa-search"></span></a>
+                                        <a href="@Url.Action("Editar","Alumno", new { id = u.ID})"><span class="fa fa-pencil"></span></a>
+                                        <a href="@Url.Action("Eliminar","Alumno", new { id = u.ID})"><span class="fa fa-trash"></span></a>
+                                    </td>
+                                </tr>
+                                    };
+                                }
+
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <th>Cedula</th>
+                                    <th>Nombre</th>
+                                    <th>Apellido</th>
+                                    <th>Curso</th>
+                                    <th>Grupo Familiar</th>
+                                    <th></th>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#example').DataTable();
+        });
+    </script>

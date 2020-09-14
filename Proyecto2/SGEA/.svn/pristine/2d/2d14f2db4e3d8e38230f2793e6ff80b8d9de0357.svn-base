@@ -1,0 +1,207 @@
+﻿using Npgsql;
+using SGEA.Models;
+using System;
+using System.Collections.Generic;
+using System.Web.Mvc;
+
+namespace SGEA.Repository
+{
+    public class EvaluacionRepository
+    {
+        public static string connectionString = System.Configuration.ConfigurationManager.
+                                     ConnectionStrings["SGEAContext"].ConnectionString;
+
+
+        public static List<SelectListItem> getPlanillasSelect2(string idInstitucion, string id)
+        {
+            var planillas = new List<SelectListItem>();
+
+            try
+            {
+
+                NpgsqlConnection cnn;
+                cnn = new NpgsqlConnection(connectionString);
+                cnn.Open();
+
+                NpgsqlCommand command;
+                NpgsqlDataReader dataReader;
+                string sql, Output = string.Empty;
+
+                sql = $"select r.id, r.titulo, 'Año ' || r.anho_lectivo, c.nombrecurso, m.nombre_materia, d.apellido || ', ' || d.nombre as docente" +
+                      $"  FROM dbo.planilla r join dbo.curso c on r.idcurso = c.id " +
+                      $"join dbo.materia m on r.idmateria = m.id join dbo.docente d on r.iddocente = d.id where r.idinstitucion = {idInstitucion}";
+                command = new NpgsqlCommand(sql, cnn);
+                dataReader = command.ExecuteReader();
+
+                planillas.Add(new SelectListItem
+                {
+                    Value = "",
+                    Text = "Seleccione un valor",
+                    Selected = id == "0" ? true : false
+                });
+
+                while (dataReader.Read())
+                {
+                    planillas.Add(new SelectListItem
+                    {
+                        Value = dataReader.GetValue(0).ToString(),
+                        Text = dataReader.GetValue(1).ToString() + " - " + dataReader.GetValue(2).ToString() + " | " + dataReader.GetValue(3).ToString() + " | " + dataReader.GetValue(4).ToString() + " | " + dataReader.GetValue(5).ToString(),
+                        Selected = dataReader.GetValue(0).ToString() == id ? true : false
+                    });
+                };
+                command.Dispose(); cnn.Close();;
+            }
+            catch (Exception)
+            {
+
+            };
+            return planillas;
+        }
+
+        public static List<SelectListItem> getItemsSelect2(string idInstitucion, string idplanilla, string id)
+        {
+            var items = new List<SelectListItem>();
+
+            try
+            {
+
+                NpgsqlConnection cnn;
+                cnn = new NpgsqlConnection(connectionString);
+                cnn.Open();
+
+                NpgsqlCommand command;
+                NpgsqlDataReader dataReader;
+                string sql, Output = string.Empty;
+
+                sql = $"select i.id, i.descripcion, u.titulo, s.titulo from dbo.itemplanilla i join dbo.subunidad s on i.idsubunidad = s.id " +
+                $"join dbo.unidad u on s.idunidad = u.id join dbo.planilla p on u.idplanilla = p.id " +
+                $"where p.id = {idplanilla}";
+                command = new NpgsqlCommand(sql, cnn);
+
+
+                dataReader = command.ExecuteReader();
+                items.Add(new SelectListItem
+                {
+                    Value = "",
+                    Text = "Seleccione un valor",
+                    Selected = id == "0" ? true : false
+                });
+
+                while (dataReader.Read())
+                {
+                    items.Add(new SelectListItem
+                    {
+                        Value = dataReader.GetValue(0).ToString(),
+                        Text = dataReader.GetValue(1).ToString() + " | " + dataReader.GetValue(2).ToString() + " | " + dataReader.GetValue(3).ToString(),
+                        Selected = dataReader.GetValue(0).ToString() == id ? true : false
+                    });
+                };
+                command.Dispose(); cnn.Close();
+
+            }
+            catch (Exception ex) { 
+
+            };
+            return items;
+        }
+
+        public static void RegistrarEvaluacion(Evaluacion evaluacion)
+        {
+            foreach(var item in evaluacion.Lista)
+            {
+                var conteo = existeEvaluacion(evaluacion.ItemID.ToString(), item.AlumnoID.ToString());
+
+                if(conteo == 0)
+                {
+                    cargaEvaluacion(evaluacion.ItemID.ToString(), item.AlumnoID.ToString(), item.PuntajeAlcanzado.ToString()); 
+                }
+                else
+                {
+                    editarEvaluacion(evaluacion.ItemID.ToString(), item.AlumnoID.ToString(), item.PuntajeAlcanzado.ToString());
+                }
+            }
+        }
+
+        private static int existeEvaluacion(string iditem, string idalumno)
+        {
+            int cantidad = 0;
+
+            try
+            {
+
+                NpgsqlConnection cnn;
+                cnn = new NpgsqlConnection(connectionString);
+                cnn.Open();
+
+                NpgsqlCommand command;
+                NpgsqlDataReader dataReader;
+                string sql, Output = string.Empty;
+
+                sql = $"select count(*) from dbo.evaluacion e where e.iditem = {iditem} and e.idalumno = {idalumno}";
+                command = new NpgsqlCommand(sql, cnn);
+
+                dataReader = command.ExecuteReader();
+              
+                while (dataReader.Read())
+                {
+                    string cant = dataReader.GetValue(0).ToString();
+                    cantidad = Convert.ToInt16(cant); 
+                };
+
+                command.Dispose(); cnn.Close();
+            }
+            catch (Exception)
+            {
+
+            };
+
+            return cantidad;
+        }
+
+        private static void cargaEvaluacion(string iditem, string idalumno, string puntajealcanzado)
+        {
+            try
+            {
+                NpgsqlConnection cnn;
+                cnn = new NpgsqlConnection(connectionString);
+                cnn.Open();
+
+                NpgsqlCommand command;
+                string sql, Output = string.Empty;
+
+                sql = $"insert into dbo.evaluacion (iditem, idalumno, puntajealcanzado) values ({iditem}, {idalumno}, {puntajealcanzado})";
+                command = new NpgsqlCommand(sql, cnn);
+
+                command.ExecuteNonQuery();
+                command.Dispose(); cnn.Close();
+            }
+            catch (Exception)
+            {
+
+            };
+        }
+
+        private static void editarEvaluacion(string iditem, string idalumno, string puntajealcanzado)
+        {
+            try
+            {
+                NpgsqlConnection cnn;
+                cnn = new NpgsqlConnection(connectionString);
+                cnn.Open();
+
+                NpgsqlCommand command;
+                string sql, Output = string.Empty;
+
+                sql = $"update dbo.evaluacion set puntajealcanzado = {puntajealcanzado} where iditem = {iditem} and idalumno = {idalumno}";
+                command = new NpgsqlCommand(sql, cnn);
+
+                command.ExecuteNonQuery();
+                command.Dispose(); cnn.Close();
+            }
+            catch (Exception)
+            {
+
+            };
+        }
+    }
+}

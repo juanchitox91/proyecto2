@@ -1,0 +1,80 @@
+﻿@model SGEA.Models.Curso
+
+@{
+    ViewBag.Title = "Eliminar";
+}
+
+
+<div class="page-title">
+    <div class="title_left" style="margin-left:10px;">
+        <h3>Eliminar Curso - @Model.NombreCurso</h3>
+    </div>
+    <div class="title_right">
+    </div>
+</div>
+
+
+<div class="col-md-12 col-sm-12 col-xs-12">
+    <div class="x_panel">
+        <div class="x_content">
+            <br>
+
+            @using (Html.BeginForm("Eliminar", "Curso", FormMethod.Post, new { @class = "form-horizontal form-label-left", @data_parsley_validate = "" }))
+            {
+                @Html.AntiForgeryToken()
+
+                <div class="form-group">
+                    @Html.LabelFor(x => x._Curso, new { @class = "control-label col-md-3 col-sm-3 col-xs-12" })
+                    <div class="col-md-6 col-sm-6 col-xs-12">
+                        @Html.TextBoxFor(x => x._Curso, new { @class = "form-control col-md-7 col-xs-12", @required = "required", @type = "number", @disabled = "true" })
+                    </div>
+                </div>
+                <div class="form-group">
+                    @Html.LabelFor(x => x.Seccion, new { @class = "control-label col-md-3 col-sm-3 col-xs-12" })
+                    <div class="col-md-6 col-sm-6 col-xs-12">
+                        @Html.TextBoxFor(x => x.Seccion, new { @class = "form-control col-md-7 col-xs-12", @required = "required", @type = "text", @disabled = "true" })
+                    </div>
+                </div>
+                <div class="form-group">
+                    @Html.LabelFor(x => x.Turno, new { @class = "control-label col-md-3 col-sm-3 col-xs-12" })
+                    <div class="col-md-6 col-sm-6 col-xs-12">
+                        @Html.TextBoxFor(x => x.Turno, new { @class = "form-control col-md-7 col-xs-12", @required = "required", @type = "text", @disabled = "true" })
+                    </div>
+                </div>
+                <div class="form-group">
+                    @Html.LabelFor(x => x.NombreCurso, new { @class = "control-label col-md-3 col-sm-3 col-xs-12" })
+                    <div class="col-md-6 col-sm-6 col-xs-12">
+                        @Html.TextBoxFor(x => x.NombreCurso, new { @class = "form-control col-md-7 col-xs-12", @required = "required", @type = "text", @disabled = "true" })
+                    </div>
+                </div>
+                <div class="form-group">
+                    @Html.LabelFor(x => x.Observacion, new { @class = "control-label col-md-3 col-sm-3 col-xs-12" })
+                    <div class="col-md-6 col-sm-6 col-xs-12">
+                        @Html.TextBoxFor(x => x.Observacion, new { @class = "form-control col-md-7 col-xs-12", @required = "required", @type = "text", @disabled = "true" })
+                    </div>
+                </div>
+                <div class="ln_solid"></div>
+                <div class="form-group">
+                    <div class="col-md-6 col-sm-6 col-xs-12 col-md-offset-3">
+                        <a href="@Url.Action("Index", "Curso")" class="btn btn-primary">Volver</a>
+                        <button type="submit" class="btn btn-success">Eliminar</button>
+                    </div>
+                </div>
+                @*</form>*@
+            }
+        </div>
+    </div>
+</div>
+
+@Scripts.Render("~/bundles/jquery")
+
+<script type="text/javascript">
+    $(document).ready(function () {
+
+
+       var pageSize = 20;
+       var optionListUrl = '@Url.Action("ObtenerRolesSelect2", "Usuario")';
+       //Method which is to be called for populating options in dropdown //dynamically
+
+    });
+</script>

@@ -1,0 +1,21 @@
+﻿using SGEA.Models;
+using System.Data.Entity;
+using System.Data.Entity.ModelConfiguration.Conventions;
+
+namespace SGEA.Models
+{
+    public class SGEAContext : DbContext
+    {
+
+        public SGEAContext() : base(nameOrConnectionString: "SGEAContext") { }   
+
+        public DbSet<Alumno> Alumnos { get; set; }
+        //public DbSet<Entrevista> Entrevistas { get; set; }
+        //public DbSet<Grupo_Familiar> Grupo_Familiar { get; set; }
+
+        protected override void OnModelCreating(DbModelBuilder modelBuilder)
+        {
+            modelBuilder.Conventions.Remove<PluralizingTableNameConvention>();
+        }
+    }
+}

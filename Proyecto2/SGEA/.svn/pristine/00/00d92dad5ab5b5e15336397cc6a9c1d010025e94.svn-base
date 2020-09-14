@@ -1,0 +1,2 @@
+insert into "Roles" values (1, 'Administrador');
+

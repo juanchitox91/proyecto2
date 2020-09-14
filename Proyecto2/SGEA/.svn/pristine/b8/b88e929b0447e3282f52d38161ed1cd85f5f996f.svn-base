@@ -1,0 +1,16 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+
+namespace SGEA.Models
+{
+    public class Rol
+    {
+        public long ID { get; set; }
+        public string NombreRol { get; set; }
+        public long InstitucionID { get; set; }
+        public string NombreInstitucion { get; set; }
+        public bool EsAdministrador { get; set; }
+    }
+}

@@ -1,0 +1,19 @@
+﻿
+namespace SGEA.Models
+{
+    public class Planilla
+    {
+        public long ID { get; set; }
+        public long CursoID { get; set; }
+        public string NombreCurso { get; set; }
+        public long MateriaID { get; set; }
+        public string NombreMateria { get; set; }
+        public long DocenteID { get; set; }
+        public string NombreDocente { get; set; }
+        public long InstitucionID { get; set; }
+        public string Estado { get; set; }
+        public string AnhoLectivo { get; set; }
+        public string Titulo { get; set; }
+        public string Descripcion { get; set; }
+    }
+}

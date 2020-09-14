@@ -1,0 +1,16 @@
+﻿@{
+    ViewBag.Title = "Error";
+}
+
+<div class="col-md-12">
+    <div class="col-middle">
+        <div class="text-center text-center">
+            <h1 class="error-number">@ViewBag.NroError</h1>
+            <h2>@ViewBag.Titulo</h2>
+            <p>
+                @ViewBag.Texto. <a href=@Url.Action("../Home")><b>Volver al Inicio</b></a>
+            </p>
+
+        </div>
+    </div>
+</div>

@@ -1,0 +1,20 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+
+namespace SGEA.Models
+{
+    public class Select2Model
+    {
+        public string id { get; set; }
+        public string text { get; set; }
+        public bool selected { get; set; }
+    }
+
+    public class Select2PagedResult
+    {
+        public int Total { get; set; }
+        public List<Select2Model> Results { get; set; }
+    }
+}

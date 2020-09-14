@@ -1,0 +1,13 @@
+﻿using System;
+
+namespace SGEA.Models
+{
+    public class SubUnidad
+    {
+        public long ID { get; set; }
+        public long UnidadID { get; set; }
+        public long InstitucionID { get; set; }
+        public string Titulo { get; set; }
+        public string Descripcion { get; set; }
+    }
+}

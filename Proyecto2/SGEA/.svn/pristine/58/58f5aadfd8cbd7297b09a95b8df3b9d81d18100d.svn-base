@@ -1,0 +1,39 @@
+﻿using System.Collections.Generic;
+using System.ComponentModel;
+
+namespace SGEA.Models
+{
+    public class Alumno
+    {
+        [DisplayName("Alumno")]
+        public long ID { get; set; }
+        [DisplayName("Cédula de Identidad")]
+        public long  Cedula { get; set; }
+        [DisplayName("Nombre")]
+        public string Nombre { get; set; }
+        [DisplayName("Apellido")]
+        public string Apellido { get; set; }
+        [DisplayName("Teléfono")]
+        public string Telefono { get; set; }
+        [DisplayName("Contacto Principal")]
+        public string PersonaContacto1 { get; set; }
+        [DisplayName("Teléfono Contacto Principal")]
+        public string TelefonoContacto1 { get; set; }
+        [DisplayName("Contacto Adicional")]
+        public string PersonaContacto2 { get; set; }
+        [DisplayName("Teléfono Contacto Adicional")]
+        public string TelefonoContacto2 { get; set; }
+        [DisplayName("Dirección")]
+        public string Direccion { get; set; }
+        [DisplayName("Observación")]
+        public string Observacion { get; set; }
+        [DisplayName("Grupo Familiar")]
+        public long? GrupoFamiliarID { get; set; }
+        [DisplayName("Fecha Alta")]
+        public string FechaAlta { get; set; }
+        [DisplayName("Última Modificación")]
+        public string UltModificacion { get; set; }
+        [DisplayName("Institución")]
+        public long InstitucionID { get; set; }
+    }
+}

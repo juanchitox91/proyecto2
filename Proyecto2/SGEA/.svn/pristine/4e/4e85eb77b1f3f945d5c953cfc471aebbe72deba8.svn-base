@@ -1,0 +1,1 @@
+INSERT INTO "Usuario" ("Nombre", "Apellido", "RolID", "Email", "Password", "InstitucionID") VALUES('Administrador', '', 1, 'admin@admin.com', 'e10adc3949ba59abbe56e057f20f883e', 1);

@@ -1,0 +1,96 @@
+﻿@model SGEA.Models.Rol
+
+@{
+    ViewBag.Title = "Crear";
+}
+
+
+<div class="page-title">
+    <div class="title_left" style="margin-left:10px;">
+        <h1>Crear Rol</h1>
+    </div>
+    <div class="title_right">
+    </div>
+</div>
+
+
+<div class="col-md-12 col-sm-12 col-xs-12">
+    <div class="x_panel">
+        <div class="x_content">
+            <br>
+
+            <div id="form_error"class="alert" hidden>
+                <span class="closebtn">&times;</span>
+                <strong>Error!</strong> Ha habido un error al insertar el campo.
+            </div>
+
+            <div id="form_exit"class="alert success" style="text-align:center" hidden>
+                <span class="closebtn">&times;</span>
+                <strong>Éxito!</strong> El campo se insertó correctamente.
+            </div>
+
+            @using (Html.BeginForm("Crear", "Rol", FormMethod.Post, new { @class = "form-horizontal form-label-left", @data_parsley_validate = "" }))
+            {
+                @Html.AntiForgeryToken()
+
+                <div class="form-group">
+                    @Html.LabelFor(x => x.NombreRol, new { @class = "control-label col-md-3 col-sm-3 col-xs-12" })
+                    <div class="col-md-6 col-sm-6 col-xs-12">
+                        @Html.TextBoxFor(x => x.NombreRol, new { @class = "form-control col-md-7 col-xs-12", @required = "required" })
+                    </div>
+                </div>
+                <div class="ln_solid"></div>
+                <div class="form-group">
+                    <div class="col-md-6 col-sm-6 col-xs-12 col-md-offset-3">
+                        <a href="@Url.Action("Index","Rol")" class="btn btn-primary" type="button">Cancelar</a>
+                        <a  href="@Url.Action("Crear","Rol")" class="btn btn-primary">Limpiar</a>
+                        <button type="submit" class="btn btn-success">Confirmar</button>
+                    </div>
+                </div>
+                @*</form>*@
+            }
+        </div>
+    </div>
+</div>
+
+@Scripts.Render("~/bundles/jquery")
+
+<script type="text/javascript">
+    $(document).ready(function () {
+
+      
+       var pageSize = 20;
+       var optionListUrl = '@Url.Action("ObtenerRolesSelect2", "Usuario")';
+       //Method which is to be called for populating options in dropdown //dynamically
+
+       // $('#txtIDRol').select2(
+       //{
+       //    ajax: {
+       //        delay: 150,
+       //        url: optionListUrl,
+       //        dataType: 'json',
+       //        data: function (params) {
+       //            params.page = params.page || 1;
+       //            return {
+       //                searchTerm: params.term,
+       //                pageSize: pageSize,
+       //                pageNumber: params.page
+       //            };
+       //        },
+       //        processResults: function (data, params) {
+       //            params.page = params.page || 1;
+       //           return {
+       //                results: data.Results,
+       //                pagination: {
+       //                    more: (params.page * pageSize) < data.Total
+       //                }
+       //            };
+       //        }
+       //    },
+       //    placeholder: "-- Seleccione una opción --",
+       //    minimumInputLength: 0,
+       //    allowClear: true,
+       // });
+
+    });
+</script>

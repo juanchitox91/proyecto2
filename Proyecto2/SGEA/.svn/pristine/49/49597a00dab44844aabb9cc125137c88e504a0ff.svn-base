@@ -1,0 +1,202 @@
+﻿using Npgsql;
+using SGEA.Models;
+using System;
+using System.Collections.Generic;
+using System.Web.Mvc;
+
+namespace SGEA.Repository
+{
+    public class PlanillaRepository
+    {
+        public static string connectionString = System.Configuration.ConfigurationManager.
+                                     ConnectionStrings["SGEAContext"].ConnectionString;
+
+        public static List<Planilla> getPlanillas(string idInstitucion)
+        {
+            var planillas = new List<Planilla>();
+
+            try
+            {
+
+                NpgsqlConnection cnn;
+                cnn = new NpgsqlConnection(connectionString);
+                cnn.Open();
+
+                NpgsqlCommand command;
+                NpgsqlDataReader dataReader;
+                string sql, Output = string.Empty;
+
+                sql = $"select r.id, r.idcurso, r.idmateria, r.iddocente, r.estado, r.anho_lectivo, r.idinstitucion, r.titulo, " +
+                    $"r.descripcion, c.nombrecurso, m.nombre_materia, d.apellido || ', ' || d.nombre as nombre_docente " +
+                    $" FROM dbo.planilla r join dbo.curso c on r.idcurso = c.id join dbo.materia m on r.idmateria = m.id " +
+                    $"join dbo.docente d on r.iddocente = d.id where r.idinstitucion = {idInstitucion}";
+
+                command = new NpgsqlCommand(sql, cnn);
+                dataReader = command.ExecuteReader();
+
+                while (dataReader.Read())
+                {
+                    planillas.Add(new Planilla
+                    {
+                        ID = Convert.ToInt64(dataReader.GetValue(0).ToString()),
+                        CursoID = Convert.ToInt64(dataReader.GetValue(1).ToString()),
+                        MateriaID = Convert.ToInt64(dataReader.GetValue(2).ToString()),
+                        DocenteID = Convert.ToInt64(dataReader.GetValue(3).ToString()),
+                        Estado = dataReader.GetValue(4).ToString(),
+                        AnhoLectivo = Convert.ToInt64(dataReader.GetValue(5).ToString()).ToString("#,###"),
+                        InstitucionID = Convert.ToInt64(dataReader.GetValue(6).ToString()),
+                        Titulo = dataReader.GetValue(7).ToString(),
+                        Descripcion = dataReader.GetValue(8).ToString(),
+                        NombreCurso = dataReader.GetValue(9).ToString(),
+                        NombreMateria = dataReader.GetValue(10).ToString(),
+                        NombreDocente = dataReader.GetValue(11).ToString(),
+
+                    });
+                }
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+
+            return planillas;
+        }
+
+        public static string createPlanilla(Planilla planilla)
+        {
+            string mensaje = string.Empty;
+
+            try
+            {
+                NpgsqlConnection cnn;
+                cnn = new NpgsqlConnection(connectionString);
+                cnn.Open();
+
+                NpgsqlCommand command;
+                string sql, Output = string.Empty;
+                planilla.Estado = "A";
+                int anho = Convert.ToInt32(planilla.AnhoLectivo.Replace(".", string.Empty));
+
+                sql = $"insert into dbo.planilla(idcurso, idmateria, iddocente, estado, anho_lectivo, idinstitucion, titulo, descripcion)" +
+                      $"values ({planilla.CursoID}, {planilla.MateriaID}, {planilla.DocenteID}, '{planilla.Estado}', " +
+                      $"{anho}, {planilla.InstitucionID}, '{planilla.Titulo}', '{planilla.Descripcion}')";
+
+                command = new NpgsqlCommand(sql, cnn);
+                command.ExecuteNonQuery();
+                mensaje = "OK";
+            }
+
+            catch (Exception e)
+            {
+                mensaje = "Ha ocurrido un error al insertar la planilla.";
+            }
+
+            return mensaje;
+        }
+
+        public static string deletePlanilla(long id)
+        {
+            string mensaje = string.Empty;
+
+            try
+            {
+                NpgsqlConnection cnn;
+                cnn = new NpgsqlConnection(connectionString);
+                cnn.Open();
+
+                NpgsqlCommand command;
+                string sql, Output = string.Empty;
+
+                sql = $"delete from dbo.planilla u where u.id = {id}";
+
+                command = new NpgsqlCommand(sql, cnn);
+                command.ExecuteNonQuery();
+                mensaje = "OK";
+            }
+
+            catch (Exception e)
+            {
+                mensaje = "Ha ocurrido un error al eliminar la planilla.";
+            }
+
+            return mensaje;
+        }
+
+        public static string updatePlanilla(Planilla planilla)
+        {
+            string mensaje = string.Empty;
+
+            try
+            {
+                NpgsqlConnection cnn;
+                cnn = new NpgsqlConnection(connectionString);
+                cnn.Open();
+
+                NpgsqlCommand command;
+                string sql, Output = string.Empty;
+                int anho = Convert.ToInt32(planilla.AnhoLectivo.Replace(".", string.Empty));
+                planilla.Estado = planilla.Estado != "I" || planilla.Estado != "A" ? "A" : planilla.Estado;
+
+                sql = $"update dbo.planilla set idcurso = {planilla.CursoID}, idmateria = {planilla.MateriaID}, iddocente = {planilla.DocenteID}, " +
+                    $"estado = '{planilla.Estado}', anho_lectivo = {anho}, idinstitucion = {planilla.InstitucionID}, " +
+                    $"titulo = '{planilla.Titulo}', descripcion = '{planilla.Descripcion}' where id = {planilla.ID}";
+
+                command = new NpgsqlCommand(sql, cnn);
+                command.ExecuteNonQuery();
+                mensaje = "OK";
+            }
+
+            catch (Exception e)
+            {
+                mensaje = "Ha ocurrido un error al editar la planilla.";
+            }
+
+            return mensaje;
+        }
+
+        public static List<SelectListItem> getPlanillasSelect2(string idInstitucion, string id)
+        {
+            var cursos = new List<SelectListItem>();
+
+            try
+            {
+
+                NpgsqlConnection cnn;
+                cnn = new NpgsqlConnection(connectionString);
+                cnn.Open();
+
+                NpgsqlCommand command;
+                NpgsqlDataReader dataReader;
+                string sql, Output = string.Empty;
+
+                sql = $"select  r.id, r.titulo FROM dbo.planilla r where r.idinstitucion = {idInstitucion}";
+                command = new NpgsqlCommand(sql, cnn);
+                dataReader = command.ExecuteReader();
+
+                cursos.Add(new SelectListItem
+                {
+                    Value = "",
+                    Text = "Seleccione un valor",
+                    Selected = id == "0" ? true : false
+                });
+
+                while (dataReader.Read())
+                {
+                    cursos.Add(new SelectListItem
+                    {
+                        Value = dataReader.GetValue(0).ToString(),
+                        Text = dataReader.GetValue(1).ToString(),
+                        Selected = dataReader.GetValue(0).ToString() == id ? true : false
+                    });
+                };
+            }
+            catch (Exception)
+            {
+
+                //return resultado;
+            };
+            return cursos;
+        }
+    }
+}

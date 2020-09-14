@@ -1,0 +1,52 @@
+﻿
+@{
+    ViewBag.Title = "Login";
+}
+
+@{
+    Layout = null;
+}
+
+@Styles.Render("~/Content/css")
+@Styles.Render("~/Gentelella/css")
+@Scripts.Render("~/bundles/modernizr")
+
+<body class="login">
+    <div>
+        <a class="hiddenanchor" id="signup"></a>
+        <a class="hiddenanchor" id="signin"></a>
+        <div class="login_wrapper">
+            <div class="animate form login_form">
+                <section class="login_content">
+                    @using (Html.BeginForm("Acceder", "Login", FormMethod.Post))
+                    {
+                        <h1>S. G. E. A.</h1>
+                        <p align="left" style="font-size:18px;">Iniciar sesión</p>
+                        <div>
+                            <input name="email" type="text" class="form-control" placeholder="usuario" required="" />
+                        </div>
+                        <div>
+                            <input name="password" type="password" class="form-control" placeholder="contraseña" required="" />
+                        </div>
+                        <div>
+                            <button class="btn btn-primary submit" type="submit"> Ingresar </button>
+                        </div>
+                        <div class="clearfix"></div>
+                        <div class="separator">
+                            @*<p class="change_link">
+                                    New to site?
+                                    <a href="#signup" class="to_register"> Create Account </a>
+                                </p>
+                                <div class="clearfix"></div>
+                                <br />*@
+                            <div>
+                                @*<h1><i class="fa fa-paw"></i> Gentelella Alela!</h1>*@
+                                <p>© S.G.E.A. 2019 - Todos los derechos reservados</p>
+                            </div>
+                        </div>
+                    }
+                </section>
+            </div>
+        </div>
+    </div>
+</body>

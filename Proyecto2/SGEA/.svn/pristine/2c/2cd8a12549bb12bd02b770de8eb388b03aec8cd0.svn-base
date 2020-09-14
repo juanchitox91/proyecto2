@@ -1,0 +1,142 @@
+﻿using Npgsql;
+using SGEA.Models;
+using System;
+using System.Collections.Generic;
+
+namespace SGEA.Repository
+{
+    public class DocenteRepository
+    {
+        public static string connectionString = System.Configuration.ConfigurationManager.
+                                     ConnectionStrings["SGEAContext"].ConnectionString;
+
+        public static List<Docente> getDocentes(string idInstitucion)
+        {
+            var docentes = new List<Docente>();
+
+            try
+            {
+                NpgsqlConnection cnn;
+                cnn = new NpgsqlConnection(connectionString);
+                cnn.Open();
+
+                NpgsqlCommand command;
+                NpgsqlDataReader dataReader;
+                string sql, Output = string.Empty;
+
+                sql = $"select r.id, r.cedula, r.nombre, r.apellido, r.telefono, r.direccion, r.observacion FROM dbo.docente r where r.idinstitucion = {idInstitucion}";
+                command = new NpgsqlCommand(sql, cnn);
+                dataReader = command.ExecuteReader();
+
+                while (dataReader.Read())
+                {
+                    docentes.Add(new Docente
+                    {
+                        ID = Convert.ToInt64(dataReader.GetValue(0).ToString()),
+                        cedula = Convert.ToInt64(dataReader.GetValue(1).ToString()) ,
+                        Nombres = dataReader.GetValue(2).ToString(),
+                        Apellidos = dataReader.GetValue(3).ToString(),
+                        Telefono = dataReader.GetValue(4).ToString(),
+                        Direccion = dataReader.GetValue(5).ToString(),
+                        Observacion = dataReader.GetValue(6).ToString()
+                    });
+                }
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+
+            return docentes;
+        }
+
+        public static string createDocente(Docente docente)
+        {
+            string mensaje = string.Empty;
+
+            try
+            {
+                NpgsqlConnection cnn;
+                cnn = new NpgsqlConnection(connectionString);
+                cnn.Open();
+
+                NpgsqlCommand command;
+                string sql, Output = string.Empty;
+
+                sql = $"insert into dbo.docente(cedula, nombre, apellido, telefono, direccion, observacion, idinstitucion) " +
+                      $"values ({docente.cedula}, '{docente.Nombres}', '{docente.Apellidos}', '{docente.Telefono}', '{docente.Direccion}', " +
+                      $"'{docente.Observacion}', {docente.InstitucionID})";
+
+                command = new NpgsqlCommand(sql, cnn);
+                command.ExecuteNonQuery();
+                mensaje = "OK";
+            }
+
+            catch (Exception e)
+            {
+                mensaje = "Ha ocurrido un error al insertar el docente.";
+            }
+
+            return mensaje;
+        }
+
+        public static string deleteDocente(long id)
+        {
+            string mensaje = string.Empty;
+
+            try
+            {
+                NpgsqlConnection cnn;
+                cnn = new NpgsqlConnection(connectionString);
+                cnn.Open();
+
+                NpgsqlCommand command;
+                string sql, Output = string.Empty;
+
+                sql = $"delete from dbo.docente u where u.id = {id}";
+
+                command = new NpgsqlCommand(sql, cnn);
+                command.ExecuteNonQuery();
+                mensaje = "OK";
+            }
+
+            catch (Exception e)
+            {
+                mensaje = "Ha ocurrido un error al eliminar el docente.";
+            }
+
+            return mensaje;
+        }
+
+        public static string updateDocente(Docente docente)
+        {
+            string mensaje = string.Empty;
+
+            try
+            {
+                NpgsqlConnection cnn;
+                cnn = new NpgsqlConnection(connectionString);
+                cnn.Open();
+
+                NpgsqlCommand command;
+                string sql, Output = string.Empty;
+
+                sql = $"update dbo.docente set cedula = {docente.cedula}, nombre = '{docente.Nombres}', apellido = '{docente.Apellidos}', " +
+                    $"telefono = '{docente.Telefono}', direccion = '{docente.Direccion}', " +
+                    $"observacion = '{docente.Observacion}' where id = {docente.ID}";
+
+                command = new NpgsqlCommand(sql, cnn);
+                command.ExecuteNonQuery();
+                mensaje = "OK";
+            }
+
+            catch (Exception e)
+            {
+                mensaje = "Ha ocurrido un error al modificar el docente.";
+            }
+
+            return mensaje;
+        }
+    }
+}

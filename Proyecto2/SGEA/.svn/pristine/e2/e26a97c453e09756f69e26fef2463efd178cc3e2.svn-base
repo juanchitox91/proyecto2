@@ -1,0 +1,187 @@
+﻿using Helper;
+using Npgsql;
+//using SGEA.DAL;
+using SGEA.Models;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web.Mvc;
+
+namespace SGEA.Repository
+{
+    public class SubUnidadRepository
+    {
+        public static string connectionString = System.Configuration.ConfigurationManager.
+                                     ConnectionStrings["SGEAContext"].ConnectionString;
+
+        public static List<SubUnidad> getSubUnidades(string idInstitucion)
+        {
+            var subUnidades = new List<SubUnidad>();
+
+            try
+            {
+
+                NpgsqlConnection cnn;
+                cnn = new NpgsqlConnection(connectionString);
+                cnn.Open();
+
+                NpgsqlCommand command;
+                NpgsqlDataReader dataReader;
+                string sql, Output = string.Empty;
+
+                sql = $"select r.id, r.titulo, u.id, u.titulo, r.descripcion, r.idinstitucion FROM dbo.subunidad r join dbo.unidad u on r.idunidad = u.id where r.idinstitucion = {idInstitucion}";
+                command = new NpgsqlCommand(sql, cnn);
+                dataReader = command.ExecuteReader();
+
+                while (dataReader.Read())
+                {
+                    subUnidades.Add(new SubUnidad
+                    {
+                        ID = Convert.ToInt64(dataReader.GetValue(0).ToString()),
+                        Titulo = dataReader.GetValue(1).ToString(),
+                        UnidadID = Convert.ToInt64(dataReader.GetValue(2).ToString()),
+                        NombreUnidad = dataReader.GetValue(3).ToString(),
+                        Descripcion = dataReader.GetValue(4).ToString(),
+                        InstitucionID = Convert.ToInt64(dataReader.GetValue(5).ToString()),
+                    });
+                }
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+
+            return subUnidades;
+        }
+
+        public static string createSubUnidad(SubUnidad subunidad)
+        {
+            string mensaje = string.Empty;
+
+            try
+            {
+                NpgsqlConnection cnn;
+                cnn = new NpgsqlConnection(connectionString);
+                cnn.Open();
+
+                NpgsqlCommand command;
+                string sql, Output = string.Empty;
+
+                sql = $"insert into dbo.subunidad(titulo, descripcion, idunidad, idinstitucion)" +
+                      $"values ('{subunidad.Titulo}', '{subunidad.Descripcion}', {subunidad.UnidadID}, {subunidad.InstitucionID})";
+
+                command = new NpgsqlCommand(sql, cnn);
+                command.ExecuteNonQuery();
+                mensaje = "OK";
+            }
+
+            catch (Exception e)
+            {
+                mensaje = "Ha ocurrido un error al insertar la subunidad.";
+            }
+
+            return mensaje;
+        }
+
+        public static string deleteSubUnidad(long id)
+        {
+            string mensaje = string.Empty;
+
+            try
+            {
+                NpgsqlConnection cnn;
+                cnn = new NpgsqlConnection(connectionString);
+                cnn.Open();
+
+                NpgsqlCommand command;
+                string sql, Output = string.Empty;
+
+                sql = $"delete from dbo.subunidad u where u.id = {id}";
+
+                command = new NpgsqlCommand(sql, cnn);
+                command.ExecuteNonQuery();
+                mensaje = "OK";
+            }
+
+            catch (Exception e)
+            {
+                mensaje = "Ha ocurrido un error al eliminar la subunidad.";
+            }
+
+            return mensaje;
+        }
+
+        public static string updateSubUnidad(SubUnidad subunidad)
+        {
+            string mensaje = string.Empty;
+
+            try
+            {
+                NpgsqlConnection cnn;
+                cnn = new NpgsqlConnection(connectionString);
+                cnn.Open();
+
+                NpgsqlCommand command;
+                string sql, Output = string.Empty;
+
+                sql = $"update dbo.subunidad set titulo = '{subunidad.Titulo}', descripcion = '{subunidad.Descripcion}', " +
+                    $"idunidad = {subunidad.UnidadID}, idinstitucion = {subunidad.InstitucionID}" +
+                      $"where id = {subunidad.ID}";
+
+                command = new NpgsqlCommand(sql, cnn);
+                command.ExecuteNonQuery();
+                mensaje = "OK";
+            }
+
+            catch (Exception e)
+            {
+                mensaje = "Ha ocurrido un error al editar la subunidad.";
+            }
+
+            return mensaje;
+        }
+
+        public static List<SelectListItem> getSubUnidadesSelect2(string idInstitucion, string id)
+        {
+            var items = new List<SelectListItem>();
+
+            try
+            {
+
+                NpgsqlConnection cnn;
+                cnn = new NpgsqlConnection(connectionString);
+                cnn.Open();
+
+                NpgsqlCommand command;
+                NpgsqlDataReader dataReader;
+                string sql, Output = string.Empty;
+
+                sql = $"select r.id, r.titulo FROM dbo.subunidad r where r.idinstitucion = {idInstitucion}";
+                command = new NpgsqlCommand(sql, cnn);
+                dataReader = command.ExecuteReader();
+
+                items.Add(new SelectListItem
+                {
+                    Value = "",
+                    Text = "Seleccione un valor",
+                    Selected = id == "0" ? true : false
+                });
+
+                while (dataReader.Read())
+                {
+                    items.Add(new SelectListItem
+                    {
+                        Value = dataReader.GetValue(0).ToString(),
+                        Text = dataReader.GetValue(1).ToString(),
+                        Selected = dataReader.GetValue(0).ToString() == id ? true : false
+                    });
+                };
+            }
+            catch (Exception)
+            {
+
+            };
+            return items;
+        }
+    }
+}

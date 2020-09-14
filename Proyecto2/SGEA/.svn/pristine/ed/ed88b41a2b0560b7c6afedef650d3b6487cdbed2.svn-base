@@ -1,0 +1,95 @@
+﻿@model SGEA.Models.ItemPlanilla
+@{
+    ViewBag.Title = "Crear";
+}
+
+
+<div class="page-title">
+    <div class="title_left" style="margin-left:10px;">
+        <h1>Crear ItemPlanilla</h1>
+    </div>
+    <div class="title_right">
+    </div>
+</div>
+
+
+<div class="col-md-12 col-sm-12 col-xs-12">
+    <div class="x_panel">
+        <div class="x_content">
+            <br>
+
+            <div id="form_error" class="alert" hidden>
+                <span class="closebtn">&times;</span>
+                <strong>Error!</strong> Ha habido un error al insertar el campo.
+            </div>
+
+            <div id="form_exit" class="alert success" style="text-align:center" hidden>
+                <span class="closebtn">&times;</span>
+                <strong>Éxito!</strong> El campo se insertó correctamente.
+            </div>
+
+            @using (Html.BeginForm("Crear", "ItemPlanilla", FormMethod.Post, new { @class = "form-horizontal form-label-left", @data_parsley_validate = "" }))
+            {
+                @Html.AntiForgeryToken()
+
+                <div class="form-group">
+                    @Html.LabelFor(x => x.Titulo, new { @class = "control-label col-md-3 col-sm-3 col-xs-12" })
+                    <div class="col-md-6 col-sm-6 col-xs-12">
+                        @Html.TextBoxFor(x => x.Titulo, new { @class = "form-control col-md-7 col-xs-12", @required = "required", @type = "text" })
+                    </div>
+                </div>
+                <div class="form-group">
+                    @Html.LabelFor(x => x.Descripcion, new { @class = "control-label col-md-3 col-sm-3 col-xs-12" })
+                    <div class="col-md-6 col-sm-6 col-xs-12">
+                        @Html.TextBoxFor(x => x.Descripcion, new { @class = "form-control col-md-7 col-xs-12", @required = "required", @type = "text" })
+                    </div>
+                </div>
+                <div class="form-group">
+                    @Html.LabelFor(x => x.TipoItemID, new { @class = "control-label col-md-3 col-sm-3 col-xs-12" })
+                    <div class="col-md-6 col-sm-6 col-xs-12">
+                        @Html.DropDownListFor(n => n.TipoItemID, (List<SelectListItem>)ViewBag.tipositem, new { @id = "txtIDTipoItem", @required = "required", @class = "form-control col-md-7 col-xs-12" })
+                    </div>
+                </div>
+                <div class="form-group">
+                    @Html.LabelFor(x => x.SubUnidadID, new { @class = "control-label col-md-3 col-sm-3 col-xs-12" })
+                    <div class="col-md-6 col-sm-6 col-xs-12">
+                        @Html.DropDownListFor(n => n.SubUnidadID, (List<SelectListItem>)ViewBag.subunidades, new { @id = "txtIDSubUnidad", @required = "required", @class = "form-control col-md-7 col-xs-12" })
+                    </div>
+                </div>
+                <div class="form-group">
+                    @Html.LabelFor(x => x.PuntajeMaximo, new { @class = "control-label col-md-3 col-sm-3 col-xs-12" })
+                    <div class="col-md-6 col-sm-6 col-xs-12">
+                        @Html.TextBoxFor(x => x.PuntajeMaximo, new { @class = "form-control col-md-7 col-xs-12", @required = "required", @type = "number" })
+                    </div>
+                </div>
+                <div class="form-group">
+                    @Html.LabelFor(x => x.FechaEvaluacionString, new { @class = "control-label col-md-3 col-sm-3 col-xs-12" })
+                    <div class="col-md-6 col-sm-6 col-xs-12">
+                        @Html.TextBoxFor(x => x.FechaEvaluacionString, new { @class = "form-control col-md-7 col-xs-12", @required = "required", @type = "text" })
+                    </div>
+                </div>
+                <div class="ln_solid"></div>
+                <div class="form-group">
+                    <div class="col-md-6 col-sm-6 col-xs-12 col-md-offset-3">
+                        <a href="@Url.Action("Index","ItemPlanilla")" class="btn btn-primary" type="button"> < Volver</a>
+                        <a href="@Url.Action("Crear","ItemPlanilla")" class="btn btn-primary" >Limpiar</a>
+                        <button type="submit" class="btn btn-success">Confirmar</button>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@Scripts.Render("~/bundles/jquery")
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('.numberformat').mask("0.###.###.###.###", { reverse: true });
+
+        $('#FechaEvaluacionString').datetimepicker({
+            format: 'DD/MM/YYYY'
+        });
+
+    });
+</script>

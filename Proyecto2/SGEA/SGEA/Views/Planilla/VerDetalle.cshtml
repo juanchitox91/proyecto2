@@ -1,0 +1,81 @@
+﻿@model SGEA.Models.Planilla
+
+@{
+    ViewBag.Title = "Detalle";
+}
+
+
+<div class="page-title">
+    <div class="title_left" style="margin-left:10px;">
+        <h3>Detalle Planilla - @Model.Titulo </h3>
+    </div>
+    <div class="title_right">
+    </div>
+</div>
+
+
+<div class="col-md-12 col-sm-12 col-xs-12">
+    <div class="x_panel">
+        <div class="x_content">
+            <br>.......
+
+            @using (Html.BeginForm("VerDetalle", "Planilla", FormMethod.Post, new { @class = "form-horizontal form-label-left", @data_parsley_validate = "" }))
+            {
+                @Html.AntiForgeryToken()
+
+                <div class="form-group">
+                    @Html.LabelFor(x => x.Titulo, new { @class = "control-label col-md-3 col-sm-3 col-xs-12" })
+                    <div class="col-md-6 col-sm-6 col-xs-12">
+                        @Html.TextBoxFor(x => x.Titulo, new { @class = "form-control col-md-7 col-xs-12", @required = "required", @disabled = "true" })
+                    </div>
+                </div>
+                <div class="form-group">
+                    @Html.LabelFor(x => x.Descripcion, new { @class = "control-label col-md-3 col-sm-3 col-xs-12" })
+                    <div class="col-md-6 col-sm-6 col-xs-12">
+                        @Html.TextBoxFor(x => x.Descripcion, new { @class = "form-control col-md-7 col-xs-12", @required = "required", @type = "text", @disabled = "true" })
+                    </div>
+                </div>
+                <div class="form-group">
+                    @Html.LabelFor(x => x.AnhoLectivo, new { @class = "control-label col-md-3 col-sm-3 col-xs-12" })
+                    <div class="col-md-6 col-sm-6 col-xs-12">
+                        @Html.TextBoxFor(x => x.AnhoLectivo, new { @class = "form-control col-md-7 col-xs-12", @required = "required", @type = "text", @disabled = "true" })
+                    </div>
+                </div>
+                <div class="form-group">
+                    @Html.LabelFor(x => x.NombreCurso, new { @class = "control-label col-md-3 col-sm-3 col-xs-12" })
+                    <div class="col-md-6 col-sm-6 col-xs-12">
+                        @Html.TextBoxFor(x => x.NombreCurso, new { @class = "form-control col-md-7 col-xs-12", @required = "required", @type = "text", @disabled = "true" })
+                    </div>
+                </div>
+                <div class="form-group">
+                    @Html.LabelFor(x => x.NombreDocente, new { @class = "control-label col-md-3 col-sm-3 col-xs-12" })
+                    <div class="col-md-6 col-sm-6 col-xs-12">
+                        @Html.TextBoxFor(x => x.NombreDocente, new { @class = "form-control col-md-7 col-xs-12", @required = "required", @type = "text", @disabled = "true" })
+                    </div>
+                </div>
+                <div class="form-group">
+                    @Html.LabelFor(x => x.NombreMateria, new { @class = "control-label col-md-3 col-sm-3 col-xs-12" })
+                    <div class="col-md-6 col-sm-6 col-xs-12">
+                        @Html.TextBoxFor(x => x.NombreMateria, new { @class = "form-control col-md-7 col-xs-12", @required = "required", @type = "text", @disabled = "true" })
+                    </div>
+                </div>
+                <div class="ln_solid"></div>
+                <div class="form-group">
+                    <div class="col-md-6 col-sm-6 col-xs-12 col-md-offset-3">
+                        <a href="@Url.Action("Index", "Planilla")" class="btn btn-primary">Volver</a>
+                    </div>
+                </div>
+
+                @*</form>*@
+            }
+        </div>
+    </div>
+</div>
+
+@Scripts.Render("~/bundles/jquery")
+
+<script type="text/javascript">
+    $(document).ready(function () {
+
+    });
+</script>

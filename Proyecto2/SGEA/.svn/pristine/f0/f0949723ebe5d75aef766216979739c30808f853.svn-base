@@ -1,0 +1,106 @@
+﻿@model SGEA.Models.Usuario
+
+@{
+    ViewBag.Title = "Detalle";
+}
+
+
+<div class="page-title">
+    <div class="title_left" style="margin-left:10px;">
+        <h3>Elimin ar - @Model.Nombre @Model.Apellido</h3>
+    </div>
+    <div class="title_right">
+    </div>
+</div>
+
+
+<div class="col-md-12 col-sm-12 col-xs-12">
+    <div class="x_panel">
+        <div class="x_content">
+            <br>
+
+            @using (Html.BeginForm("Eliminar", "Usuario", FormMethod.Post, new { @class = "form-horizontal form-label-left", @data_parsley_validate = "" }))
+            {
+                @Html.AntiForgeryToken()
+
+                <div class="form-group">
+                    @Html.LabelFor(x => x.Nombre, new { @class = "control-label col-md-3 col-sm-3 col-xs-12" })
+                    <div class="col-md-6 col-sm-6 col-xs-12">
+                        @Html.TextBoxFor(x => x.Nombre, new { @class = "form-control col-md-7 col-xs-12", @required = "required", @disabled="true" })
+                    </div>
+                </div>
+                <div class="form-group">
+                    @Html.LabelFor(x => x.Apellido, new { @class = "control-label col-md-3 col-sm-3 col-xs-12" })
+                    <div class="col-md-6 col-sm-6 col-xs-12">
+                        @Html.TextBoxFor(x => x.Apellido, new { @class = "form-control col-md-7 col-xs-12", @required = "required", @disabled = "true" })
+                    </div>
+                </div>
+                <div class="form-group">
+                    @Html.LabelFor(x => x.Email, new { @class = "control-label col-md-3 col-sm-3 col-xs-12" })
+                    <div class="col-md-6 col-sm-6 col-xs-12">
+                        @Html.TextBoxFor(x => x.Email, new { @class = "form-control col-md-7 col-xs-12", @required = "required", @disabled = "true" })
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    @Html.LabelFor(x => x.IDRol, new { @class = "control-label col-md-3 col-sm-3 col-xs-12" })
+                    <div class="col-md-6 col-sm-6 col-xs-12">
+                        @*@Html.DropDownListFor(n => n.IDRol, Enumerable.Empty<SelectListItem>(), new { @id = "txtIDRol", @style = "width:300px;", @disabled = "true" })*@
+                        @Html.DropDownListFor(n => n.IDRol, (List<SelectListItem>)ViewBag.Roles, new { @id = "txtIDRol", @required = "required", @class = "form-control col-md-7 col-xs-12", @disabled = "true" })
+
+                    </div>
+                </div>
+                <div class="ln_solid"></div>
+                <div class="form-group">
+                    <div class="col-md-6 col-sm-6 col-xs-12 col-md-offset-3">
+                        <a href="@Url.Action("Index", "Usuario")" class="btn btn-primary">Volver</a>
+                        <button type="submit" class="btn btn-success">Elimminar</button>
+                    </div>
+                </div>
+                @*</form>*@
+            }
+        </div>
+    </div>
+</div>
+
+@Scripts.Render("~/bundles/jquery")
+
+<script type="text/javascript">
+    $(document).ready(function () {
+
+      
+       var pageSize = 20;
+       var optionListUrl = '@Url.Action("ObtenerRolesSelect2", "Usuario")';
+       //Method which is to be called for populating options in dropdown //dynamically
+
+        $('#txtIDRol').select2(
+       {
+           ajax: {
+               delay: 150,
+               url: optionListUrl,
+               dataType: 'json',
+               data: function (params) {
+                   params.page = params.page || 1;
+                   return {
+                       searchTerm: params.term,
+                       pageSize: pageSize,
+                       pageNumber: params.page
+                   };
+               },
+               processResults: function (data, params) {
+                   params.page = params.page || 1;
+                  return {
+                       results: data.Results,
+                       pagination: {
+                           more: (params.page * pageSize) < data.Total
+                       }
+                   };
+               }
+           },
+           placeholder: "-- Seleccione una opción --",
+           minimumInputLength: 0,
+           allowClear: true,
+        });
+
+    });
+</script>

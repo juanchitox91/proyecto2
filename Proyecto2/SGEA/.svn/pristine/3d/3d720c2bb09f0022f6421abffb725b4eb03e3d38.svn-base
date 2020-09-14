@@ -1,0 +1,14 @@
+﻿using System.Collections.Generic;
+
+namespace SGEA.Models
+{
+    public class Institucion
+    {
+        public long ID { get; set; }
+        public string NombreInstitucion { get; set; }
+        public string Direccion { get; set; }
+        public string Ciudad { get; set; }
+        public string Departamento { get; set; }
+        public string Telefono { get; set; }
+    }
+}

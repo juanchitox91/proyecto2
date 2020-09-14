@@ -1,0 +1,147 @@
+﻿using Helper;
+using Npgsql;
+//using SGEA.DAL;
+using SGEA.Models;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web.Mvc;
+
+namespace SGEA.Repository
+{
+    public class UnidadRepository
+    {
+        public static string connectionString = System.Configuration.ConfigurationManager.
+                                     ConnectionStrings["SGEAContext"].ConnectionString;
+
+        public static List<Unidad> getUnidades(string idInstitucion)
+        {
+            var unidades = new List<Unidad>();
+
+            try
+            {
+
+                NpgsqlConnection cnn;
+                cnn = new NpgsqlConnection(connectionString);
+                cnn.Open();
+
+                NpgsqlCommand command;
+                NpgsqlDataReader dataReader;
+                string sql, Output = string.Empty;
+
+                sql = $"select r.id, r.titulo, u.id, u.titulo, r.descripcion, r.idinstitucion FROM dbo.unidad r join dbo.planilla u on r.idplanilla = u.id where r.idinstitucion = {idInstitucion}";
+                command = new NpgsqlCommand(sql, cnn);
+                dataReader = command.ExecuteReader();
+
+                while (dataReader.Read())
+                {
+                    unidades.Add(new Unidad
+                    {
+                        ID = Convert.ToInt64(dataReader.GetValue(0).ToString()),
+                        Titulo = dataReader.GetValue(1).ToString(),
+                        PlanillaID = Convert.ToInt64(dataReader.GetValue(2).ToString()),
+                        NombrePlanilla = dataReader.GetValue(3).ToString(),
+                        Descripcion = dataReader.GetValue(4).ToString(),
+                        InstitucionID = Convert.ToInt64(dataReader.GetValue(5).ToString()),
+                    });
+                }
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+
+            return unidades;
+        }
+
+        public static string createUnidad(Unidad unidad)
+        {
+            string mensaje = string.Empty;
+
+            try
+            {
+                NpgsqlConnection cnn;
+                cnn = new NpgsqlConnection(connectionString);
+                cnn.Open();
+
+                NpgsqlCommand command;
+                string sql, Output = string.Empty;
+
+                sql = $"insert into dbo.unidad(titulo, descripcion, idplanilla, idinstitucion)" +
+                      $"values ('{unidad.Titulo}', '{unidad.Titulo}', {unidad.PlanillaID}, {unidad.InstitucionID})";
+
+                command = new NpgsqlCommand(sql, cnn);
+                command.ExecuteNonQuery();
+                mensaje = "OK";
+            }
+
+            catch (Exception e)
+            {
+                mensaje = "Ha ocurrido un error al insertar la unidad.";
+            }
+
+            return mensaje;
+        }
+
+        public static string deleteUnidad(long id)
+        {
+            string mensaje = string.Empty;
+
+            try
+            {
+                NpgsqlConnection cnn;
+                cnn = new NpgsqlConnection(connectionString);
+                cnn.Open();
+
+                NpgsqlCommand command;
+                string sql, Output = string.Empty;
+
+                sql = $"delete from dbo.unidad u where u.id = {id}";
+
+                command = new NpgsqlCommand(sql, cnn);
+                command.ExecuteNonQuery();
+                mensaje = "OK";
+            }
+
+            catch (Exception e)
+            {
+                mensaje = "Ha ocurrido un error al eliminar la unidad.";
+            }
+
+            return mensaje;
+        }
+
+        public static string updateUnidad(Unidad unidad)
+        {
+            string mensaje = string.Empty;
+
+            try
+            {
+                NpgsqlConnection cnn;
+                cnn = new NpgsqlConnection(connectionString);
+                cnn.Open();
+
+                NpgsqlCommand command;
+                string sql, Output = string.Empty;
+
+                sql = $"update dbo.unidad set titulo = '{unidad.Titulo}', descripcion = '{unidad.Descripcion}', " +
+                    $"idplanilla = {unidad.PlanillaID}, idinstitucion = {unidad.InstitucionID}" +
+                      $"where id = {unidad.ID}";
+
+                command = new NpgsqlCommand(sql, cnn);
+                command.ExecuteNonQuery();
+                mensaje = "OK";
+            }
+
+            catch (Exception e)
+            {
+                mensaje = "Ha ocurrido un error al editar la unidad.";
+            }
+
+            return mensaje;
+        }
+
+       
+    }
+}

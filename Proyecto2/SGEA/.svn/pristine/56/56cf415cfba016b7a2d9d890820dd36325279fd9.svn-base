@@ -1,0 +1,123 @@
+﻿//using SGEA.Filters;
+//using System.Web.Mvc;
+//using SGEA.Repository;
+//using System.Collections.Generic;
+//using SGEA.Models;
+//using System.Linq;
+//using System;
+
+//namespace SGEA.Areas.Datos.Controllers
+//{
+//    [Autenticado]
+//    public class EvaluacionController : Controller
+//    {
+//        [Permiso(permiso = "verEvaluaciones")]
+//        public ActionResult Index()
+//        {
+//            List<Evaluacion> evaluaciones = EvaluacionRepository.getEvaluaciones(HttpContext.Session["institucion"].ToString());
+//            Session["evaluaciones"] = evaluaciones;
+//            ViewBag.Evaluaciones = evaluaciones;
+//            return View();
+//        }
+
+//        [HttpGet]
+//        [Permiso(permiso = "crearEvaluacion")]
+//        public ActionResult Crear()
+//        {
+//            ViewBag.evaluaciones = ObtenerUnidadesSelect("0");
+
+//            return View();
+//        }
+
+//        [HttpPost]
+//        [Permiso(permiso = "crearEvaluacion")]
+//        public ActionResult Crear(Evaluacion subunidad)
+//        {
+//            subunidad.InstitucionID = Convert.ToInt64(HttpContext.Session["institucion"].ToString());
+//            var mensaje = EvaluacionRepository.createEvaluacion(subunidad);
+//            if (mensaje == "OK")
+//            {
+//                ViewBag.mensaje = "La carga se realizó exitosamente.";
+//            }
+//            else
+//            {
+//                ViewBag.error = mensaje;
+//            }
+
+//            ViewBag.evaluaciones = ObtenerUnidadesSelect("0");
+//            return View();
+//        }
+
+//        [HttpGet]
+//        [Permiso(permiso = "editarEvaluacion")]
+//        public ActionResult Editar(string id)
+//        {
+//            var longid = Convert.ToInt64(id);
+//            List<Evaluacion> evaluaciones = (List<Evaluacion>)Session["evaluaciones"];
+//            Evaluacion subunidad = evaluaciones.Where(x => x.ID == longid).SingleOrDefault();
+
+//            ViewBag.evaluaciones = ObtenerUnidadesSelect(subunidad.UnidadID.ToString());
+
+//            return View(subunidad);
+//        }
+
+//        [HttpPost]
+//        [Permiso(permiso = "editarEvaluacion")]
+//        public ActionResult Editar(Evaluacion subunidad)
+//        {
+//            subunidad.InstitucionID = Convert.ToInt64(HttpContext.Session["institucion"].ToString());
+//            var mensaje = EvaluacionRepository.updateEvaluacion(subunidad);
+//            if (mensaje == "OK")
+//            {
+//                ViewBag.mensaje = "La carga se editó exitosamente.";
+//            }
+//            else
+//            {
+//                ViewBag.error = mensaje;
+//            }
+
+//            return RedirectToAction("Index");
+//        }
+
+//        [Permiso(permiso = "verDetalleEvaluacion")]
+//        public ActionResult VerDetalle(string id)
+//        {
+//            var longid = Convert.ToInt64(id);
+//            List<Evaluacion> evaluaciones = (List<Evaluacion>)Session["evaluaciones"];
+//            Evaluacion subunidad = evaluaciones.Where(x => x.ID == longid).SingleOrDefault();
+//            return View(subunidad);
+//        }
+
+//        [Permiso(permiso = "eliminarEvaluacion")]
+//        public ActionResult Eliminar(string id)
+//        {
+//            var longid = Convert.ToInt64(id);
+//            List<Evaluacion> evaluaciones = (List<Evaluacion>)Session["evaluaciones"];
+//            Evaluacion subunidad = evaluaciones.Where(x => x.ID == longid).SingleOrDefault();
+//            return View(subunidad);
+//        }
+
+//        [HttpPost]
+//        [Permiso(permiso = "eliminarEvaluacion")]
+//        public ActionResult Eliminar(Evaluacion subunidad)
+//        {
+//            var mensaje = EvaluacionRepository.deleteEvaluacion(subunidad.ID);
+//            if (mensaje == "OK")
+//            {
+//                ViewBag.mensaje = "La unidad se eliminó exitosamente.";
+//            }
+//            else
+//            {
+//                ViewBag.error = mensaje;
+//            }
+
+//            return RedirectToAction("Index");
+//        }
+
+//        public List<SelectListItem> ObtenerUnidadesSelect(string id)
+//        {
+//            var result = UnidadRepository.getUnidadesSelect2(HttpContext.Session["institucion"].ToString(), id);
+//            return result;
+//        }   
+//    }
+//}

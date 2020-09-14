@@ -1,0 +1,212 @@
+﻿@model SGEA.Models.Evaluacion
+
+@{
+    ViewBag.Title = "Home Page";
+}
+
+@Scripts.Render("~/bundles/jquery")
+@Styles.Render("~/Datatable/css")
+
+
+<div class="page-title">
+    <div class="col-lg-12" style="margin-left:10px;">
+        <h1>Cargar Evaluacion</h1>
+    </div>
+    @*<div class="col-lg-12" style="margin-left:10px;">
+        <h4>Rol : @rol.NombreRol </h4>
+    </div>*@
+    <div class="title_right">
+    </div>
+</div>
+<div class="col-md-12 col-sm-12 col-xs-12">
+    <div class="x_panel">
+        <div class="x_content">
+            @using (Html.BeginForm("CargarEvaluacion", "Evaluacion", FormMethod.Post))
+            {
+                <div class="form-group col-lg-12 col-md-12 col-lg-12 col-sm-12 col-xs-12" style="margin-top:10px;">
+                    @Html.LabelFor(x => x.PlanillaID, new { @class = "control-label col-md-2 col-sm-6 col-xs-12" })
+                    <div class="col-md-6 col-sm-6 col-xs-12">
+                        @Html.DropDownListFor(n => n.PlanillaID, (List<SelectListItem>)ViewBag.Planillas, new { @id = "PlanillaID", @required = "required", @class = "form-control col-md-7 col-xs-12" })
+                    </div>
+                </div>
+                <div class="form-group col-lg-12 col-md-12 col-lg-12 col-sm-12 col-xs-12" style="margin-bottom:10px;">
+                    @Html.LabelFor(x => x.ItemID, new { @class = "control-label col-md-2 col-sm-6 col-xs-12" })
+                    <div class="col-md-6 col-sm-6 col-xs-12">
+                        @Html.DropDownListFor(n => n.ItemID, (List<SelectListItem>)ViewBag.Items, new { @id = "ItemID", @required = "required", @class = "form-control col-md-7 col-xs-12" })
+                    </div>
+                </div>
+
+                <div class="form-group col-lg-12 col-md-12 col-lg-12 col-sm-12 col-xs-12" style="margin-bottom:10px;">
+                    <label class="control-label col-md-2 col-sm-6 col-xs-12"> Puntaje Maximo </label>
+                    <div class="col-md-6 col-sm-6 col-xs-12">
+                       <input id="puntaje_maximo" disabled style="text-align:center;">
+                    </div>
+                </div>
+
+                <div @*id="datatable_wrapper" class="dataTables_wrapper form-inline dt-bootstrap no-footer"*@>
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <table id="example" class="table table-striped table-bordered dataTable no-footer" style="width:100%">
+                                <thead>
+                                    <tr>
+                                        <th>Nombre</th>
+                                        <th>Puntaje</th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                                <tfoot>
+                                    <tr>
+                                        <th>Nombre</th>
+                                        <th>Puntaje</th>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                        <div class="form-group" style="margin-top:10px;">
+                            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                                <a href="@Url.Action("Index", "Rol")" class="btn btn-primary" style="float:left;" type="button">Volver</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            }
+
+        </div>
+    </div>
+
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+            /******** SECCION GRILLA **********/
+            /*$('#example').DataTable({
+               "order": [[1, "desc"]]
+            });*/
+
+            var table = $('#example').DataTable({
+                Processing: true,
+                serverSide: true,
+                ajax: {
+                    url: "@Url.Action("CustomServerSideSearchAction", "Evaluacion")",
+                    type: 'POST'
+                },
+                columns: [
+                    { "data": "Name" },
+                ],
+            });
+
+            /*$('#example').dataTable({  
+                 "paging": true,
+                "ordering": true,
+                "filter": true,
+                "destroy": true,
+                "orderMulti": false,
+                "serverSide": true,
+                "Processing": true,
+                "columnDefs": [
+                    { "width": "5%", "targets": [0] }
+                ],
+                "ajax":
+                {
+                    "url": "/Evaluacion/CargarGrilla",
+                    "type": "POST",
+                    "dataType": "JSON"
+                },
+                "aoColumns": [
+                    {
+                        "mDataProp": "Id",
+                        "visible": false
+                    },
+                    { "mDataProp": "Nombre" },
+                    { "mDataProp": "Puntaje" },
+                ]  
+            });*/
+
+            // Setup - add a text input to each filter column  
+            /*$('#example.filters td').each(function () {
+
+                var title = $('# example thead td').eq($(this).index()).text();
+                if (title) {
+                    $(this).html('<input type="text" class="form-control" />');
+                }
+            });*/
+
+            // DataTable  
+            /*var table = $('#example').DataTable(
+            {
+                "bFilter": true,
+                "order": []
+            });*/
+
+            // function to clear the previous timer and set new timer for filter column keyup event to execute.  
+            /*var delay = (function () {
+                var timer = 0;
+                return function (callback, ms) {
+                    clearTimeout(timer);
+                    timer = setTimeout(callback, ms);
+                };
+            })();*/
+
+
+            // script for column filter Keyup event and here I have created half second(500) delay using the timer. You can increase depends on your requirement.  
+            /*table.columns().eq(0).each(function (colIdx) {
+                $('input', $('.filters td')[colIdx]).bind('keyup', function () {
+                    var coltext = this.value; // typed value in the search column  
+                    var colindex = colIdx; // column index  
+                    delay(function () {
+                        table
+                            .column(colindex)
+                            .search(coltext)
+                            .draw();
+                    }, 500);
+                });
+            });    */
+
+            /************** FIN SECCION GRILLA *******************/
+            $('#ItemID').prop('disabled', 'true');
+
+            $('#PlanillaID').on('change', function () {
+                if ($('#PlanillaID').val()) {
+                    agregarTabla($('#PlanillaID').val());
+                } else {
+                    $('#ItemID').prop('disabled', 'false');
+                }                
+            });
+
+            $('#ItemID').on('change', function () {
+                
+                poblarGrilla();
+               
+            });
+
+        });
+
+
+        function agregarItems(idplanilla) {
+            $.ajax({
+                type: "POST", // la variable type guarda el tipo de la peticion GET,POST,..
+                url: "@Url.Action("CargarItems", "Evaluacion")", //url guarda la ruta hacia donde se hace la peticion
+                data: { idplanilla: idplanilla }, // data recibe un objeto con la informacion que se enviara al servidor
+                success: function (datos)
+                {
+                    $('#ItemID').empty();
+
+                    Object.entries(datos.resultado).forEach(([key, value]) => {
+
+                        var newOption = new Option(value.Value, value.Key, false, false);
+                        $('#ItemID').append(newOption);
+
+                    });
+
+                    $('#ItemID').trigger('change');
+                    $('#ItemID').prop('disabled', false);
+                    //success es una funcion que se utiliza si el servidor retorna informacion
+                },
+                error: function () {
+
+                }
+            })
+
+        }
+    </script>

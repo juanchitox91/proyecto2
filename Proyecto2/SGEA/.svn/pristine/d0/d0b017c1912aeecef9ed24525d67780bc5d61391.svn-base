@@ -1,0 +1,106 @@
+﻿
+
+@{
+    ViewBag.Title = "Home Page";
+    SGEA.Models.Rol rol = (SGEA.Models.Rol)ViewBag.rol;
+    List<SGEA.Models.Accion> acciones = (List<SGEA.Models.Accion>)ViewBag.acciones;
+}
+
+@Scripts.Render("~/bundles/jquery")
+@Styles.Render("~/Datatable/css")
+
+
+<div class="page-title">
+    <div class="col-lg-12" style="margin-left:10px;">
+        <h1>Acciones en Roles</h1>
+    </div>
+    <div class="col-lg-12" style="margin-left:10px;">
+        <h4>Rol : @rol.NombreRol </h4>
+    </div>
+    <div class="title_right">
+    </div>
+</div>
+<div class="col-md-12 col-sm-12 col-xs-12">
+    <div class="x_panel">
+        <div class="x_content">
+           @using (Html.BeginForm("AgregarAccion", "Rol", FormMethod.Post)) {
+            <div @*id="datatable_wrapper" class="dataTables_wrapper form-inline dt-bootstrap no-footer"*@>
+                <div class="row">
+                    <div class="col-sm-12">
+                        <table id="example" class="table table-striped table-bordered dataTable no-footer" style="width:100%">
+                            <thead>
+                                <tr>
+                                    <th>Nombre</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @{
+                                    foreach (var u in acciones)
+                                    {
+                                        <tr>
+                                            <td>@u.Descripcion</td>
+                                            <td>
+                                                @if (rol.EsAdministrador)
+                                                {
+                                                    @Html.CheckBox("check", u.Activo, new { @disabled = "true" })
+                                                }
+                                                else
+                                                {
+                                                    @Html.CheckBox("check", u.Activo, new { @onclick = "agregarAccion(\'" + u.NombreAccion + "\')" })
+                                                }
+                                            </td>
+                                        </tr>
+                                    };
+                                }
+
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <th>Nombre</th>
+                                    <th></th>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                    <div class="form-group" style="margin-top:10px;">
+                        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                            <a href="@Url.Action("Index", "Rol")" class="btn btn-primary" style="float:left;" type="button">Volver</a>
+                            @if (!rol.EsAdministrador)
+                            {
+                                <button type="submit" class="btn btn-success" style="float:right;">Confirmar</button>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            }
+
+        </div>
+    </div>
+
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#example').DataTable();
+        });
+
+
+        function agregarAccion(nombre) {
+            $.ajax({
+                type: "POST", // la variable type guarda el tipo de la peticion GET,POST,..
+                url: "@Url.Action("AgregarAccionAlRol", "Rol")", //url guarda la ruta hacia donde se hace la peticion
+                data: { nombre: nombre }, // data recive un objeto con la informacion que se enviara al servidor
+                success: function (datos)
+                { 
+                    //success es una funcion que se utiliza si el servidor retorna informacion
+                    console.log(datos.resultado)
+                },
+                error: function () {
+
+                }
+            })
+
+        }
+    </script>

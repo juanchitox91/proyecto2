@@ -1,0 +1,114 @@
+﻿using SGEA.Filters;
+using System.Web.Mvc;
+using SGEA.Repository;
+using System.Collections.Generic;
+using SGEA.Models;
+using System.Linq;
+using System;
+using static SGEA.Models.DataTable;
+
+namespace SGEA.Areas.Gestion.Controllers
+{
+    [Autenticado]
+    public class InscripcionController : Controller
+    {
+        [Permiso(permiso = "verInscripciones")]
+        public ActionResult Index()
+        {
+            string idinstitucion = HttpContext.Session["institucion"].ToString();
+            List<Inscripcion> inscripciones = InscripcionRepository.getInscripciones(idinstitucion);
+            ViewBag.Inscripciones = inscripciones;
+            return View();
+        }
+
+        [HttpGet]
+        [Permiso(permiso = "crearInscripcion")]
+        public ActionResult Crear()
+        {
+            string idinstitucion = HttpContext.Session["institucion"].ToString();
+            ViewBag.cursos = CursoRepository.getCursosSelect2(idinstitucion, "0");
+            ViewBag.alumnos = AlumnoRepository.getAlumnosSelect2(idinstitucion, "0");
+            ViewBag.aranceles = ArancelRepository.getArancelSelect2(idinstitucion, "0");
+            ViewBag.meses = GeneralRepository.getMeses(2, 11);
+            ViewBag.cantidadcuotas = GeneralRepository.getCantidadCuotas();
+            return View();
+
+        }
+
+        [HttpPost]
+        [Permiso(permiso = "crearInscripcion")]
+        public ActionResult Crear(Inscripcion inscripcion)
+        {
+            Session["inscripcion"] = inscripcion;
+            return RedirectToAction("Paso2");
+        }
+
+        [Permiso(permiso = "crearInscripcion")]
+        public ActionResult Paso2()
+        {
+            string idinstitucion = HttpContext.Session["institucion"].ToString();
+            Inscripcion inscripcion = (Inscripcion)Session["inscripcion"];
+
+            ViewBag.cursos = CursoRepository.getCursosSelect2(idinstitucion, inscripcion.CursoID.ToString());
+            ViewBag.alumnos = AlumnoRepository.getAlumnosSelect2(idinstitucion, inscripcion.AlumnoID.ToString());
+            ViewBag.aranceles = ArancelRepository.getArancelSelect2(idinstitucion, inscripcion.ArancelID.ToString());
+            ViewBag.meses = GeneralRepository.getMeses(2, 11);
+            ViewBag.cantidadcuotas = GeneralRepository.getCantidadCuotas();
+
+            inscripcion.listaPagares = new List<Pagare>();
+
+            Arancel arancel_actual = ArancelRepository.getAranceles(idinstitucion).Where(x => x.ID == inscripcion.ArancelID).SingleOrDefault();
+
+            Alumno alumno = AlumnoRepository.getAlumnos(idinstitucion).Where(x => x.ID == inscripcion.AlumnoID).FirstOrDefault();
+            string nombreAlumno = $"{alumno.Nombre} {alumno.Apellido}";
+            string nombrecurso = CursoRepository.getCursos(idinstitucion).Where(x => x.ID == inscripcion.CursoID).FirstOrDefault().NombreCurso;
+
+
+            inscripcion.listaPagares.Add(new Pagare
+            {
+                Descripcion = $"Inscripcion - {nombreAlumno} / {nombrecurso}",
+                Monto = (Convert.ToDecimal(arancel_actual.MontoInscripcion.Replace(".", ","))).ToString("#,###").Replace(",", "."),
+                TipoPagare = "INSCRIPCION"
+            });
+
+            for (var i = 1; i <= inscripcion.CantidadCuotas; i++)
+            {
+
+                inscripcion.listaPagares.Add(new Pagare
+                {
+                    Descripcion = $"Cuota {i}/{inscripcion.CantidadCuotas} - {nombreAlumno} / {nombrecurso}",
+                    Monto = (Convert.ToDecimal(arancel_actual.MatriculaAnual.Replace(".", ",")) / Convert.ToInt16(inscripcion.CantidadCuotas)).ToString("#,###").Replace(",", "."),
+                    TipoPagare = "CUOTA"
+                });
+            }
+
+            Session["inscripcion"] = inscripcion;
+            return View(inscripcion);
+        }
+
+        [HttpPost]
+        public JsonResult CargarFechas(string[] lista)
+        {
+            string idinstitucion = HttpContext.Session["institucion"].ToString();
+            Inscripcion inscripcion = (Inscripcion)Session["inscripcion"];
+
+            List<string> listafechas = lista.ToList();//.Split(',').ToList();
+            List<DateTime> listDate = new List<DateTime>();
+
+           foreach(var item in listafechas)
+            {
+                listDate.Add(DateTime.ParseExact(item, "dd/MM/yyyy", null));
+            }
+
+            listDate.OrderBy(x => x);
+
+
+            foreach ( var fecha  in listDate)
+            {
+
+            }
+
+            return Json(string.Empty);
+        }
+    }
+}

@@ -1,0 +1,182 @@
+﻿@model SGEA.Models.Inscripcion
+
+@{
+    ViewBag.Title = "Ver Detalle";
+}
+
+
+<div class="page-title">
+    <div class="title_left" style="margin-left:10px;">
+        <h1>Ver Detalle Inscripción - @Model.NombreAlumno</h1>
+    </div>
+    <div class="title_right">
+    </div>
+</div>
+
+
+<div class="col-md-12 col-sm-12 col-xs-12">
+    <div class="x_panel">
+        <div class="x_content">
+            <br>
+
+            @using (Html.BeginForm("Confirmar", "Inscripcion", FormMethod.Post, new { @class = "form-horizontal form-label-left", @data_parsley_validate = "" }))
+            {
+                @Html.AntiForgeryToken()
+
+                <div class="form-group">
+                    @Html.LabelFor(x => x.AlumnoID, new { @class = "control-label col-md-3 col-sm-3 col-xs-12" })
+                    <div class="col-md-6 col-sm-6 col-xs-12">
+                        @Html.DropDownListFor(n => n.AlumnoID, (List<SelectListItem>)ViewBag.alumnos, new { @id = "txtIDAlumno", @required = "required", @class = "form-control col-md-7 col-xs-12", @disabled = "true" })
+                    </div>
+                </div>
+                <div class="form-group">
+                    @Html.LabelFor(x => x.CursoID, new { @class = "control-label col-md-3 col-sm-3 col-xs-12" })
+                    <div class="col-md-6 col-sm-6 col-xs-12">
+                        @Html.DropDownListFor(n => n.CursoID, (List<SelectListItem>)ViewBag.cursos, new { @id = "txtIDCurso", @required = "required", @class = "form-control col-md-7 col-xs-12", @disabled = "true" })
+                    </div>
+                </div>
+                <div class="form-group">
+                    @Html.LabelFor(x => x.ArancelID, new { @class = "control-label col-md-3 col-sm-3 col-xs-12" })
+                    <div class="col-md-6 col-sm-6 col-xs-12">
+                        @Html.DropDownListFor(n => n.ArancelID, (List<SelectListItem>)ViewBag.aranceles, new { @id = "txtIDArancel", @required = "required", @class = "form-control col-md-7 col-xs-12", @disabled = "true" })
+                    </div>
+                </div>
+                <div class="form-group">
+                    @Html.LabelFor(x => x.MesDesde, new { @class = "control-label col-md-3 col-sm-3 col-xs-12" })
+                    <div class="col-md-6 col-sm-6 col-xs-12">
+                        @Html.DropDownListFor(n => n.MesDesde, (List<SelectListItem>)ViewBag.mesDesde, new { @id = "txtMesDesde", @required = "required", @class = "form-control col-md-7 col-xs-12", @disabled = "true" })
+                    </div>
+                </div>
+                <div class="form-group">
+                    @Html.LabelFor(x => x.MesHasta, new { @class = "control-label col-md-3 col-sm-3 col-xs-12" })
+                    <div class="col-md-6 col-sm-6 col-xs-12">
+                        @Html.DropDownListFor(n => n.MesHasta, (List<SelectListItem>)ViewBag.mesHasta, new { @id = "txtMesHasta", @required = "required", @class = "form-control col-md-7 col-xs-12", @disabled = "true" })
+                    </div>
+                </div>
+                <div class="form-group">
+                    @Html.LabelFor(x => x.CantidadCuotas, new { @class = "control-label col-md-3 col-sm-3 col-xs-12" })
+                    <div class="col-md-6 col-sm-6 col-xs-12">
+                        @Html.DropDownListFor(n => n.CantidadCuotas, (List<SelectListItem>)ViewBag.cantidadcuotas, new { @id = "txtCantidadCuotas", @required = "required", @class = "form-control col-md-7 col-xs-12", @disabled = "true" })
+                    </div>
+                </div>
+                <div class="form-group">
+                    @Html.LabelFor(x => x.NroComprobante, new { @class = "control-label col-md-3 col-sm-3 col-xs-12" })
+                    <div class="col-md-6 col-sm-6 col-xs-12">
+                        @Html.TextBoxFor(x => x.NroComprobante, new { @class = "form-control col-md-7 col-xs-12", @required = "required", @type = "text", @disabled = "true" })
+                    </div>
+                </div>
+                <div class="form-group">
+                    @Html.LabelFor(x => x.Estado, new { @class = "control-label col-md-3 col-sm-3 col-xs-12" })
+                    <div class="col-md-6 col-sm-6 col-xs-12">
+                        <input class="form-control col-md-7 col-xs-12" disabled="disabled" id="NroComprobante" name="NroComprobante"
+                               required="required" type="text" value="@(Model.Estado )">
+                    </div>
+                </div>
+
+                <div class="title_left" style="margin-left:10px;">
+                    <h3>Pagares</h3>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-12 col-md-10">
+                        <table id="example" class="table table-striped table-bordered dataTable no-footer" style="width:100%">
+                            <thead>
+                                <tr>
+                                    <th>descripcion</th>
+                                    <th>Monto</th>
+                                    <th>Estado</th>
+                                    <th>Fecha Vencimiento</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @{
+                                    foreach (var u in Model.listaPagares)
+                                    {
+                                        <tr>
+                                            <td>@u.Descripcion</td>
+                                            <td>@u.Monto</td>
+                                            <td>@(u.Estado == "PE" ? "PENDIENTE" : "PAGADO")</td>
+                                            @*<td>@u.Estado</td>*@
+                                            <td>
+                                                <input class="Fecha" id="FechaVencimientoString" name="FechaVencimientoString" disabled="true" required="required" type="text" value="@u.FechaVencimientoString">
+                                                @if (Model.Estado != "CONFIRMADO")
+                                                {
+                                                    <a href="#" onclick="editarFecha(this); return false;"><span class="fa fa-pencil editar" title="Editar"></span></a>
+                                                    <a href="#" onclick="confirmarFecha(this,@u.ID); return false;"><span class="fa fa-check confirmar" title="Confirmar"></span></a>
+                                                }
+
+                                            </td>
+                                        </tr>
+                                    };
+                                }
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <th>descripcion</th>
+                                    <th>Monto</th>
+                                    <th>Estado</th>
+                                    <th>Fecha Vencimiento</th>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="ln_solid"></div>
+                <div class="form-row">
+                    <div class="col-md-12 col-sm-12 col-xs-12 col-md-offset-1">
+                        <a href="@Url.Action("Index","Inscripcion")" class="btn btn-primary" type="button"> < Volver</a>
+                        @if (Model.Estado != "CONFIRMADO")
+                        {
+                            <button type="submit" class="btn btn-success">Confirmar</button>
+                        }
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+@Scripts.Render("~/bundles/jquery")
+
+<script type="text/javascript">
+    $(document).ready(function () {
+
+        //$('.confirmar').hide();
+        $('.Fecha').datetimepicker({
+            format: 'DD/MM/YYYY',
+            //minDate: new Date()
+        });
+
+    });
+
+    function editarFecha(objeto)
+    {      
+        var fechatexto = objeto.previousElementSibling;
+        fechatexto.disabled = false;
+    }
+
+    function confirmarFecha(objeto, id) {
+
+        var fecha = objeto.previousElementSibling.previousElementSibling;
+
+        $.ajax({
+            type: "POST",
+            url: "@Url.Action("GuardarFecha", "Inscripcion")",
+            data: {
+                fecha: fecha.value,
+                id: id
+            },
+            success: function (msg) {
+                if (msg == "OK") {
+                    fecha.disabled = true;
+                    alert("La fecha se ha guardado correctamente.");
+                } else
+                {
+                    alert(msg);
+                }
+            },
+            error: function () {
+                alert("Se ha producido un error, favor intente nuevamente.");
+            }
+        });           
+    }
+</script>

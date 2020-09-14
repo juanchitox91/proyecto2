@@ -1,0 +1,237 @@
+﻿using Helper;
+using Npgsql;
+//using SGEA.DAL;
+using SGEA.Models;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web.Mvc;
+
+namespace SGEA.Repository
+{
+    public class ItemPlanillaRepository
+    {
+        public static string connectionString = System.Configuration.ConfigurationManager.
+                                     ConnectionStrings["SGEAContext"].ConnectionString;
+
+        public static List<ItemPlanilla> getItemPlanillas(string idInstitucion)
+        {
+            var items = new List<ItemPlanilla>();
+
+            try
+            {
+
+                NpgsqlConnection cnn;
+                cnn = new NpgsqlConnection(connectionString);
+                cnn.Open();
+
+                NpgsqlCommand command;
+                NpgsqlDataReader dataReader;
+                string sql, Output = string.Empty;
+
+                sql = $"select r.id, s.id, s.descripcion, u.id, u.titulo, r.descripcion, r.puntajemaximo, r.fechaevaluacion, " +
+                    $"r.idinstitucion, r.titulo " +
+                    $"FROM dbo.itemplanilla r join dbo.subunidad u on r.idsubunidad = u.id " +
+                    $"join dbo.tipo_item s on r.idtipoitem = s.id where r.idinstitucion = {idInstitucion}";
+                command = new NpgsqlCommand(sql, cnn);
+                dataReader = command.ExecuteReader();
+
+                while (dataReader.Read())
+                {
+                    items.Add(new ItemPlanilla
+                    {
+                        ID = Convert.ToInt64(dataReader.GetValue(0).ToString()),
+                        TipoItemID = Convert.ToInt64(dataReader.GetValue(1).ToString()),
+                        NombreTipoItem = dataReader.GetValue(2).ToString(),
+                        SubUnidadID = Convert.ToInt64(dataReader.GetValue(3).ToString()),
+                        NombreSubUnidad = dataReader.GetValue(4).ToString(),
+                        Descripcion = dataReader.GetValue(5).ToString(),
+                        PuntajeMaximo = Convert.ToInt16(dataReader.GetValue(6).ToString()),
+                        FechaEvaluacionString = DateTime.Parse(dataReader.GetValue(7).ToString()).ToString("dd/MM/yyyy"),
+                        InstitucionID = Convert.ToInt64(dataReader.GetValue(8).ToString()),
+                        Titulo = dataReader.GetValue(9).ToString()
+                    });
+                }
+            }
+            catch (Exception)
+            {
+
+            }
+
+            return items;
+        }
+
+        public static string createItemPlanilla(ItemPlanilla item)
+        {
+            string mensaje = string.Empty;
+
+            try
+            {
+                NpgsqlConnection cnn;
+                cnn = new NpgsqlConnection(connectionString);
+                cnn.Open();
+
+                NpgsqlCommand command;
+                string sql, Output = string.Empty;
+
+                sql = $"insert into dbo.itemplanilla(idtipoitem, idsubunidad, titulo, descripcion, puntajemaximo, fechaevaluacion, idinstitucion)" +
+                      $"values ({item.TipoItemID}, {item.SubUnidadID}, '{item.Titulo}', '{item.Descripcion}', {item.PuntajeMaximo}, TO_DATE('{item.FechaEvaluacionString}', 'DD/MM/YYYY'),{item.InstitucionID})";
+
+                command = new NpgsqlCommand(sql, cnn);
+                command.ExecuteNonQuery();
+                mensaje = "OK";
+            }
+            catch (Exception e)
+            {
+                mensaje = "Ha ocurrido un error al insertar el item.";
+            }
+
+            return mensaje;
+        }
+
+        public static string deleteItemPlanilla(long id)
+        {
+            string mensaje = string.Empty;
+
+            try
+            {
+                NpgsqlConnection cnn;
+                cnn = new NpgsqlConnection(connectionString);
+                cnn.Open();
+
+                NpgsqlCommand command;
+                string sql, Output = string.Empty;
+
+                sql = $"delete from dbo.itemplanilla u where u.id = {id}";
+
+                command = new NpgsqlCommand(sql, cnn);
+                command.ExecuteNonQuery();
+                mensaje = "OK";
+            }
+
+            catch (Exception e)
+            {
+                mensaje = "Ha ocurrido un error al eliminar el item.";
+            }
+
+            return mensaje;
+        }
+
+        public static string updateItemPlanilla(ItemPlanilla item)
+        {
+            string mensaje = string.Empty;
+
+            try
+            {
+                NpgsqlConnection cnn;
+                cnn = new NpgsqlConnection(connectionString);
+                cnn.Open();
+
+                NpgsqlCommand command;
+                string sql, Output = string.Empty;
+
+                sql = $"update dbo.itemplanilla set idtipoitem = {item.TipoItemID}, idsubunidad = {item.SubUnidadID}, " +
+                    $"titulo = '{item.Titulo}', descripcion = '{item.Descripcion}', puntajemaximo = {item.PuntajeMaximo}, " +
+                    $"fechaevaluacion = TO_DATE('{item.FechaEvaluacionString}', 'DD/MM/YYYY'), idinstitucion = {item.InstitucionID}" +
+                      $"where id = {item.ID}";
+
+                command = new NpgsqlCommand(sql, cnn);
+                command.ExecuteNonQuery();
+                mensaje = "OK";
+            }
+
+            catch (Exception e)
+            {
+                mensaje = "Ha ocurrido un error al editar la item.";
+            }
+
+            return mensaje;
+        }
+
+        public static List<SelectListItem> getItemPlanillaesSelect2(string idInstitucion, string id)
+        {
+            var items = new List<SelectListItem>();
+
+            try
+            {
+
+                NpgsqlConnection cnn;
+                cnn = new NpgsqlConnection(connectionString);
+                cnn.Open();
+
+                NpgsqlCommand command;
+                NpgsqlDataReader dataReader;
+                string sql, Output = string.Empty;
+
+                sql = $"select r.id, r.descripcion FROM dbo.itemplanilla r where r.idinstitucion = {idInstitucion}";
+                command = new NpgsqlCommand(sql, cnn);
+                dataReader = command.ExecuteReader();
+
+                items.Add(new SelectListItem
+                {
+                    Value = "",
+                    Text = "Seleccione un valor",
+                    Selected = id == "0" ? true : false
+                });
+
+                while (dataReader.Read())
+                {
+                    items.Add(new SelectListItem
+                    {
+                        Value = dataReader.GetValue(0).ToString(),
+                        Text = dataReader.GetValue(1).ToString(),
+                        Selected = dataReader.GetValue(0).ToString() == id ? true : false
+                    });
+                };
+            }
+            catch (Exception)
+            {
+
+            };
+            return items;
+        }
+
+        public static List<SelectListItem> getTiposItemSelect2(string idInstitucion, string id)
+        {
+            var items = new List<SelectListItem>();
+
+            try
+            {
+
+                NpgsqlConnection cnn;
+                cnn = new NpgsqlConnection(connectionString);
+                cnn.Open();
+
+                NpgsqlCommand command;
+                NpgsqlDataReader dataReader;
+                string sql, Output = string.Empty;
+
+                sql = $"select r.id, r.descripcion FROM dbo.tipo_item r where r.idinstitucion = {idInstitucion}";
+                command = new NpgsqlCommand(sql, cnn);
+                dataReader = command.ExecuteReader();
+
+                items.Add(new SelectListItem
+                {
+                    Value = "",
+                    Text = "Seleccione un valor",
+                    Selected = id == "0" ? true : false
+                });
+
+                while (dataReader.Read())
+                {
+                    items.Add(new SelectListItem
+                    {
+                        Value = dataReader.GetValue(0).ToString(),
+                        Text = dataReader.GetValue(1).ToString(),
+                        Selected = dataReader.GetValue(0).ToString() == id ? true : false
+                    });
+                };
+            }
+            catch (Exception)
+            {
+
+            };
+            return items;
+        }
+    }
+}

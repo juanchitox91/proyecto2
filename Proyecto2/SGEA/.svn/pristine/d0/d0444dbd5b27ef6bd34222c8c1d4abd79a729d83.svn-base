@@ -1,0 +1,22 @@
+﻿using System.Collections.Generic;
+using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
+
+namespace SGEA.Models
+{
+    public class Arancel
+    {
+        public long ID { get; set; }
+        [DisplayName("Monto Inscripción")]
+        public string MontoInscripcion { get; set; }
+        [DisplayName("Matrícula Anual")]
+        public string MatriculaAnual { get; set; }
+        [DisplayName("Año Lectivo")]
+        public string AnhoLectivo { get; set; }
+        public string Observacion { get; set; }
+        public string NombreArancel { get; set; }
+        public long InstitucionId { get; set; }
+
+    }
+
+}

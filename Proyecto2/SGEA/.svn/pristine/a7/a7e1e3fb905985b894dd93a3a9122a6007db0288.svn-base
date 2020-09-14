@@ -1,0 +1,123 @@
+﻿using SGEA.Filters;
+using System.Web.Mvc;
+using SGEA.Repository;
+using System.Collections.Generic;
+using SGEA.Models;
+using System.Linq;
+using System;
+
+namespace SGEA.Areas.Datos.Controllers
+{
+    [Autenticado]
+    public class SubUnidadController : Controller
+    {
+        [Permiso(permiso = "verSubUnidades")]
+        public ActionResult Index()
+        {
+            List<SubUnidad> unidades = SubUnidadRepository.getSubUnidades(HttpContext.Session["institucion"].ToString());
+            Session["subunidades"] = unidades;
+            ViewBag.SubUnidades = unidades;
+            return View();
+        }
+
+        [HttpGet]
+        [Permiso(permiso = "crearSubUnidad")]
+        public ActionResult Crear()
+        {
+            ViewBag.unidades = ObtenerUnidadesSelect("0");
+
+            return View();
+        }
+
+        [HttpPost]
+        [Permiso(permiso = "crearSubUnidad")]
+        public ActionResult Crear(SubUnidad subunidad)
+        {
+            subunidad.InstitucionID = Convert.ToInt64(HttpContext.Session["institucion"].ToString());
+            var mensaje = SubUnidadRepository.createSubUnidad(subunidad);
+            if (mensaje == "OK")
+            {
+                ViewBag.mensaje = "La carga se realizó exitosamente.";
+            }
+            else
+            {
+                ViewBag.error = mensaje;
+            }
+
+            ViewBag.unidades = ObtenerUnidadesSelect(subunidad.UnidadID.ToString());
+            return View();
+        }
+
+        [HttpGet]
+        [Permiso(permiso = "editarSubUnidad")]
+        public ActionResult Editar(string id)
+        {
+            var longid = Convert.ToInt64(id);
+            List<SubUnidad> subunidades = (List<SubUnidad>)Session["subunidades"];
+            SubUnidad subunidad = subunidades.Where(x => x.ID == longid).SingleOrDefault();
+
+            ViewBag.unidades = ObtenerUnidadesSelect(subunidad.UnidadID.ToString());
+
+            return View(subunidad);
+        }
+
+        [HttpPost]
+        [Permiso(permiso = "editarSubUnidad")]
+        public ActionResult Editar(SubUnidad subunidad)
+        {
+            subunidad.InstitucionID = Convert.ToInt64(HttpContext.Session["institucion"].ToString());
+            var mensaje = SubUnidadRepository.updateSubUnidad(subunidad);
+            if (mensaje == "OK")
+            {
+                ViewBag.mensaje = "La carga se editó exitosamente.";
+            }
+            else
+            {
+                ViewBag.error = mensaje;
+            }
+
+            return RedirectToAction("Index");
+        }
+
+        [Permiso(permiso = "verDetalleSubUnidad")]
+        public ActionResult VerDetalle(string id)
+        {
+            var longid = Convert.ToInt64(id);
+            List<SubUnidad> subunidades = (List<SubUnidad>)Session["subunidades"];
+            SubUnidad subunidad = subunidades.Where(x => x.ID == longid).SingleOrDefault();
+            return View(subunidad);
+        }
+
+        [Permiso(permiso = "eliminarSubUnidad")]
+        public ActionResult Eliminar(string id)
+        {
+            var longid = Convert.ToInt64(id);
+            List<SubUnidad> subunidades = (List<SubUnidad>)Session["subunidades"];
+            SubUnidad subunidad = subunidades.Where(x => x.ID == longid).SingleOrDefault();
+            return View(subunidad);
+        }
+
+        [HttpPost]
+        [Permiso(permiso = "eliminarSubUnidad")]
+        public ActionResult Eliminar(SubUnidad subunidad)
+        {
+            var mensaje = SubUnidadRepository.deleteSubUnidad(subunidad.ID);
+            if (mensaje == "OK")
+            {
+                ViewBag.mensaje = "La unidad se eliminó exitosamente.";
+            }
+            else
+            {
+                ViewBag.error = mensaje;
+            }
+
+            return RedirectToAction("Index");
+        }
+
+        public List<SelectListItem> ObtenerUnidadesSelect(string id)
+        {
+            var result = UnidadRepository.getUnidadesSelect2(HttpContext.Session["institucion"].ToString(), id);
+            return result;
+        }   
+    }
+}

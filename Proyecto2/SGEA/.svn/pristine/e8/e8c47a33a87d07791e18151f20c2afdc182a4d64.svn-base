@@ -1,0 +1,17 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+
+namespace SGEA.Models
+{
+    public class AccionRol
+    {
+        public long ID { get; set; }
+        public long RolID { get; set; }
+        public long AccionID { get; set; }
+
+        public virtual Rol Rol { get; set; }
+        public virtual Accion Accion { get; set; }
+    }
+}

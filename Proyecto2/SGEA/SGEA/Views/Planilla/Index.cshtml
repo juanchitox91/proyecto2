@@ -1,0 +1,85 @@
+﻿@{
+    ViewBag.Title = "Home Page";
+}
+@{
+
+    List<SGEA.Models.Planilla> modelo = (List<SGEA.Models.Planilla>)ViewBag.Planillas;
+}
+
+@Scripts.Render("~/bundles/jquery")
+@Styles.Render("~/Datatable/css")
+
+
+<div class="page-title">
+    <div class="title_left" style="margin-left:10px;">
+        <h1>Cursos</h1>
+    </div>
+    <div class="title_right">
+    </div>
+</div>
+
+<div class="col-md-12 col-sm-12 col-xs-12">
+    <div class="x_panel">
+
+        <div id="buttonset" style="margin-top:5px;margin-bottom:5px;">
+            <a class="btn btn-primary" href="@Url.Action("Crear","Planilla")">Cargar Nueva Planilla</a>
+        </div>
+        <div class="x_content">
+          
+            <div>
+                <div class="row">
+                    <div class="col-sm-12">
+                        <table id="example" class="table table-striped table-bordered dataTable no-footer" style="width:100%">
+                            <thead>
+                                <tr>
+                                    <th>Titulo</th>
+                                    <th>Año Lectivo</th>
+                                    <th>Curso</th>
+                                    <th>Docente</th>
+                                    <th>Materia</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @{
+                                    foreach (var u in modelo)
+                                    {
+                                    <tr>
+                                        <td>@u.Titulo</td>
+                                        <td>@u.AnhoLectivo</td>
+                                        <td>@u.NombreCurso</td>
+                                        <td>@u.NombreDocente</td>
+                                        <td>@u.NombreMateria</td>
+                                        <td>
+                                            <a href="@Url.Action("VerDetalle","Planilla", new { id = u.ID})"><span class="fa fa-search"></span></a>
+                                            <a href="@Url.Action("Editar","Planilla", new { id = u.ID})"><span class="fa fa-pencil"></span></a>
+                                            <a href="@Url.Action("Eliminar","Planilla", new { id = u.ID})"><span class="fa fa-trash"></span></a>
+                                        </td>
+                                    </tr>
+                                    };
+                                }
+
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <th>Titulo</th>
+                                    <th>Año Lectivo</th>
+                                    <th>Curso</th>
+                                    <th>Docente</th>
+                                    <th>Materia</th>
+                                    <th></th>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#example').DataTable();
+        });
+    </script>

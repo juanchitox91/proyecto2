@@ -1,0 +1,9 @@
+﻿namespace SGEA.Models
+{
+    public class TipoItem
+    {
+        public long ID { get; set; }
+        public string Descripcion { get; set; }
+        public long InstitucionID { get; set; }
+    }
+}

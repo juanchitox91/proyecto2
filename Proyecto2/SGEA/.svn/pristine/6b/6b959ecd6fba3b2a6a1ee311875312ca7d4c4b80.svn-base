@@ -1,0 +1,310 @@
+﻿using Helper;
+using Npgsql;
+using SGEA.Models;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web.Mvc;
+
+namespace SGEA.Repository
+{
+    public class InscripcionRepository
+    {
+        public static string connectionString = System.Configuration.ConfigurationManager.
+                                     ConnectionStrings["SGEAContext"].ConnectionString;
+
+        public static List<Inscripcion> getInscripciones(string idInstitucion)
+        {
+            var inscripciones = new List<Inscripcion>();
+
+            try
+            {
+                NpgsqlConnection cnn;
+                cnn = new NpgsqlConnection(connectionString);
+                cnn.Open();
+
+                NpgsqlCommand command;
+                NpgsqlDataReader dataReader;
+                string sql, Output = string.Empty;
+
+                sql = $"select i.id, a.id, a.nombre || ' ' || a.apellido as nombrealumno, c.id, c.nombrecurso, ar.id, ar.nombre_arancel, " +
+                    $"i.anho, i.mesdesde, i.meshasta, i.fecha_inscripcion, i.estado, i.cantidad_cuotas, i.idinstitucion, i.nrocomprobante " +
+                    $"FROM dbo.inscripcion i join dbo.alumno a on i.idalumno= a.id " +
+                    $"join dbo.curso c on i.idcurso = c.id join dbo.arancel ar on i.idarancel = ar.id " +
+                    $"where r.idinstitucion = {idInstitucion}";
+                command = new NpgsqlCommand(sql, cnn);
+                dataReader = command.ExecuteReader();
+
+                while (dataReader.Read())
+                {
+                    inscripciones.Add(new Inscripcion
+                    {
+                        ID = Convert.ToInt64(dataReader.GetValue(0).ToString()),
+                        AlumnoID = Convert.ToInt64(dataReader.GetValue(1).ToString()),
+                        NombreAlumno = dataReader.GetValue(2).ToString(),
+                        CursoID = Convert.ToInt64(dataReader.GetValue(3).ToString()),
+                        NombreCurso = dataReader.GetValue(4).ToString(),
+                        ArancelID = Convert.ToInt64(dataReader.GetValue(5).ToString()),
+                        NombreArancel = dataReader.GetValue(6).ToString(),
+                        Anho = dataReader.GetValue(7).ToString(),
+                        MesDesde = Convert.ToInt16(dataReader.GetValue(8).ToString()),
+                        MesHasta = Convert.ToInt16(dataReader.GetValue(9).ToString()),
+                        FechaInscripcionString = DateTime.Parse(dataReader.GetValue(10).ToString()).ToString("dd/MM/yyyy"),
+                        Estado = dataReader.GetValue(11).ToString(),
+                        CantidadCuotas = Convert.ToInt16(dataReader.GetValue(12).ToString()),
+                        InstitucionID = Convert.ToInt64(dataReader.GetValue(13).ToString()),
+                        NroComprobante = dataReader.GetValue(14).ToString()
+                    });
+                }
+                command.Dispose(); cnn.Close();
+            }
+            catch (Exception)
+            {
+
+            }
+
+            return inscripciones;
+        }
+
+        public static string createInscripcion(Inscripcion inscripcion)
+        {
+            string mensaje = string.Empty;
+
+            try
+            {
+                NpgsqlConnection cnn;
+                cnn = new NpgsqlConnection(connectionString);
+                cnn.Open();
+
+                NpgsqlCommand command;
+                string sql, Output = string.Empty;
+
+                sql = $"insert into dbo.inscripcion(idalumno, idcurso, anho, mesdesde, meshasta, fecha_inscripcion, estado, cantidad_cuotas, idarancel, idinstitucion, nrocomprobante)" +
+                      $"values ({inscripcion.AlumnoID}, {inscripcion.CursoID}, '{inscripcion.Anho}', '{inscripcion.MesDesde}', {inscripcion.MesHasta}, TO_DATE('{inscripcion.FechaInscripcionString}', 'DD/MM/YYYY'), {inscripcion.Estado}, " +
+                      $"{inscripcion.CantidadCuotas}, {inscripcion.ArancelID}, {inscripcion.InstitucionID}, {inscripcion.NroComprobante})";
+
+                command = new NpgsqlCommand(sql, cnn);
+                command.ExecuteNonQuery();
+
+                createPagares(inscripcion.listaPagares);
+
+                mensaje = "OK";
+                command.Dispose(); cnn.Close();
+            }
+            catch (Exception e)
+            {
+                mensaje = "Ha ocurrido un error al insertar los pagares .";
+            }
+
+            return mensaje;
+        }
+
+        public static string deleteInscripcion(long id)
+        {
+            string mensaje = string.Empty;
+
+            try
+            {
+                NpgsqlConnection cnn;
+                cnn = new NpgsqlConnection(connectionString);
+                cnn.Open();
+
+                NpgsqlCommand command;
+                string sql, Output = string.Empty;
+
+                sql = $"delete from dbo.inscripcion u where u.id = {id}";
+
+                command = new NpgsqlCommand(sql, cnn);
+                command.ExecuteNonQuery();
+                mensaje = "OK";
+                command.Dispose(); cnn.Close();
+            }
+
+            catch (Exception e)
+            {
+                mensaje = "Ha ocurrido un error al eliminar la inscripcion.";
+            }
+
+            return mensaje;
+        }
+
+        public static string updateInscripcion(Inscripcion inscripcion)
+        {
+            string mensaje = string.Empty;
+
+            try
+            {
+                NpgsqlConnection cnn;
+                cnn = new NpgsqlConnection(connectionString);
+                cnn.Open();
+
+                NpgsqlCommand command;
+                string sql, Output = string.Empty;
+
+                sql = $"update dbo.itemplanilla set idalumno = {inscripcion.AlumnoID}, idcurso = {inscripcion.CursoID}, " +
+                      $"anho = '{inscripcion.Anho}', mesdesde = '{inscripcion.MesDesde}', meshasta = {inscripcion.MesHasta}, " +
+                      $"fechainscripcion = TO_DATE('{inscripcion.FechaInscripcionString}', 'DD/MM/YYYY'), estado = {inscripcion.Estado}, " +
+                      $"cantidad_cuotas = {inscripcion.CantidadCuotas}, idarancel = {inscripcion.ArancelID}, nrocomprobante = {inscripcion.NroComprobante} " +
+                      $"where id = {inscripcion.ID}";
+
+                command = new NpgsqlCommand(sql, cnn);
+                command.ExecuteNonQuery();
+                mensaje = "OK";
+                command.Dispose(); cnn.Close();
+            }
+
+            catch (Exception e)
+            {
+                mensaje = "Ha ocurrido un error al editar la item.";
+            }
+
+            return mensaje;
+        }
+
+        public static void createPagares(List<Pagare> lista)
+        {
+            foreach (var item in lista)
+            {
+                try
+                {
+                    NpgsqlConnection cnn;
+                    cnn = new NpgsqlConnection(connectionString);
+                    cnn.Open();
+
+                    NpgsqlCommand command;
+                    string sql, Output = string.Empty;
+
+                    decimal montodecimal = Convert.ToDecimal(item.Monto.Replace(".", string.Empty));
+
+                    sql = $"insert into dbo.pagare(idinscripcion, tipopagare, fechavencimiento, estado, monto, fechapago, descripcion) " +
+                          $"values ({item.InscripcionID}, {item.TipoPagare}, TO_DATE('{item.FechaVencimientoString}', 'DD/MM/YYYY'), " +
+                          $"'{item.Estado}', {montodecimal}, TO_DATE('{item.FechaPagoString}', 'DD/MM/YYYY'), {item.Descripcion} ";
+
+                    command = new NpgsqlCommand(sql, cnn);
+                    command.ExecuteNonQuery();
+                    command.Dispose(); cnn.Close();
+                }
+                catch (Exception e)
+                {
+
+                }
+            }
+        }
+
+        //solo se puede actualizar fecha vencimiento, fecha pago y estado
+        public static void updatePagares(List<Pagare> lista)
+        {
+            foreach (var item in lista)
+            {
+                try
+                {
+                    NpgsqlConnection cnn;
+                    cnn = new NpgsqlConnection(connectionString);
+                    cnn.Open();
+
+                    NpgsqlCommand command;
+                    string sql, Output = string.Empty;
+
+                    sql = $"update dbo.pagare set fechavencimiento = TO_DATE('{item.FechaVencimientoString}', 'DD/MM/YYYY'), " +
+                          $"estado = '{item.Estado}', fechapago = TO_DATE('{item.FechaPagoString}', 'DD/MM/YYYY') " +
+                          $"where id = {item.ID}";
+
+                    command = new NpgsqlCommand(sql, cnn);
+                    command.ExecuteNonQuery();
+                    command.Dispose(); cnn.Close();
+                }
+                catch (Exception e)
+                {
+
+                }
+            }
+        }
+        /*public static List<SelectListItem> getItemPlanillaesSelect2(string idInstitucion, string id)
+        {
+            var items = new List<SelectListItem>();
+
+            try
+            {
+
+                NpgsqlConnection cnn;
+                cnn = new NpgsqlConnection(connectionString);
+                cnn.Open();
+
+                NpgsqlCommand command;
+                NpgsqlDataReader dataReader;
+                string sql, Output = string.Empty;
+
+                sql = $"select r.id, r.descripcion FROM dbo.itemplanilla r where r.idinstitucion = {idInstitucion}";
+                command = new NpgsqlCommand(sql, cnn);
+                dataReader = command.ExecuteReader();
+
+                items.Add(new SelectListItem
+                {
+                    Value = "",
+                    Text = "Seleccione un valor",
+                    Selected = id == "0" ? true : false
+                });
+
+                while (dataReader.Read())
+                {
+                    items.Add(new SelectListItem
+                    {
+                        Value = dataReader.GetValue(0).ToString(),
+                        Text = dataReader.GetValue(1).ToString(),
+                        Selected = dataReader.GetValue(0).ToString() == id ? true : false
+                    });
+                };
+                command.Dispose(); cnn.Close();
+            }
+            catch (Exception)
+            {
+
+            };
+            return items;
+        }*/
+
+        /*public static List<SelectListItem> getTiposItemSelect2(string idInstitucion, string id)
+        {
+            var items = new List<SelectListItem>();
+
+            try
+            {
+
+                NpgsqlConnection cnn;
+                cnn = new NpgsqlConnection(connectionString);
+                cnn.Open();
+
+                NpgsqlCommand command;
+                NpgsqlDataReader dataReader;
+                string sql, Output = string.Empty;
+
+                sql = $"select r.id, r.descripcion FROM dbo.tipo_item r where r.idinstitucion = {idInstitucion}";
+                command = new NpgsqlCommand(sql, cnn);
+                dataReader = command.ExecuteReader();
+
+                items.Add(new SelectListItem
+                {
+                    Value = "",
+                    Text = "Seleccione un valor",
+                    Selected = id == "0" ? true : false
+                });
+
+                while (dataReader.Read())
+                {
+                    items.Add(new SelectListItem
+                    {
+                        Value = dataReader.GetValue(0).ToString(),
+                        Text = dataReader.GetValue(1).ToString(),
+                        Selected = dataReader.GetValue(0).ToString() == id ? true : false
+                    });
+                };
+                command.Dispose(); cnn.Close();
+            }
+            catch (Exception)
+            {
+
+            };
+            return items;
+        }*/
+    }
+}

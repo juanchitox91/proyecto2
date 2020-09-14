@@ -1,0 +1,97 @@
+﻿@model SGEA.Models.Inscripcion
+
+@{
+    ViewBag.Title = "Editar";
+}
+
+
+<div class="page-title">
+    <div class="title_left" style="margin-left:10px;">
+        <h1>Editar Inscripcion - @Model.NombreAlumno </h1>
+    </div>
+    <div class="title_right">
+    </div>
+</div>
+
+
+<div class="col-md-12 col-sm-12 col-xs-12">
+    <div class="x_panel">
+        <div class="x_content">
+            <br>
+
+            <div id="form_error" class="alert" hidden>
+                <span class="closebtn">&times;</span>
+                <strong>Error!</strong> Ha habido un error al modificar la inscripcion.
+            </div>
+
+            <div id="form_exit" class="alert success" style="text-align:center" hidden>
+                <span class="closebtn">&times;</span>
+                <strong>Éxito!</strong> El campo se modificó correctamente.
+            </div>
+            @using (Html.BeginForm("Editar", "Inscripcion", FormMethod.Post, new { @class = "form-horizontal form-label-left", @data_parsley_validate = "" }))
+            {
+                @Html.AntiForgeryToken()
+
+                <div class="form-group">
+                    @Html.LabelFor(x => x.AlumnoID, new { @class = "control-label col-md-3 col-sm-3 col-xs-12" })
+                    <div class="col-md-6 col-sm-6 col-xs-12">
+                        @Html.DropDownListFor(n => n.AlumnoID, (List<SelectListItem>)ViewBag.alumnos, new { @id = "txtIDAlumno", @required = "required", @class = "form-control col-md-7 col-xs-12", @disabled="true" })
+                    </div>
+                </div>
+                <div class="form-group">
+                    @Html.LabelFor(x => x.CursoID, new { @class = "control-label col-md-3 col-sm-3 col-xs-12" })
+                    <div class="col-md-6 col-sm-6 col-xs-12">
+                        @Html.DropDownListFor(n => n.CursoID, (List<SelectListItem>)ViewBag.cursos, new { @id = "txtIDCurso", @required = "required", @class = "form-control col-md-7 col-xs-12" })
+                    </div>
+                </div>
+                <div class="form-group">
+                    @Html.LabelFor(x => x.ArancelID, new { @class = "control-label col-md-3 col-sm-3 col-xs-12" })
+                    <div class="col-md-6 col-sm-6 col-xs-12">
+                        @Html.DropDownListFor(n => n.ArancelID, (List<SelectListItem>)ViewBag.aranceles, new { @id = "txtIDArancel", @required = "required", @class = "form-control col-md-7 col-xs-12" })
+                    </div>
+                </div>
+                <div class="form-group">
+                    @Html.LabelFor(x => x.MesDesde, new { @class = "control-label col-md-3 col-sm-3 col-xs-12" })
+                    <div class="col-md-6 col-sm-6 col-xs-12">
+                        @Html.DropDownListFor(n => n.MesDesde, (List<SelectListItem>)ViewBag.mesDesde, new { @id = "txtMesDesde", @required = "required", @class = "form-control col-md-7 col-xs-12" })
+                    </div>
+                </div>
+                <div class="form-group">
+                    @Html.LabelFor(x => x.MesHasta, new { @class = "control-label col-md-3 col-sm-3 col-xs-12" })
+                    <div class="col-md-6 col-sm-6 col-xs-12">
+                        @Html.DropDownListFor(n => n.MesHasta, (List<SelectListItem>)ViewBag.mesHasta, new { @id = "txtMesHasta", @required = "required", @class = "form-control col-md-7 col-xs-12" })
+                    </div>
+                </div>
+                <div class="form-group">
+                    @Html.LabelFor(x => x.CantidadCuotas, new { @class = "control-label col-md-3 col-sm-3 col-xs-12" })
+                    <div class="col-md-6 col-sm-6 col-xs-12">
+                        @Html.DropDownListFor(n => n.CantidadCuotas, (List<SelectListItem>)ViewBag.cantidadcuotas, new { @id = "txtCantidadCuotas", @required = "required", @class = "form-control col-md-7 col-xs-12" })
+                    </div>
+                </div>
+                <div class="form-group">
+                    @Html.LabelFor(x => x.NroComprobante, new { @class = "control-label col-md-3 col-sm-3 col-xs-12" })
+                    <div class="col-md-6 col-sm-6 col-xs-12">
+                        @Html.EditorFor(x => x.NroComprobante, new { @class = "form-control col-md-7 col-xs-12", @required = "required", @type = "text" })
+                    </div>
+                </div>
+                <div class="ln_solid"></div>
+                <div class="form-group">
+                    <div class="col-md-6 col-sm-6 col-xs-12 col-md-offset-3">
+                        <a href="@Url.Action("Index","Inscripcion")" class="btn btn-primary" type="button"> < Volver</a>
+                        <a href="@Url.Action("Crear","Inscripcion")" class="btn btn-primary">Limpiar</a>
+                        <button type="submit" class="btn btn-success">Confirmar</button>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@Scripts.Render("~/bundles/jquery")
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('.numberformat').mask("0.###.###.###.###", { reverse: true });
+
+    });
+</script>

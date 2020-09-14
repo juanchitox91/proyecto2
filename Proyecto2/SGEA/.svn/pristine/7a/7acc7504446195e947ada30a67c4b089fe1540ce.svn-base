@@ -1,0 +1,19 @@
+-- Drop table
+
+-- DROP TABLE dbo.grupo_familiar
+
+CREATE TABLE dbo.grupo_familiar (
+	id serial NOT NULL,
+	apellidos varchar(100) NOT NULL,
+	tutor1 varchar(100) NOT NULL,
+	tutor2 varchar(100) NULL,
+	observacion varchar(250) NULL,
+	fecha_alta date NOT NULL,
+	ult_modificacion date NOT NULL,
+	CONSTRAINT grupo_familiar_pk PRIMARY KEY (id)
+);
+
+-- Permissions
+
+ALTER TABLE dbo.grupo_familiar OWNER TO postgres;
+GRANT ALL ON TABLE dbo.grupo_familiar TO postgres;

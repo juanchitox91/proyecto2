@@ -1,0 +1,83 @@
+﻿@{
+    ViewBag.Title = "Home Page";
+}
+@{
+
+    List<SGEA.Models.ItemPlanilla> modelo = (List<SGEA.Models.ItemPlanilla>)ViewBag.ItemPlanillas;
+}
+
+@Scripts.Render("~/bundles/jquery")
+@Styles.Render("~/Datatable/css")
+
+
+<div class="page-title">
+    <div class="title_left" style="margin-left:10px;">
+        <h1>Items de Planilla</h1>
+    </div>
+    <div class="title_right">
+    </div>
+</div>
+
+<div class="col-md-12 col-sm-12 col-xs-12">
+    <div class="x_panel">
+
+        <div id="buttonset" style="margin-top:5px;margin-bottom:5px;">
+            <a class="btn btn-primary" href="@Url.Action("Crear","ItemPlanilla")">Cargar Nueva ItemPlanilla</a>
+        </div>
+        <div class="x_content">
+          
+            <div>
+                <div class="row">
+                    <div class="col-sm-12">
+                        <table id="example" class="table table-striped table-bordered dataTable no-footer" style="width:100%">
+                            <thead>
+                                <tr>
+                                    <th>Titulo</th>
+                                    <th>Tipo Item</th>
+                                    <th>Sub Unidad</th>
+                                    <th>Fecha Evaluacion</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @{
+                                    foreach (var u in modelo)
+                                    {
+                                        <tr>
+                                            <td>@u.Titulo</td>
+                                            <td>@u.NombreTipoItem</td>
+                                            <td>@u.NombreSubUnidad</td>
+                                            <td>@u.FechaEvaluacionString</td>
+
+                                            <td>
+                                                <a href="@Url.Action("VerDetalle","ItemPlanilla", new { id = u.ID})"><span class="fa fa-search"></span></a>
+                                                <a href="@Url.Action("Editar","ItemPlanilla", new { id = u.ID})"><span class="fa fa-pencil"></span></a>
+                                                <a href="@Url.Action("Eliminar","ItemPlanilla", new { id = u.ID})"><span class="fa fa-trash"></span></a>
+                                            </td>
+                                        </tr>
+                                    };
+                                }
+
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <th>Titulo</th>
+                                    <th>Tipo Item</th>
+                                    <th>Sub Unidad</th>
+                                    <th>Fecha Evaluacion</th>
+                                    <th></th>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#example').DataTable();
+        });
+    </script>

@@ -1,0 +1,19 @@
+﻿using System;
+
+namespace SGEA.Models
+{
+    public class ItemPlanilla
+    {
+        public long ID { get; set; }
+        public string NombreTipoItem { get; set; }
+        public long TipoItemID { get; set; }
+        public string NombreSubUnidad { get; set; }
+        public long SubUnidadID { get; set; }
+        public string Titulo { get; set; }
+        public string Descripcion { get; set; }
+        public int PuntajeMaximo { get; set; }
+        public DateTime FechaEvaluacion { get; set; }
+        public string FechaEvaluacionString { get; set; }
+        public long InstitucionID { get; set; }
+    }
+}

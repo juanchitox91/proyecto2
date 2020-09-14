@@ -1,0 +1,76 @@
+﻿@model SGEA.Models.Arancel
+
+@{
+    ViewBag.Title = "Detalle";
+}
+
+
+<div class="page-title">
+    <div class="title_left" style="margin-left:10px;">
+        <h3>Eliminar Arancel - @Model.NombreArancel - Año @Model.AnhoLectivo</h3>
+    </div>
+    <div class="title_right">
+    </div>
+</div>
+
+
+<div class="col-md-12 col-sm-12 col-xs-12">
+    <div class="x_panel">
+        <div class="x_content">
+            <br>
+
+            @using (Html.BeginForm("Eliminar", "Arancel", FormMethod.Post, new { @class = "form-horizontal form-label-left", @data_parsley_validate = "" }))
+            {
+                @Html.AntiForgeryToken()
+
+                <div class="form-group">
+                    @Html.LabelFor(x => x.NombreArancel, new { @class = "control-label col-md-3 col-sm-3 col-xs-12" })
+                    <div class="col-md-6 col-sm-6 col-xs-12">
+                        @Html.TextBoxFor(x => x.NombreArancel, new { @class = "form-control col-md-7 col-xs-12", @required = "required",  @disabled="true" })
+                    </div>
+                </div>
+                <div class="form-group">
+                    @Html.LabelFor(x => x.MontoInscripcion, new { @class = "control-label col-md-3 col-sm-3 col-xs-12" })
+                    <div class="col-md-6 col-sm-6 col-xs-12">
+                        @Html.TextBoxFor(x => x.MontoInscripcion, new { @class = "form-control col-md-7 col-xs-12", @required = "required", @type = "text", @disabled = "true" })
+                    </div>
+                </div>
+                <div class="form-group">
+                    @Html.LabelFor(x => x.MatriculaAnual, new { @class = "control-label col-md-3 col-sm-3 col-xs-12" })
+                    <div class="col-md-6 col-sm-6 col-xs-12">
+                        @Html.TextBoxFor(x => x.MatriculaAnual, new { @class = "form-control col-md-7 col-xs-12", @required = "required", @type = "text", @disabled = "true" })
+                    </div>
+                </div>
+                <div class="form-group">
+                    @Html.LabelFor(x => x.AnhoLectivo, new { @class = "control-label col-md-3 col-sm-3 col-xs-12" })
+                    <div class="col-md-6 col-sm-6 col-xs-12">
+                        @Html.TextBoxFor(x => x.AnhoLectivo, new { @class = "form-control col-md-7 col-xs-12", @required = "required", @type = "text", @disabled = "true" })
+                    </div>
+                </div>
+                <div class="form-group">
+                    @Html.LabelFor(x => x.Observacion, new { @class = "control-label col-md-3 col-sm-3 col-xs-12" })
+                    <div class="col-md-6 col-sm-6 col-xs-12">
+                        @Html.TextBoxFor(x => x.Observacion, new { @class = "form-control col-md-7 col-xs-12", @required = "required", @type = "text", @disabled = "true" })
+                    </div>
+                </div>
+
+                <div class="ln_solid"></div>
+                <div class="form-group">
+                    <div class="col-md-6 col-sm-6 col-xs-12 col-md-offset-3">
+                        <a href="@Url.Action("Index", "Arancel")" class="btn btn-primary">Volver</a>
+                        <button type="submit" class="btn btn-success">Elimminar</button>
+                    </div>
+                </div>
+                @*</form>*@
+            }
+        </div>
+    </div>
+</div>
+
+@Scripts.Render("~/bundles/jquery")
+
+<script type="text/javascript">
+    $(document).ready(function () {
+
+    });
+</script>

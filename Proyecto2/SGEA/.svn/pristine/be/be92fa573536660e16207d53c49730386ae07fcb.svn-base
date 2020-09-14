@@ -1,0 +1,130 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+
+    @{
+        var error = ViewBag.error;
+        var exito = ViewBag.mensaje;
+
+    }
+
+
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>S. G. E. A.</title>
+
+    @Styles.Render("~/Datatable/css")
+    @Styles.Render("~/Content/css")
+    @Styles.Render("~/Gentelella/css")
+    @Styles.Render("~/Content/forms")
+    <style>
+        .alert {
+            padding: 20px;
+            background-color: #f44336;
+            color: white;
+            opacity: 1;
+            transition: opacity 0.6s;
+            margin-bottom: 15px;
+        }
+
+            .alert.success {
+                background-color: #4CAF50;
+            }
+
+            .alert.info {
+                background-color: #2196F3;
+            }
+
+            .alert.warning {
+                background-color: #ff9800;
+            }
+
+        .closebtn {
+            margin-left: 15px;
+            color: white;
+            font-weight: bold;
+            float: right;
+            font-size: 22px;
+            line-height: 20px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+            .closebtn:hover {
+                color: black;
+            }
+    </style>
+    @*<style src="../Content/DataTables/DataTables-1.10.18/css/jquery.dataTables.min.css" type="text/css"></style>*@
+</head>
+<body class="nav-md">
+    <div class="container body">
+        <div class="main_container">
+            <div class="top_nav">
+                <div class="nav_menu">
+                    <nav>
+                        <div class="nav toggle">
+                            <a id="menu_toggle"><i class="fa fa-bars"></i></a>
+                        </div>
+                        <ul class="nav navbar-nav navbar-right">
+                            <li class="">
+                                <a href="javascript:;" class="user-profile dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+                                    Salir
+                                    <span class=" fa fa-angle-down"></span>
+                                </a>
+                                <ul class="dropdown-menu dropdown-usermenu pull-right">
+                                    <li><a href=@Url.Action("../Login/Logout")><i class="fa fa-sign-out pull-right"></i> Log Out</a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+            @Html.Action("Index", "_MenuLateral")
+            <div class="right_col" role="main" style="min-height: 1704px;">
+                @RenderBody()
+            </div>
+        </div>
+    </div>
+
+    <footer id="footer" style="text-align:right">
+        2019 - Proyecto desarrollado por Juan Caballero.
+    </footer>
+
+    @*@Scripts.Render("~/bundles/modernizr")*@
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/datatable")
+
+    @Scripts.Render("~/bundles/bootstrap")
+    @Scripts.Render("~/bundles/gentelella")
+    @*<script src="../Content/DataTables/DataTables-1.10.18/js/jquery.dataTables.min.js" type="text/javascript"></script>*@
+    @Scripts.Render("~/bundles/forms")
+    <script src="~/Content/vendors/masknumber/jquery.mask.js"></script>
+    <script type="text/javascript">
+        //$('#form_error').hide();
+        //$('#form_exit').hide();
+
+         if ('@error' != '') {
+            $('#form_error').show();
+        }
+        if ('@exito' != '') {
+            $('#form_exit').show();
+        }
+
+        var close
+        document.getElementsByClassName("closebtn");
+        var i;
+
+        for (i = 0; i < close.length; i++) {
+            close[i].onclick = function () {
+                var div = this.parentElement;
+                div.style.opacity = "0";
+                setTimeout(function () { div.style.display = "none"; }, 600);
+            }
+        }
+    </script>
+   
+
+
+</body>
+</html>

@@ -1,0 +1,17 @@
+C:\Users\Juanchitox\source\repos\SGEA1\Helper\bin\Debug\Helper.dll
+C:\Users\Juanchitox\source\repos\SGEA1\Helper\bin\Debug\Helper.pdb
+C:\Users\Juanchitox\source\repos\SGEA1\Helper\obj\Debug\Helper.csproj.CoreCompileInputs.cache
+C:\Users\Juanchitox\source\repos\SGEA1\Helper\obj\Debug\Helper.dll
+C:\Users\Juanchitox\source\repos\SGEA1\Helper\obj\Debug\Helper.pdb
+C:\Users\Juanchitox\source\repos\SGEA\Helper\bin\Debug\Helper.dll
+C:\Users\Juanchitox\source\repos\SGEA\Helper\bin\Debug\Helper.pdb
+C:\Users\Juanchitox\source\repos\SGEA\Helper\obj\Debug\Helper.csproj.CoreCompileInputs.cache
+C:\Users\Juanchitox\source\repos\SGEA\Helper\obj\Debug\Helper.dll
+C:\Users\Juanchitox\source\repos\SGEA\Helper\obj\Debug\Helper.pdb
+C:\Users\Juanchitox\source\repos\SGEA\Helper\obj\Debug\Helper.csprojAssemblyReference.cache
+C:\Users\Juanchitox\Desktop\SGEA\Helper\bin\Debug\Helper.dll
+C:\Users\Juanchitox\Desktop\SGEA\Helper\bin\Debug\Helper.pdb
+C:\Users\Juanchitox\Desktop\SGEA\Helper\obj\Debug\Helper.csprojAssemblyReference.cache
+C:\Users\Juanchitox\Desktop\SGEA\Helper\obj\Debug\Helper.csproj.CoreCompileInputs.cache
+C:\Users\Juanchitox\Desktop\SGEA\Helper\obj\Debug\Helper.dll
+C:\Users\Juanchitox\Desktop\SGEA\Helper\obj\Debug\Helper.pdb
