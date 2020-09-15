@@ -158,12 +158,10 @@ namespace SGEA.Repository
                 NpgsqlDataReader dataReader;
                 string sql, Output = string.Empty;
 
-                sql = $"select al.cedula || ' - '  || al.apellido || ', ' || al.nombre alumno " +
-                    "from dbo.itemplanilla i join dbo.subunidad s on i.idsubunidad = s.id " +
-                    "join dbo.unidad u on s.idunidad = u.id join dbo.planilla p on u.idplanilla = p.id " +
-                    "join dbo.curso c on p.idcurso = c.id join dbo.inscripcion ins on c.id = ins.idcurso " +
-                    "join dbo.alumno al on ins.idalumno = al.id " +
-                    $"where i.id = {iditemplanilla}";
+                sql = $"select a.cedula, a.nombre || ' ' || a.apellido  from dbo.planilla p join dbo.curso c on p.idcurso = c.id " +
+                    $" join dbo.inscripcion i on c.id = i.idcurso " +
+                    $" join dbo.alumno a on i.idalumno = a.id " +
+                    $" where p.id = {iditemplanilla}";
 
                 command = new NpgsqlCommand(sql, cnn);
 
@@ -174,7 +172,8 @@ namespace SGEA.Repository
                 {
                     evaluacion.Add(new Evaluacion
                     {
-                        NombreAlumno = dataReader.GetValue(0).ToString(),
+                        Cedula = dataReader.GetValue(0).ToString(),
+                        NombreAlumno = dataReader.GetValue(1).ToString(),
                         PuntajeAlcanzado = 0
                     });
                 };

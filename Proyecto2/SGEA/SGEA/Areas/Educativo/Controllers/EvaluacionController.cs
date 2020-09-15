@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using SGEA.Models;
 using System.Linq;
 using System;
-using static SGEA.Models.DataTable;
 
 namespace SGEA.Areas.Educativo.Controllers
 {
@@ -27,8 +26,8 @@ namespace SGEA.Areas.Educativo.Controllers
             Dictionary<string, string> respuesta = new Dictionary<string, string>();
 
             List<SelectListItem> planillas = EvaluacionRepository.getItemsSelect2(HttpContext.Session["institucion"].ToString(), idplanilla, "0");
-            
-            foreach(var item in planillas)
+
+            foreach (var item in planillas)
             {
                 respuesta.Add(item.Value, item.Text);
             }
@@ -75,16 +74,26 @@ namespace SGEA.Areas.Educativo.Controllers
             });
         }*/
 
-        /*public ActionResult PoblarGrilla(string iditem)
+        [HttpPost]
+        public JsonResult PoblarGrilla(DataTableAjaxPostModel model)
         {
             List<Evaluacion> lista = new List<Evaluacion>();
+
             try
             {
-                lista = EvaluacionRepository.getAlumnosEvaluar(iditem);
+                lista = EvaluacionRepository.getAlumnosEvaluar(model.param1);
             }
             catch { }
 
-            return Json(new { data = lista}, JsonRequestBehavior.AllowGet);
-        }*/
+
+            return Json(new
+            {
+                // this is what datatables wants sending back
+                draw = model.draw,
+                recordsTotal = 100,
+                recordsFiltered = 100,
+                data = lista
+            });
+        }
     }
 }

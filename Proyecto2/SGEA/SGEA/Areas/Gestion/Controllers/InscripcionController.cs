@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using SGEA.Models;
 using System.Linq;
 using System;
-using static SGEA.Models.DataTable;
 
 namespace SGEA.Areas.Gestion.Controllers
 {

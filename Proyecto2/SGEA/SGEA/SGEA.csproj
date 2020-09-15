@@ -173,7 +173,7 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
-    <Compile Include="Models\DataTable.cs" />
+    <Compile Include="Models\DataTableAjaxPostModel.cs" />
     <Compile Include="Models\Inscripcion.cs" />
     <Compile Include="Models\SelectListItemWithParameter.cs" />
     <Compile Include="Models\Tutor.cs" />

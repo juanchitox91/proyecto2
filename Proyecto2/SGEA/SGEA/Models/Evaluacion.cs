@@ -6,6 +6,8 @@ namespace SGEA.Models
 {
     public class Evaluacion
     {
+        [DisplayName("Cedula")]
+        public string Cedula { get; set; }
         [DisplayName("Alumno")]
         public string NombreAlumno { get; set; }
         [DisplayName("Alumno")]
