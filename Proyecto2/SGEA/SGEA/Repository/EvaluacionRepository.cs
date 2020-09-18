@@ -143,6 +143,69 @@ namespace SGEA.Repository
             return puntajeMaximo;
         }
 
+        public static void insertPuntaje(string idItem, string  cedula, string puntaje)
+        {
+            long idalumno = 0;
+            int cantidad = 0;
+            try
+            {
+                NpgsqlConnection cnn;
+                NpgsqlDataReader dataReader;
+                cnn = new NpgsqlConnection(connectionString);
+                cnn.Open();
+
+                NpgsqlCommand command;
+                string sql, Output = string.Empty;
+
+                sql = $"select i.id FROM dbo.alumno i where i.cedula = {cedula}";
+                command = new NpgsqlCommand(sql, cnn);
+                dataReader = command.ExecuteReader();
+
+                while (dataReader.Read())
+                {
+                    idalumno = Convert.ToInt64(dataReader.GetValue(0).ToString());
+                }
+                command.Dispose(); cnn.Close();
+
+                cnn = new NpgsqlConnection(connectionString);
+                cnn.Open();
+
+                sql = $"select count(*) from dbo.evaluacion where iditem = {idItem} and idalumno = {idalumno} ";
+                     
+
+                command = new NpgsqlCommand(sql, cnn);
+                dataReader = command.ExecuteReader();
+
+                while (dataReader.Read())
+                {
+                    cantidad = Convert.ToInt32(dataReader.GetValue(0).ToString());
+                }
+
+                cnn = new NpgsqlConnection(connectionString);
+                cnn.Open();
+
+                if(cantidad == 0)
+                {
+                    sql = $"insert into dbo.evaluacion(iditem, idalumno, puntajealcanzado) " +
+                    $"values ({idItem}, {idalumno}, {puntaje})";
+                }
+                else
+                {
+                    sql = $"update dbo.evaluacion set puntaje = {puntaje} where iditem = {idItem} and idalumno = {idalumno}";
+                }
+
+                command = new NpgsqlCommand(sql, cnn);
+                command.ExecuteNonQuery();
+                command.Dispose(); cnn.Close();
+
+            }
+            catch (Exception e)
+            {
+                //mensaje = "Ha ocurrido un error al insertar la inscripcion.";
+            }
+
+        }
+
         public static List<Evaluacion> getAlumnosEvaluar(string iditemplanilla)
         {
             List<Evaluacion> evaluacion = new List<Evaluacion>();
@@ -158,13 +221,16 @@ namespace SGEA.Repository
                 NpgsqlDataReader dataReader;
                 string sql, Output = string.Empty;
 
-                sql = $"select a.cedula, a.nombre || ' ' || a.apellido  from dbo.planilla p join dbo.curso c on p.idcurso = c.id " +
+                sql = $"select a.cedula, a.nombre || ' ' || a.apellido, " +
+                    $" case e.puntajealcanzado when null then e.puntajealcanzado else 0 end as puntaje " +
+                    $" from dbo.planilla p join dbo.curso c on p.idcurso = c.id " +
                     $" join dbo.inscripcion i on c.id = i.idcurso " +
-                    $" join dbo.alumno a on i.idalumno = a.id " +
-                    $" where p.id = {iditemplanilla}";
+                    $" join dbo.alumno a on i.idalumno = a.id join dbo.unidad u on p.id = u.idplanilla " +
+                    $" join dbo.subunidad su on u.id = su.idunidad join dbo.itemplanilla it on su.id = it.idsubunidad " +
+                    $" full join dbo.evaluacion e on it.id = e.iditem " +
+                    $" where it.id = {iditemplanilla}";
 
                 command = new NpgsqlCommand(sql, cnn);
-
 
                 dataReader = command.ExecuteReader();
 
@@ -174,7 +240,7 @@ namespace SGEA.Repository
                     {
                         Cedula = dataReader.GetValue(0).ToString(),
                         NombreAlumno = dataReader.GetValue(1).ToString(),
-                        PuntajeAlcanzado = 0
+                        PuntajeAlcanzado = Convert.ToInt64(dataReader.GetValue(2).ToString())
                     });
                 };
                 command.Dispose(); cnn.Close();

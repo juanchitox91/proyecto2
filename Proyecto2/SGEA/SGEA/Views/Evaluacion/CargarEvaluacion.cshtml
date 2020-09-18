@@ -86,7 +86,7 @@
                     "url": "@Url.Action("PoblarGrilla", "Evaluacion")",
                     "type": "POST",
                     "data": function (d) {
-                        d.param1 = $('#PlanillaID').val();
+                        d.param1 = $('#ItemID').val();
                     }
                 },
                  "columns": [
@@ -94,8 +94,8 @@
                     { "data": "NombreAlumno" },
                     {
                         "data": "PuntajeAlcanzado",
-                        "render": function (data) {
-                            return "<input class='puntaje-maximo-input' value='" + data + "'/><a class='btn btn-primary btn-sm btn-puntaje-input' style='margin-left:10px;' onclick=PopupForm('@Url.Action("AgregarPuntaje","Evaluacion")/" + data + "')><i class='fa fa-save'></i> Guardar</a>";
+                        "render": function (data, type, row) {
+                            return "<input class='puntaje-maximo-input' value='" + row.PuntajeAlcanzado + "'/><a class='btn btn-primary btn-sm btn-puntaje-input' style='margin-left:10px;' onclick='guardarPuntaje(this, " + row.Cedula + ")'><i class='fa fa-save'></i> Guardar</a>";
 
                         }
                     }
@@ -124,7 +124,6 @@
             $('#puntaje_maximo').val('');
             if ($('#PlanillaID').val()) {
                 agregarItems($('#PlanillaID').val());
-                poblarGrilla();
             } else {
                 $('#ItemID').prop('disabled', 'false');
             }
@@ -172,7 +171,7 @@
                     //success es una funcion que se utiliza si el servidor retorna informacion
                 },
                 error: function () {
-
+                    alert('mensaje de error de cuando se debe');
                 }
             })
         }
@@ -204,4 +203,32 @@
             tableAlumnos.ajax.reload();
         }
 
+        function guardarPuntaje(boton, cedula)
+        {
+            var puntaje = $(boton).parent().children('input').val();
+
+            $.ajax({
+                type: "POST", // la variable type guarda el tipo de la peticion GET,POST,..
+                url: "@Url.Action("AgregarPuntaje", "Evaluacion")", //url guarda la ruta hacia donde se hace la peticion
+                data: {
+                    puntaje: puntaje,
+                    cedula: cedula}, // data recibe un objeto con la informacion que se enviara al servidor
+                success: function (data)
+                {
+                    $('.puntaje-maximo-input').val(0);
+                    $('#puntaje_maximo').val(data.puntajemaximo);
+                    if (data.puntajemaximo != '' && data.puntajemaximo != 0) {
+                        $('.puntaje-maximo-input').attr('max', data.puntajemaximo);
+                        $('.puntaje-maximo-input').attr('disabled', false);
+                        $('.btn-puntaje-input').attr('disabled', false);
+                    } else {
+                        $('.puntaje-maximo-input').attr('disabled', true);
+                        $('.btn-puntaje-input').attr('disabled', true);
+                    }
+                },
+            })
+
+            debugger;
+
+        }
     </script>

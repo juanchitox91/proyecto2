@@ -37,11 +37,29 @@ namespace SGEA.Areas.Educativo.Controllers
 
         public JsonResult AgregarPuntajeMaximo(string idItemPlanilla)
         {
-            int puntajemaximo = Convert.ToInt32(EvaluacionRepository.getPuntajeMaximo(idItemPlanilla))
-                ;
+            Session["idItemEvaluacion"] = idItemPlanilla;
+            int puntajemaximo = Convert.ToInt32(EvaluacionRepository.getPuntajeMaximo(idItemPlanilla)) ;
             return Json(new { puntajemaximo = puntajemaximo });
         }
 
+        public JsonResult AgregarPuntaje(string puntaje, string cedula)
+        {
+            try
+            {
+                string idItem = (string)Session["idItemEvaluacion"];
+
+                EvaluacionRepository.insertPuntaje(idItem, cedula, puntaje);
+                return Json(new { mensaje = "OK" });
+            }
+            catch(Exception ex)
+            {
+                string idItem = (string)Session["idItemEvaluacion"];
+
+                EvaluacionRepository.insertPuntaje(idItem, cedula, puntaje);
+                return Json(new { mensaje = "ERROR" });
+            }
+           
+        }
         /*public JsonResult CustomServerSideSearchAction(DataTableAjaxPostModel model)
         {
             int filteredResultsCount;
@@ -81,7 +99,7 @@ namespace SGEA.Areas.Educativo.Controllers
 
             try
             {
-                lista = EvaluacionRepository.getAlumnosEvaluar(model.param1);
+                lista = EvaluacionRepository.getAlumnosEvaluar (model.param1);
             }
             catch { }
 
