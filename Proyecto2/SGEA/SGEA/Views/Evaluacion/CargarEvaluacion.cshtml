@@ -95,22 +95,14 @@
                     {
                         "data": "PuntajeAlcanzado",
                         "render": function (data, type, row) {
-                            return "<input class='puntaje-maximo-input' value='" + row.PuntajeAlcanzado + "'/><a class='btn btn-primary btn-sm btn-puntaje-input' style='margin-left:10px;' onclick='guardarPuntaje(this, " + row.Cedula + ")'><i class='fa fa-save'></i> Guardar</a>";
-
+                            return "<input class='puntaje-maximo-input' value='" + row.PuntajeAlcanzado + "'/><a style='margin-left:10px;' onclick='habilitar(this)'><span class='fa fa-pencil'></span></a>" +
+                                "<a style='margin-left:10px;' onclick='guardarPuntaje(this, " + row.Cedula + ")'><span class='fa fa-save'></span></a>";
                         }
                     }
                 ],
                 "drawCallback": function (settings) {
-                    var puntajemaximo = $('#puntaje_maximo').val();
-
-                    if (puntajemaximo == '') {
-                        $('.puntaje-maximo-input').attr('disabled', true);
-                        $('.btn-puntaje-input').attr('disabled', true);
-                    } else {
-                        $('.puntaje-maximo-input').attr('max', puntajemaximo);
-                        $('.puntaje-maximo-input').attr('disabled', false);
-                        $('.btn-puntaje-input').attr('disabled', false);
-                    }
+                    $('.puntaje-maximo-input').prop('disabled', true);
+                   
                 }
             });
             /************** FIN SECCION GRILLA *******************/
@@ -144,9 +136,9 @@
                 
             } else {
                 $('#puntaje_maximo').val('');
-                $('.puntaje-maximo-input').val(0);
-                $('.puntaje-maximo-input').attr('disabled', true);
-                $('.btn-puntaje-input').attr('disabled', true);
+                //$('.puntaje-maximo-input').val(0);
+                //$('.puntaje-maximo-input').prop('disabled', true);
+                //$('.btn-puntaje-input').attr('disabled', true);
             }
         });
 
@@ -171,7 +163,6 @@
                     //success es una funcion que se utiliza si el servidor retorna informacion
                 },
                 error: function () {
-                    alert('mensaje de error de cuando se debe');
                 }
             })
         }
@@ -187,11 +178,11 @@
                     $('#puntaje_maximo').val(data.puntajemaximo);
                     if (data.puntajemaximo != '' && data.puntajemaximo != 0) {
                         $('.puntaje-maximo-input').attr('max', data.puntajemaximo);
-                        $('.puntaje-maximo-input').attr('disabled', false);
-                        $('.btn-puntaje-input').attr('disabled', false);
+                        $('.puntaje-maximo-input').prop('disabled', false);
+                        $('.btn-puntaje-input').prop('disabled', false);
                     } else {
-                        $('.puntaje-maximo-input').attr('disabled', true);
-                        $('.btn-puntaje-input').attr('disabled', true);
+                        $('.puntaje-maximo-input').prop('disabled', true);
+                        $('.btn-puntaje-input').prop('disabled', true);
                     }
                 },
             })
@@ -215,8 +206,14 @@
                     cedula: cedula}, // data recibe un objeto con la informacion que se enviara al servidor
                 success: function (data)
                 {
-                    $('.puntaje-maximo-input').val(0);
-                    $('#puntaje_maximo').val(data.puntajemaximo);
+                    $(boton).parent().children('input').attr('disabled', true);
+                    if (data.mensaje == "ERROR") {
+                        alert("Ha ocurrido un error, favor intentelo nuevamente.")
+                    } else if (data.mensaje == "ERROR-PUNTAJE") {
+                        alert("Ha ocurrido un error, favor verifique el puntaje asignado.");
+                    }
+                    //$('.puntaje-maximo-input').val(0);
+                    /*$('#puntaje_maximo').val(data.puntajemaximo);
                     if (data.puntajemaximo != '' && data.puntajemaximo != 0) {
                         $('.puntaje-maximo-input').attr('max', data.puntajemaximo);
                         $('.puntaje-maximo-input').attr('disabled', false);
@@ -224,11 +221,12 @@
                     } else {
                         $('.puntaje-maximo-input').attr('disabled', true);
                         $('.btn-puntaje-input').attr('disabled', true);
-                    }
+                    }*/
                 },
             })
+        }
 
-            debugger;
-
+        function habilitar(boton) {
+            $(boton).parent().children('input').prop('disabled', false);
         }
     </script>

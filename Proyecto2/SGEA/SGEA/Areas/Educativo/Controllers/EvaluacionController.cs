@@ -39,13 +39,19 @@ namespace SGEA.Areas.Educativo.Controllers
         {
             Session["idItemEvaluacion"] = idItemPlanilla;
             int puntajemaximo = Convert.ToInt32(EvaluacionRepository.getPuntajeMaximo(idItemPlanilla)) ;
+            Session["puntajeMaximo"] = puntajemaximo;
             return Json(new { puntajemaximo = puntajemaximo });
         }
 
         public JsonResult AgregarPuntaje(string puntaje, string cedula)
         {
+            int puntajemaximo = (int)Session["puntajeMaximo"];
             try
             {
+                if(puntajemaximo < Convert.ToInt32(puntaje))
+                {
+                    return Json(new { mensaje = "ERROR-PUNTAJE" });
+                }
                 string idItem = (string)Session["idItemEvaluacion"];
 
                 EvaluacionRepository.insertPuntaje(idItem, cedula, puntaje);

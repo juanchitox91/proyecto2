@@ -222,7 +222,7 @@ namespace SGEA.Repository
                 string sql, Output = string.Empty;
 
                 sql = $"select a.cedula, a.nombre || ' ' || a.apellido, " +
-                    $" case e.puntajealcanzado when null then e.puntajealcanzado else 0 end as puntaje " +
+                    $" COALESCE(e.puntajealcanzado, 0) as puntaje" +
                     $" from dbo.planilla p join dbo.curso c on p.idcurso = c.id " +
                     $" join dbo.inscripcion i on c.id = i.idcurso " +
                     $" join dbo.alumno a on i.idalumno = a.id join dbo.unidad u on p.id = u.idplanilla " +
