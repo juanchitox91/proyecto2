@@ -160,6 +160,7 @@
     <Compile Include="Areas\Datos\Controllers\ArancelController.cs" />
     <Compile Include="Areas\Datos\Controllers\AlumnoController.cs" />
     <Compile Include="Areas\Educativo\Controllers\EvaluacionController.cs" />
+    <Compile Include="Areas\Educativo\Controllers\EntrevistaController.cs" />
     <Compile Include="Areas\Educativo\Controllers\SubUnidadController.cs" />
     <Compile Include="Areas\Educativo\Controllers\ItemPlanillaController.cs" />
     <Compile Include="Areas\Educativo\Controllers\UnidadController.cs" />
@@ -175,6 +176,7 @@
     </Compile>
     <Compile Include="Models\DataTableAjaxPostModel.cs" />
     <Compile Include="Models\Inscripcion.cs" />
+    <Compile Include="Models\Entrevista.cs" />
     <Compile Include="Models\SelectListItemWithParameter.cs" />
     <Compile Include="Models\Tutor.cs" />
     <Compile Include="Models\Arancel.cs" />
@@ -199,6 +201,7 @@
     <Compile Include="Repository\EvaluacionRepository.cs" />
     <Compile Include="Repository\GeneralRepository.cs" />
     <Compile Include="Repository\InscripcionRepository.cs" />
+    <Compile Include="Repository\EntrevistaRepository.cs" />
     <Compile Include="Repository\TutorRepository.cs" />
     <Compile Include="Repository\ArancelRepository.cs" />
     <Compile Include="Repository\PlanillaRepository.cs" />
@@ -3471,6 +3474,7 @@
     <Content Include="Views\Inscripcion\Eliminar.cshtml" />
     <Content Include="Views\Inscripcion\Index.cshtml" />
     <Content Include="Views\Inscripcion\VerDetalle.cshtml" />
+    <Content Include="Views\Entrevista\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
