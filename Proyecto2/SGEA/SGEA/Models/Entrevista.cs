@@ -11,6 +11,10 @@ namespace SGEA.Models
         public long Cedula { get; set; }
         [DisplayName("Alumno")]
         public long AlumnoID { get; set; }
+        [DisplayName("Curso")]
+        public long CursoID { get; set; }
+        [DisplayName("Inscripcion")]
+        public long InscripcionID { get; set; }
         [DisplayName("Alumno")]
         public string NombreAlumno { get; set; }
         [DisplayName("Motivo")]

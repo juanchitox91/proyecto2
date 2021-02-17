@@ -26,8 +26,8 @@ namespace SGEA.Repository
                 NpgsqlDataReader dataReader;
                 string sql, Output = string.Empty;
 
-                sql = $"select al.cedula, al.nombre || ' ' || al.apellido as nombre, e.motivo, e.fecha from dbo.entrevista e " +
-                    $" join dbo.inscripcion i on e.idinscripcion = i.id join dbo.curso cu on i.idcurso = cu.id " +
+                sql = $"select al.cedula, al.nombre || ' ' || al.apellido as nombre, e.motivo, e.fecha, e.id, cu.id, i.id, e.acuerdo, e.sugerencia  " +
+                    $" from dbo.entrevista e join dbo.inscripcion i on e.idinscripcion = i.id join dbo.curso cu on i.idcurso = cu.id " +
                     $" join dbo.alumno al on i.idalumno = al.id where cu.id = {idCurso}"; 
 
                 command = new NpgsqlCommand(sql, cnn);
@@ -37,15 +37,20 @@ namespace SGEA.Repository
                 {
                     entrevistas.Add(new Entrevista
                     {
+                        ID = Convert.ToInt64(dataReader.GetValue(4).ToString()),
                         Cedula = Convert.ToInt64(dataReader.GetValue(0).ToString()),
                         NombreAlumno = dataReader.GetValue(1).ToString(),
                         Motivo = dataReader.GetValue(2).ToString(),
-                        FechaEntrevistaString = dataReader.GetValue(3).ToString()
+                        FechaEntrevistaString = Convert.ToDateTime(dataReader.GetValue(3).ToString()).ToString("dd/MM/yyyy"),
+                        CursoID = Convert.ToInt64(dataReader.GetValue(5).ToString()),
+                        InscripcionID = Convert.ToInt64(dataReader.GetValue(6).ToString()),
+                        Acuerdo = dataReader.GetValue(7).ToString(),
+                        Sugerencia = dataReader.GetValue(8).ToString()
                     });
                 }
                 command.Dispose(); cnn.Close();
             }
-            catch (Exception)
+            catch (Exception ex)
             {
 
             }
@@ -53,7 +58,63 @@ namespace SGEA.Repository
             return entrevistas;
         }
 
-        public static string createPlanilla(Planilla planilla)
+        public static List<SelectListItem> getAlumnosSelect2(string idInstitucion, string idcurso, string id)
+        {
+            var items = new List<SelectListItem>();
+
+            try
+            {
+
+                NpgsqlConnection cnn;
+                cnn = new NpgsqlConnection(connectionString);
+                cnn.Open();
+
+                NpgsqlCommand command;
+                NpgsqlDataReader dataReader;
+                string sql, Output = string.Empty;
+
+                /*
+                 select i.id, a.apellido || ', ' || a.nombre as nombre  from dbo.inscripcion i
+                    join dbo.alumno a on i.idalumno = a.id
+                    join dbo.curso c on i.idcurso = c.id
+                    where c.id = 1;
+                 
+                 */
+                sql = $"select i.id, a.apellido || ', ' || a.nombre as nombre  from dbo.inscripcion i " +
+                $"join dbo.alumno a on i.idalumno = a.id " +
+                $"join dbo.curso c on i.idcurso = c.id where c.id = {idcurso}";
+
+                command = new NpgsqlCommand(sql, cnn);
+
+                dataReader = command.ExecuteReader();
+                items.Add(new SelectListItem
+                {
+                    Value = "",
+                    Text = "Seleccione un valor",
+                    Selected = id == "0" ? true : false
+                });
+
+                while (dataReader.Read())
+                {
+                    items.Add(new SelectListItem
+                    {
+                        Value = dataReader.GetValue(0).ToString(),
+                        Text = dataReader.GetValue(1).ToString(),
+                        Selected = dataReader.GetValue(0).ToString() == id ? true : false
+                    });
+                };
+                command.Dispose(); cnn.Close();
+
+            }
+            catch (Exception ex)
+            {
+
+            };
+            return items;
+        }
+
+
+        public static string createEntrevista(Entrevista entrevista)
         {
             string mensaje = string.Empty;
 
@@ -65,12 +126,11 @@ namespace SGEA.Repository
 
                 NpgsqlCommand command;
                 string sql, Output = string.Empty;
-                planilla.Estado = "A";
-                int anho = Convert.ToInt32(planilla.AnhoLectivo.Replace(".", string.Empty));
 
-                sql = $"insert into dbo.planilla(idcurso, idmateria, iddocente, estado, anho_lectivo, idinstitucion, titulo, descripcion)" +
-                      $"values ({planilla.CursoID}, {planilla.MateriaID}, {planilla.DocenteID}, '{planilla.Estado}', " +
-                      $"{anho}, {planilla.InstitucionID}, '{planilla.Titulo}', '{planilla.Descripcion}')";
+
+                sql = $"insert into dbo.entrevista(idinscripcion, motivo, acuerdo, sugerencia) " +
+                      $"values ({entrevista.InscripcionID}, '{entrevista.Motivo}', '{entrevista.Acuerdo}', '{entrevista.Sugerencia}')";
+                      
 
                 command = new NpgsqlCommand(sql, cnn);
                 command.ExecuteNonQuery();
@@ -80,7 +140,7 @@ namespace SGEA.Repository
 
             catch (Exception e)
             {
-                mensaje = "Ha ocurrido un error al insertar la planilla.";
+                mensaje = "Ha ocurrido un error al insertar la entrevista.";
             }
 
             return mensaje;
@@ -115,7 +175,7 @@ namespace SGEA.Repository
             return mensaje;
         }
 
-        public static string updatePlanilla(Planilla planilla)
+        public static string updateEntrevista(Entrevista entrevista)
         {
             string mensaje = string.Empty;
 
@@ -127,12 +187,9 @@ namespace SGEA.Repository
 
                 NpgsqlCommand command;
                 string sql, Output = string.Empty;
-                int anho = Convert.ToInt32(planilla.AnhoLectivo.Replace(".", string.Empty));
-                planilla.Estado = planilla.Estado != "I" || planilla.Estado != "A" ? "A" : planilla.Estado;
 
-                sql = $"update dbo.planilla set idcurso = {planilla.CursoID}, idmateria = {planilla.MateriaID}, iddocente = {planilla.DocenteID}, " +
-                    $"estado = '{planilla.Estado}', anho_lectivo = {anho}, idinstitucion = {planilla.InstitucionID}, " +
-                    $"titulo = '{planilla.Titulo}', descripcion = '{planilla.Descripcion}' where id = {planilla.ID}";
+                sql = $"update dbo.entrevista set motivo = '{entrevista.Motivo}', acuerdo = '{entrevista.Acuerdo}', sugerencia = '{entrevista.Sugerencia}' " +
+                    $" where id = {entrevista.ID}";
 
                 command = new NpgsqlCommand(sql, cnn);
                 command.ExecuteNonQuery();
@@ -142,7 +199,7 @@ namespace SGEA.Repository
 
             catch (Exception e)
             {
-                mensaje = "Ha ocurrido un error al editar la planilla.";
+                mensaje = "Ha ocurrido un error al editar la entrevista.";
             }
 
             return mensaje;
