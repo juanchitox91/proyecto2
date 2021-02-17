@@ -3475,6 +3475,8 @@
     <Content Include="Views\Inscripcion\Index.cshtml" />
     <Content Include="Views\Inscripcion\VerDetalle.cshtml" />
     <Content Include="Views\Entrevista\Index.cshtml" />
+    <Content Include="Views\Entrevista\Crear.cshtml" />
+    <Content Include="Views\Entrevista\Editar.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
