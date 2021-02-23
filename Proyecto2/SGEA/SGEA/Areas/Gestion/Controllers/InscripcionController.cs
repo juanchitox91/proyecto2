@@ -61,7 +61,6 @@ namespace SGEA.Areas.Gestion.Controllers
             }
         }
 
-
         [HttpGet]
         [Permiso(permiso = "editarInscripcion")]
         public ActionResult Editar(string id)
@@ -101,7 +100,6 @@ namespace SGEA.Areas.Gestion.Controllers
 
             return View(inscripcion);
         }
-
 
         [HttpGet]
         [Permiso(permiso = "eliminarInscripcion")]
@@ -172,7 +170,6 @@ namespace SGEA.Areas.Gestion.Controllers
             return Json("OK");
         }
 
-
         [HttpGet]
         [Permiso(permiso = "ConfirmarInscripcion")]
         public ActionResult Confirmar(string id)
@@ -226,6 +223,47 @@ namespace SGEA.Areas.Gestion.Controllers
 
             return View(inscripcion1);
         }
+
+
+        #region Abonar Aranceles
+
+        [HttpGet]
+        [Permiso(permiso = "verAbonarInscripciones")]
+        public ActionResult Abonar()
+        {
+            string idinstitucion = HttpContext.Session["institucion"].ToString();
+            List<Inscripcion> inscripciones = InscripcionRepository.getInscripciones(idinstitucion).Where(x => x.Estado == "CONFIRMADO").ToList();
+            ViewBag.Inscripciones = inscripciones;
+            Session["inscripciones"] = inscripciones;
+            return View();
+        }
+
+        [HttpGet]
+        [Permiso(permiso = "AbonarInscripcion")]
+        public ActionResult AbonarInscripcion(string id)
+        {
+            string idinstitucion = HttpContext.Session["institucion"].ToString();
+            List<Inscripcion> lista = (List<Inscripcion>)Session["inscripciones"];
+            Inscripcion inscripcion = lista.Where(x => x.ID == Convert.ToInt64(id)).SingleOrDefault();
+            inscripcion.listaPagares = InscripcionRepository.getPagares(inscripcion.ID.ToString());
+
+            CargarDatosListas(inscripcion);
+
+
+            return View(inscripcion);
+        }
+
+        [HttpPost]
+        [Permiso(permiso = "ConfirmarPago")]
+        public ActionResult ConfirmarPago(List<string> IDs)
+        {
+
+
+
+
+            return View();
+        }
+        #endregion
 
         private void CargarDatosListas(Inscripcion inscripcion)
         {

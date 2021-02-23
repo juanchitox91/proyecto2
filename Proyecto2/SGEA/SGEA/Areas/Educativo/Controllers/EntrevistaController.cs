@@ -120,41 +120,20 @@ namespace SGEA.Areas.Educativo.Controllers
             return RedirectToAction("Index");
         }
 
-        //[Permiso(permiso = "verDetallePlanilla")]
-        //public ActionResult VerDetalle(string id)
-        //{
-        //    var longid = Convert.ToInt64(id);
-        //    List<Planilla> planillas = (List<Planilla>)Session["planillas"];
-        //    Planilla planilla = planillas.Where(x => x.ID == longid).SingleOrDefault();
-        //    return View(planilla);
-        //}
+        [Permiso(permiso = "verDetalleEntrevista")]
+        public ActionResult VerDetalle(string id)
+        {
+            var longid = Convert.ToInt64(id);
+            List<Entrevista> entrevistas = (List<Entrevista>)Session["entrevistas"];
+            Entrevista entrevista = entrevistas.Where(x => x.ID == longid).SingleOrDefault();
 
-        //[Permiso(permiso = "eliminarPlanilla")]
-        //public ActionResult Eliminar(string id)
-        //{
-        //    var longid = Convert.ToInt64(id);
-        //    List<Planilla> planillas = (List<Planilla>)Session["planillas"];
-        //    Planilla planilla = planillas.Where(x => x.ID == longid).SingleOrDefault();
-        //    return View(planilla);
-        //}
+            //ViewBag.materias = ObtenerMateriasSelect(planilla.MateriaID.ToString());
+            //ViewBag.docentes = ObtenerDocentesSelect(planilla.DocenteID.ToString());
+            ViewBag.cursos = ObtenerCursosSelect(entrevista.CursoID.ToString());
+            ViewBag.Alumnos = EntrevistaRepository.getAlumnosSelect2(HttpContext.Session["institucion"].ToString(), entrevista.CursoID.ToString(), entrevista.InscripcionID.ToString());
 
-        //[HttpPost]
-        //[Permiso(permiso = "eliminarPlanilla")]
-        //public ActionResult Eliminar(Planilla planilla)
-        //{
-        //    var mensaje = PlanillaRepository.deletePlanilla(planilla.ID);
-        //    if (mensaje == "OK")
-        //    {
-        //        ViewBag.mensaje = "La" +
-        //            " planilla se eliminó exitosamente.";
-        //    }
-        //    else
-        //    {
-        //        ViewBag.error = mensaje;
-        //    }
-
-        //    return RedirectToAction("Index");
-        //}
+            return View(entrevista);
+        }
 
         public List<SelectListItem> ObtenerCursosSelect(string id)
 
@@ -162,19 +141,6 @@ namespace SGEA.Areas.Educativo.Controllers
             var result = CursoRepository.getCursosSelect2(HttpContext.Session["institucion"].ToString(), id);
             return result;
         }
-
-        //public List<SelectListItem> ObtenerMateriasSelect(string id)
-
-        //{
-        //    var result = MateriaRepository.getMateriaSelect2(HttpContext.Session["institucion"].ToString(), id);
-        //    return result;
-        //}
-
-        //public List<SelectListItem> ObtenerDocentesSelect(string id)
-
-        //{
-        //    var result = DocenteRepository.getDocentesSelect2(HttpContext.Session["institucion"].ToString(), id);
-        //    return result;
-        //}
+      
     }
 }

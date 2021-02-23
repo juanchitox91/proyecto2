@@ -28,7 +28,7 @@ namespace SGEA.Repository
                 string sql, Output = string.Empty;
 
                 sql = $"select i.id, a.id, a.nombre || ' ' || a.apellido as nombrealumno, c.id, c.nombrecurso, ar.id, ar.nombre_arancel, " +
-                    $"i.anho, i.mesdesde, i.meshasta, i.fecha_inscripcion, i.estado, i.cantidad_cuotas, i.idinstitucion, i.nrocomprobante " +
+                    $"i.anho, i.mesdesde, i.meshasta, i.fecha_inscripcion, i.estado, i.cantidad_cuotas, i.idinstitucion, i.nrocomprobante, a.cedula " +
                     $"FROM dbo.inscripcion i join dbo.alumno a on i.idalumno= a.id " +
                     $"join dbo.curso c on i.idcurso = c.id join dbo.arancel ar on i.idarancel = ar.id " +
                     $"where i.idinstitucion = {idInstitucion}";
@@ -53,7 +53,8 @@ namespace SGEA.Repository
                         Estado = (dataReader.GetValue(11).ToString() == "A" ? "ACTIVO" : (dataReader.GetValue(11).ToString() == "C" ? "CONFIRMADO" : "INACTIVO")),
                         CantidadCuotas = Convert.ToInt16(dataReader.GetValue(12).ToString()),
                         InstitucionID = Convert.ToInt64(dataReader.GetValue(13).ToString()),
-                        NroComprobante = dataReader.GetValue(14).ToString()
+                        NroComprobante = dataReader.GetValue(14).ToString(),
+                        Cedula = Convert.ToInt64(dataReader.GetValue(15).ToString())
                     });
                 }
                 command.Dispose(); cnn.Close();
@@ -162,6 +163,50 @@ namespace SGEA.Repository
             }
 
             return pagares;
+        }
+
+        public static PagareViewModel getPagareById(string idPagare)
+        {
+            var pagare = new PagareViewModel();
+
+            try
+            {
+                NpgsqlConnection cnn;
+                cnn = new NpgsqlConnection(connectionString);
+                cnn.Open();
+
+                NpgsqlCommand command;
+                NpgsqlDataReader dataReader;
+                string sql, Output = string.Empty;
+
+                sql = $"select a.id, a.descripcion, a.tipopagare, a.estado, a.monto, a.fechapago, a.fechavencimiento " +
+                    $"FROM dbo.pagare a " +
+                    $"where a.id = {idPagare}";
+
+                command = new NpgsqlCommand(sql, cnn);
+                dataReader = command.ExecuteReader();
+
+                while (dataReader.Read())
+                {
+                    pagare = new PagareViewModel
+                    {
+                        ID = Convert.ToInt64(dataReader.GetValue(0).ToString()),
+                        Descripcion = dataReader.GetValue(1).ToString(),
+                        TipoPagare = dataReader.GetValue(2).ToString(),
+                        Estado = dataReader.GetValue(3).ToString(),
+                        Monto = Convert.ToDecimal(dataReader.GetValue(4)).ToString("#,###").Replace(",", "."),
+                        FechaPagoString = string.IsNullOrEmpty(dataReader.GetValue(5).ToString()) ? string.Empty : DateTime.Parse(dataReader.GetValue(5).ToString()).ToString("dd/MM/yyyy"),
+                        FechaVencimientoString = string.IsNullOrEmpty(dataReader.GetValue(6).ToString()) ? string.Empty : DateTime.Parse(dataReader.GetValue(6).ToString()).ToString("dd/MM/yyyy")
+                    };
+                }
+                command.Dispose(); cnn.Close();
+            }
+            catch (Exception ex)
+            {
+
+            }
+
+            return pagare;
         }
 
         public static string createInscripcion(Inscripcion inscripcion)

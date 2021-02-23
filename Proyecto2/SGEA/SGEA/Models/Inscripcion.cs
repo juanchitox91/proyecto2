@@ -12,6 +12,8 @@ namespace SGEA.Models
         public string NombreAlumno { get; set; }
         [DisplayName("Alumno")]
         public long AlumnoID { get; set; }
+        [DisplayName("Cedula")]
+        public long Cedula { get; set; }
         [DisplayName("Curso")]
         public string NombreCurso { get; set; }
         [DisplayName("Curso")]
