@@ -175,6 +175,7 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Models\DataTableAjaxPostModel.cs" />
+    <Compile Include="Models\Factura.cs" />
     <Compile Include="Models\Inscripcion.cs" />
     <Compile Include="Models\Entrevista.cs" />
     <Compile Include="Models\SelectListItemWithParameter.cs" />
@@ -3477,6 +3478,9 @@
     <Content Include="Views\Entrevista\Index.cshtml" />
     <Content Include="Views\Entrevista\Crear.cshtml" />
     <Content Include="Views\Entrevista\Editar.cshtml" />
+    <Content Include="Views\Entrevista\VerDetalle.cshtml" />
+    <Content Include="Views\Inscripcion\Abonar.cshtml" />
+    <Content Include="Views\Inscripcion\AbonarInscripcion.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
