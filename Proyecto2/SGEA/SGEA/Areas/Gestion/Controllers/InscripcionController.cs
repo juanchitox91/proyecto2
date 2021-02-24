@@ -228,7 +228,7 @@ namespace SGEA.Areas.Gestion.Controllers
         #region Abonar Aranceles
 
         [HttpGet]
-        [Permiso(permiso = "verAbonarInscripciones")]
+        [Permiso(permiso = "AbonarInscripcion")]
         public ActionResult Abonar()
         {
             string idinstitucion = HttpContext.Session["institucion"].ToString();
@@ -254,15 +254,53 @@ namespace SGEA.Areas.Gestion.Controllers
         }
 
         [HttpPost]
-        [Permiso(permiso = "ConfirmarPago")]
-        public ActionResult ConfirmarPago(List<string> IDs)
+        [Permiso(permiso = "AbonarInscripcion")]
+        public JsonResult ConfirmarPago(List<string> IDs)
         {
+            Factura factura = new Factura();
+            factura.FacturaDetalle = new List<FacturaDetalle>();
 
+            try
+            {
+                foreach (string id in IDs)
+                {
+                    PagareViewModel pagare = InscripcionRepository.getPagareById(id);
+                    factura.FacturaDetalle.Add(new FacturaDetalle
+                    {
+                        PagareID = Convert.ToInt64(id),
+                        Descripcion = pagare.Descripcion,
+                        Monto = pagare.Monto
+                    });
+                }
 
+                Session["FacturaConfirmar"] = factura;
+            }
+            catch (Exception ex)
+            {
+                return Json("ERROR");
+            }
 
+            return Json("OK");
+        }
+
+        [HttpGet]
+        [Permiso(permiso = "AbonarInscripcion")]
+        public ActionResult CargarFactura()
+        {
+            Factura factura = new Factura();
+
+            try
+            {
+                factura = (Factura)Session["FacturaConfirmar"];
+            }
+            catch (Exception ex)
+            {
+                return RedirectToAction("Abonar");
+            }
 
             return View();
         }
+
         #endregion
 
         private void CargarDatosListas(Inscripcion inscripcion)

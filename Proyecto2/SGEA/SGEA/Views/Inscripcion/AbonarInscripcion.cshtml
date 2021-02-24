@@ -103,7 +103,7 @@
                                             <td>
                                                 @if (u.Estado == "PE")
                                                 {
-                                                    <button class="btn btn-primary" onclick="cobrarArancel(this, @u.ID); return false;"><span title="Abonar"> Seleccionar </span></button>
+                                                    <button class="btn btn-primary" onclick="cobrarArancel(this, @u.ID); "><span title="Abonar"> Seleccionar </span></button>
                                                 }
                                                 else
                                                 {
@@ -172,14 +172,13 @@
             },
             success: function (msg) {
                 if (msg == "OK") {
-                    fecha.disabled = true;
-                    alert("La fecha se ha guardado correctamente.");
+                    window.location.href = "@Url.Action("CargarFactura", "Inscripcion")";
                 } else {
-                    alert(msg);
+                    window.location.href = "@Url.Action("Abonar", "Inscripcion")";
                 }
             },
             error: function () {
-                alert("Se ha producido un error, favor intente nuevamente.");
+                window.location.href = "@Url.Action("Abonar", "Inscripcion")";
             }
         });           
     }
