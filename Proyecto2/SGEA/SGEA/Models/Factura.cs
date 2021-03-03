@@ -24,6 +24,8 @@ namespace SGEA.Models
         public long TipoPagoID { get; set; }
         [DisplayName("Tipo Pago")]
         public string TipoPagoDesc { get; set; }
+        [DisplayName("Monto Inscripción")]
+        public string MontoTotal { get; set; }
 
         public List<FacturaDetalle> FacturaDetalle = new List<FacturaDetalle>();
     }

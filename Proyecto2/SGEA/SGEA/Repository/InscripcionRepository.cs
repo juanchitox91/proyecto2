@@ -438,5 +438,95 @@ namespace SGEA.Repository
             command.Dispose(); cnn.Close();
 
         }
+
+        //selectList
+        public static List<SelectListItem> getTiposPagoSelect2(string idInstitucion, string id)
+        {
+            var tiposPago = new List<SelectListItem>();
+
+            try
+            {
+
+                NpgsqlConnection cnn;
+                cnn = new NpgsqlConnection(connectionString);
+                cnn.Open();
+
+                NpgsqlCommand command;
+                NpgsqlDataReader dataReader;
+                string sql, Output = string.Empty;
+
+                sql = $"select  r.id, r.descripcion FROM dbo.tipopago r where r.idinstitucion = {idInstitucion}";
+                command = new NpgsqlCommand(sql, cnn);
+                dataReader = command.ExecuteReader();
+
+                tiposPago.Add(new SelectListItem
+                {
+                    Value = "",
+                    Text = "Seleccione un valor",
+                    Selected = id == "0" ? true : false
+                });
+
+                while (dataReader.Read())
+                {
+                    tiposPago.Add(new SelectListItem
+                    {
+                        Value = dataReader.GetValue(0).ToString(),
+                        Text = dataReader.GetValue(1).ToString(),
+                        Selected = dataReader.GetValue(0).ToString() == id ? true : false
+                    });
+                };
+                command.Dispose(); cnn.Close(); ;
+            }
+            catch (Exception)
+            {
+
+            };
+            return tiposPago;
+        }
+
+        public static List<SelectListItem> getTiposDctoSelect2(string idInstitucion, string id)
+        {
+            var tiposPago = new List<SelectListItem>();
+
+            try
+            {
+
+                NpgsqlConnection cnn;
+                cnn = new NpgsqlConnection(connectionString);
+                cnn.Open();
+
+                NpgsqlCommand command;
+                NpgsqlDataReader dataReader;
+                string sql, Output = string.Empty;
+
+                sql = $"select  r.id, r.nombre_documento FROM dbo.tipo_documento r where r.idinstitucion = {idInstitucion}";
+                command = new NpgsqlCommand(sql, cnn);
+                dataReader = command.ExecuteReader();
+
+                tiposPago.Add(new SelectListItem
+                {
+                    Value = "",
+                    Text = "Seleccione un valor",
+                    Selected = id == "0" ? true : false
+                });
+
+                while (dataReader.Read())
+                {
+                    tiposPago.Add(new SelectListItem
+                    {
+                        Value = dataReader.GetValue(0).ToString(),
+                        Text = dataReader.GetValue(1).ToString(),
+                        Selected = dataReader.GetValue(0).ToString() == id ? true : false
+                    });
+                };
+                command.Dispose(); cnn.Close(); ;
+            }
+            catch (Exception)
+            {
+
+            };
+            return tiposPago;
+        }
+
     }
 }

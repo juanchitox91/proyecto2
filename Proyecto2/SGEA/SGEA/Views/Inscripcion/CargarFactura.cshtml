@@ -1,0 +1,114 @@
+﻿@model SGEA.Models.Factura
+
+@{
+    ViewBag.Title = "Cargar Factura";
+}
+
+
+<div class="page-title">
+    <div class="title_left" style="margin-left:10px;">
+        <h1>Cargar Factura</h1>
+    </div>
+    <div class="title_right">
+    </div>
+</div>
+
+
+<div class="col-md-12 col-sm-12 col-xs-12">
+    <div class="x_panel">
+        <div class="x_content">
+            <br>
+
+            <div id="form_error" class="alert" hidden>
+                <span class="closebtn">&times;</span>
+                <strong>Error!</strong> Ha habido un error al generar la factura.
+            </div>
+
+            <div id="form_exit" class="alert success" style="text-align:center" hidden>
+                <span class="closebtn">&times;</span>
+                <strong>Éxito!</strong> La factura se genero correctamente.
+            </div>
+
+            @using (Html.BeginForm("CargarFactura", "Inscripcion", FormMethod.Post, new { @class = "form-horizontal form-label-left", @data_parsley_validate = "" }))
+            {
+                @Html.AntiForgeryToken()
+
+                <div class="form-group">
+                    @Html.LabelFor(x => x.TipoDctoID, new { @class = "control-label col-md-3 col-sm-3 col-xs-12" })
+                    <div class="col-md-6 col-sm-6 col-xs-12">
+                        @Html.DropDownListFor(n => n.TipoDctoID, (List<SelectListItem>)ViewBag.tiposDcto, new { @id = "txtTipoDcto", @required = "required", @class = "form-control col-md-7 col-xs-12" })
+                    </div>
+                </div>
+                <div class="form-group">
+                    @Html.LabelFor(x => x.NroDocumento, new { @class = "control-label col-md-3 col-sm-3 col-xs-12" })
+                    <div class="col-md-6 col-sm-6 col-xs-12">
+                        @Html.TextBoxFor(x => x.NroDocumento, new { @class = "form-control col-md-7 col-xs-12", @required = "required", @type = "text" })
+                    </div>
+                </div>
+                <div class="form-group">
+                    @Html.LabelFor(x => x.RazonSocial, new { @class = "control-label col-md-3 col-sm-3 col-xs-12" })
+                    <div class="col-md-6 col-sm-6 col-xs-12">
+                        @Html.TextBoxFor(x => x.RazonSocial, new { @class = "form-control col-md-7 col-xs-12", @required = "required", @type = "text" })
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    @Html.LabelFor(x => x.TipoPagoID, new { @class = "control-label col-md-3 col-sm-3 col-xs-12" })
+                    <div class="col-md-6 col-sm-6 col-xs-12">
+                        @Html.DropDownListFor(n => n.TipoPagoID, (List<SelectListItem>)ViewBag.tiposPago, new { @id = "txtIDCurso", @required = "required", @class = "form-control col-md-7 col-xs-12" })
+                    </div>
+                </div>
+
+                <div class="title_left" style="margin-left:10px;">
+                    <h3>Detalle de factura</h3>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-12 col-md-10">
+                        <table id="example" class="table table-striped table-bordered dataTable no-footer" style="width:100%">
+                            <thead>
+                                <tr>
+                                    <th>descripcion</th>
+                                    <th>Monto</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @{
+                                    foreach (var u in Model.FacturaDetalle)
+                                    {
+                                        <tr>
+                                            <td>@u.Descripcion</td>
+                                            <td>@u.Monto</td>
+                                        </tr>
+                                    };
+                                }
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <th>descripcion</th>
+                                    <th>Monto</th>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="ln_solid"></div>
+                <div class="form-group">
+                    <div class="col-md-6 col-sm-6 col-xs-12 col-md-offset-3">
+                        <a href="@Url.Action("Abonar","Inscripcion")" class="btn btn-primary" type="button"> < Volver</a>
+                        <a href="@Url.Action("CargarFactura","Inscripcion")" class="btn btn-primary">Limpiar</a>
+                        <button type="submit" class="btn btn-success">Confirmar</button>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@Scripts.Render("~/bundles/jquery")
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('.numberformat').mask("0.###.###.###.###", { reverse: true });
+    });
+</script>

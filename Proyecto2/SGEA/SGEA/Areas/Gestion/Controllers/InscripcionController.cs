@@ -292,13 +292,18 @@ namespace SGEA.Areas.Gestion.Controllers
             try
             {
                 factura = (Factura)Session["FacturaConfirmar"];
+
+                string idinstitucion = HttpContext.Session["institucion"].ToString();
+                ViewBag.tiposPago = InscripcionRepository.getTiposPagoSelect2(idinstitucion, "0");
+                ViewBag.tiposDcto = InscripcionRepository.getTiposDctoSelect2(idinstitucion, "0");
+
             }
             catch (Exception ex)
             {
                 return RedirectToAction("Abonar");
             }
 
-            return View();
+            return View(factura);
         }
 
         #endregion
