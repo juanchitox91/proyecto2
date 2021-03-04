@@ -151,6 +151,7 @@ namespace SGEA.Repository
                         TipoPagare = dataReader.GetValue(2).ToString(),
                         Estado = dataReader.GetValue(3).ToString(),
                         Monto = Convert.ToDecimal(dataReader.GetValue(4)).ToString("#,###").Replace(",", "."), 
+                        MontoDecimal = Convert.ToDecimal(dataReader.GetValue(4)),
                         FechaPagoString = string.IsNullOrEmpty(dataReader.GetValue(5).ToString()) ? string.Empty : DateTime.Parse(dataReader.GetValue(5).ToString()).ToString("dd/MM/yyyy"),
                         FechaVencimientoString = string.IsNullOrEmpty(dataReader.GetValue(6).ToString()) ? string.Empty : DateTime.Parse(dataReader.GetValue(6).ToString()).ToString("dd/MM/yyyy")
                     });
@@ -195,6 +196,7 @@ namespace SGEA.Repository
                         TipoPagare = dataReader.GetValue(2).ToString(),
                         Estado = dataReader.GetValue(3).ToString(),
                         Monto = Convert.ToDecimal(dataReader.GetValue(4)).ToString("#,###").Replace(",", "."),
+                        MontoDecimal = Convert.ToDecimal(dataReader.GetValue(4)),
                         FechaPagoString = string.IsNullOrEmpty(dataReader.GetValue(5).ToString()) ? string.Empty : DateTime.Parse(dataReader.GetValue(5).ToString()).ToString("dd/MM/yyyy"),
                         FechaVencimientoString = string.IsNullOrEmpty(dataReader.GetValue(6).ToString()) ? string.Empty : DateTime.Parse(dataReader.GetValue(6).ToString()).ToString("dd/MM/yyyy")
                     };
@@ -526,6 +528,54 @@ namespace SGEA.Repository
 
             };
             return tiposPago;
+        }
+
+        //cargar Factura
+        public static string cargarFactura(Factura factura)
+        {
+            string mensaje = "Ha ocurrido un error, favor intentelo nuevamente mas tarde.";
+
+            try
+            {
+                NpgsqlConnection cnn;
+                NpgsqlDataReader dataReader;
+                cnn = new NpgsqlConnection(connectionString);
+                cnn.Open();
+
+                NpgsqlCommand command;
+                string sql, Output = string.Empty;
+
+                cnn = new NpgsqlConnection(connectionString);
+                cnn.Open();
+
+                //primeramente insertamos la cabecera de la factura
+                sql = $"insert into dbo.factura_cabecera(razon_social, nro_factura, fecha, nro_documento, id_tipodocumento, id_tipopago, monto_total)" +
+                      $"values ('{factura.RazonSocial}', '{factura.NroFactura}', TO_DATE('{factura.FechaPagoFactura}', 'DD/MM/YYYY'), {factura.NroDocumento}, {factura.TipoDctoID}, " + 
+                      $" '{factura.TipoPagoID}', {factura.MontoTotalDecimal} )" ;
+
+                command = new NpgsqlCommand(sql, cnn);
+                command.ExecuteNonQuery();
+                command.Dispose(); cnn.Close();
+
+                //luego insertamos los detalles de la factura
+                //debemos recuperar el id de la cabecera para cargar el detalle
+                foreach (var detalle in factura.FacturaDetalle)
+                {
+                    cnn = new NpgsqlConnection(connectionString);
+                    cnn.Open();
+
+                    sql = $"insert into dbo.factura_cabecera(razon_social, nro_factura, fecha, nro_documento, id_tipodocumento, id_tipopago, monto_total)" +
+                     $"values ('{factura.RazonSocial}', '{factura.NroFactura}', TO_DATE('{factura.FechaPagoFactura}', 'DD/MM/YYYY'), {factura.NroDocumento}, {factura.TipoDctoID}, " +
+                     $" '{factura.TipoPagoID}', {factura.MontoTotalDecimal} )";
+                }
+                
+            }
+            catch (Exception e)
+            {
+                //mensaje = "Ha ocurrido un error al insertar la inscripcion.";
+            }
+
+            return mensaje;
         }
 
     }

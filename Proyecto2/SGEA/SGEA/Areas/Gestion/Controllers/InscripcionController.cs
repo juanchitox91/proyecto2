@@ -269,9 +269,13 @@ namespace SGEA.Areas.Gestion.Controllers
                     {
                         PagareID = Convert.ToInt64(id),
                         Descripcion = pagare.Descripcion,
-                        Monto = pagare.Monto
+                        Monto = pagare.Monto,
+                        MontoDecimal = pagare.MontoDecimal
                     });
                 }
+
+                factura.MontoTotalDecimal = factura.FacturaDetalle.Sum(x => x.MontoDecimal);
+                factura.MontoTotal = factura.MontoTotalDecimal.ToString("#,###").Replace(",", ".");
 
                 Session["FacturaConfirmar"] = factura;
             }
@@ -296,6 +300,32 @@ namespace SGEA.Areas.Gestion.Controllers
                 string idinstitucion = HttpContext.Session["institucion"].ToString();
                 ViewBag.tiposPago = InscripcionRepository.getTiposPagoSelect2(idinstitucion, "0");
                 ViewBag.tiposDcto = InscripcionRepository.getTiposDctoSelect2(idinstitucion, "0");
+
+            }
+            catch (Exception ex)
+            {
+                return RedirectToAction("Abonar");
+            }
+
+            return View(factura);
+        }
+
+        [HttpPost]
+        [Permiso(permiso = "AbonarInscripcion")]
+        public ActionResult CargarFactura(Factura facturaModel)
+        {
+            Factura factura = new Factura();
+
+            try
+            {
+                factura = (Factura)Session["FacturaConfirmar"];
+
+                factura.TipoDctoID = facturaModel.TipoDctoID;
+                factura.TipoPagoID = facturaModel.TipoPagoID;
+                factura.RazonSocial = facturaModel.RazonSocial;
+                factura.NroDocumento = facturaModel.NroDocumento;
+                factura.FechaPagoFactura = DateTime.Now.ToShortDateString();
+                factura.NroFactura = facturaModel.NroFactura;
 
             }
             catch (Exception ex)

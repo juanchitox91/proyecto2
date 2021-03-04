@@ -24,8 +24,10 @@ namespace SGEA.Models
         public long TipoPagoID { get; set; }
         [DisplayName("Tipo Pago")]
         public string TipoPagoDesc { get; set; }
-        [DisplayName("Monto Inscripción")]
+        [DisplayName("Monto Factura")]
         public string MontoTotal { get; set; }
+        [DisplayName("Monto Factura")]
+        public decimal MontoTotalDecimal { get; set; }
 
         public List<FacturaDetalle> FacturaDetalle = new List<FacturaDetalle>();
     }
@@ -39,7 +41,9 @@ namespace SGEA.Models
         [DisplayName("Pagare")]
         public long PagareID { get; set; }
         [DisplayName("Monto")]
-        public string Monto { get; set; } 
+        public string Monto { get; set; }
+        [DisplayName("Monto")]
+        public decimal MontoDecimal { get; set; }
         [DisplayName("Descripcion")]
         public string Descripcion { get; set; } 
     }

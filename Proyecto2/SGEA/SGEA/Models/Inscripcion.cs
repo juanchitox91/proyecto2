@@ -56,7 +56,9 @@ namespace SGEA.Models
         [DisplayName("Estado")]
         public string Estado { get; set; } 
         [DisplayName("Monto")]
-        public string Monto { get; set; } 
+        public string Monto { get; set; }
+        [DisplayName("Monto")]
+        public decimal MontoDecimal { get; set; }
         [DisplayName("FechaPago")]
         public string FechaPagoString { get; set; } 
         [DisplayName("Descripcion")]
