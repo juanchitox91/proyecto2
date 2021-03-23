@@ -550,12 +550,29 @@ namespace SGEA.Repository
 
                 //primeramente insertamos la cabecera de la factura
                 sql = $"insert into dbo.factura_cabecera(razon_social, nro_factura, fecha, nro_documento, id_tipodocumento, id_tipopago, monto_total)" +
-                      $"values ('{factura.RazonSocial}', '{factura.NroFactura}', TO_DATE('{factura.FechaPagoFactura}', 'DD/MM/YYYY'), {factura.NroDocumento}, {factura.TipoDctoID}, " + 
+                      $"values ('{factura.RazonSocial}', '{factura.NroFactura}', TO_DATE('{factura.FechaPagoFactura}', 'DD/MM/YYYY'), '{factura.NroDocumento}', {factura.TipoDctoID}, " + 
                       $" '{factura.TipoPagoID}', {factura.MontoTotalDecimal} )" ;
 
                 command = new NpgsqlCommand(sql, cnn);
                 command.ExecuteNonQuery();
                 command.Dispose(); cnn.Close();
+
+                //aqui recuperamos el id de la cabecera para insertar los detalles
+                long id = 0;
+                cnn.Open();
+
+                sql = $"select id from dbo.factura_cabecera where nro_factura = '{factura.NroFactura}' " +
+                      $" and nro_documento = '{factura.NroDocumento}' and monto_total = {factura.MontoTotalDecimal} and fecha = TO_DATE('{factura.FechaPagoFactura}', 'DD/MM/YYYY')";
+
+                command = new NpgsqlCommand(sql, cnn);
+                dataReader = command.ExecuteReader();
+
+                while (dataReader.Read())
+                {
+                    id = Convert.ToInt64(dataReader.GetValue(0).ToString());
+                       
+                };
+                command.Dispose(); cnn.Close(); ;
 
                 //luego insertamos los detalles de la factura
                 //debemos recuperar el id de la cabecera para cargar el detalle
@@ -564,11 +581,26 @@ namespace SGEA.Repository
                     cnn = new NpgsqlConnection(connectionString);
                     cnn.Open();
 
-                    sql = $"insert into dbo.factura_cabecera(razon_social, nro_factura, fecha, nro_documento, id_tipodocumento, id_tipopago, monto_total)" +
-                     $"values ('{factura.RazonSocial}', '{factura.NroFactura}', TO_DATE('{factura.FechaPagoFactura}', 'DD/MM/YYYY'), {factura.NroDocumento}, {factura.TipoDctoID}, " +
-                     $" '{factura.TipoPagoID}', {factura.MontoTotalDecimal} )";
+                    sql = $"insert into dbo.facturadetalle(id_facturacabecera, id_pagare, monto, descripcion) " +
+                        $"values({id}, {detalle.PagareID}, {detalle.MontoDecimal}, '{detalle.Descripcion}')";
+
+                    command = new NpgsqlCommand(sql, cnn);
+                    command.ExecuteNonQuery();
+                    command.Dispose(); cnn.Close();
+
+                    //hacemos el update de los pagares
+                    cnn = new NpgsqlConnection(connectionString);
+                    cnn.Open();
+
+                    sql = $"update dbo.pagare set estado = 'PA' where id = {detalle.PagareID}";
+
+                    command = new NpgsqlCommand(sql, cnn);
+                    command.ExecuteNonQuery();
+                    command.Dispose(); cnn.Close();
+
                 }
-                
+
+                mensaje = "OK";
             }
             catch (Exception e)
             {

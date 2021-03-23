@@ -5,6 +5,8 @@ using System.Collections.Generic;
 using SGEA.Models;
 using System.Linq;
 using System;
+using SGEA.Reportes;
+using System.IO;
 
 namespace SGEA.Areas.Educativo.Controllers
 {
@@ -19,6 +21,29 @@ namespace SGEA.Areas.Educativo.Controllers
             return View();
         }
 
+        [Permiso(permiso = "verEntrevistas")]
+        public ActionResult Reporte()
+        {
+            ViewBag.cursos = ObtenerCursosSelect("0");
+            
+            return View();
+        }
+
+        [Permiso(permiso = "verEntrevistas")]
+        public ActionResult ReportePDF(string idAlumno)
+        {
+            List<Entrevista> lista = EntrevistaRepository.getEntrevistasReporte(idAlumno);
+
+            EntrevistasReport rpt = new EntrevistasReport();
+            rpt.Load();
+            rpt.SetDataSource(lista);
+            Stream s = rpt.ExportToStream(CrystalDecisions.Shared.ExportFormatType.PortableDocFormat);
+
+
+            return File(s, "application/pdf");
+        }
+
+
         [HttpPost]
         public JsonResult PoblarGrilla(DataTableAjaxPostModel model)
         {
@@ -31,6 +56,28 @@ namespace SGEA.Areas.Educativo.Controllers
             catch { }
 
             Session["entrevistas"] = lista;
+            return Json(new
+            {
+                // this is what datatables wants sending back
+                draw = model.draw,
+                recordsTotal = 100,
+                recordsFiltered = 100,
+                data = lista
+            });
+        }
+
+        [HttpPost]
+        public JsonResult PoblarGrillaEntrevista(DataTableAjaxPostModel model)
+        {
+            List<Alumno> lista = new List<Alumno>();
+
+            try
+            {
+                lista = EntrevistaRepository.getAlumnosReporteEntrevistas(model.param1);
+            }
+            catch { }
+
+            Session["alumnosEntrevista"] = lista;
             return Json(new
             {
                 // this is what datatables wants sending back

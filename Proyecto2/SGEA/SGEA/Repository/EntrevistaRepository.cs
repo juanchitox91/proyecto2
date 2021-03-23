@@ -58,6 +58,53 @@ namespace SGEA.Repository
             return entrevistas;
         }
 
+        public static List<Entrevista> getEntrevistasReporte(string idAlumno)
+        {
+            var entrevistas = new List<Entrevista>();
+
+            try
+            {
+
+                NpgsqlConnection cnn;
+                cnn = new NpgsqlConnection(connectionString);
+                cnn.Open();
+
+                NpgsqlCommand command;
+                NpgsqlDataReader dataReader;
+                string sql, Output = string.Empty;
+
+                sql = $"select al.cedula, al.nombre || ' ' || al.apellido as nombre, e.motivo, e.fecha, e.id, cu.id, i.id, e.acuerdo, e.sugerencia  " +
+                    $" from dbo.entrevista e join dbo.inscripcion i on e.idinscripcion = i.id join dbo.curso cu on i.idcurso = cu.id " +
+                    $" join dbo.alumno al on i.idalumno = al.id where al.id = {idAlumno}";
+
+                command = new NpgsqlCommand(sql, cnn);
+                dataReader = command.ExecuteReader();
+
+                while (dataReader.Read())
+                {
+                    entrevistas.Add(new Entrevista
+                    {
+                        ID = Convert.ToInt64(dataReader.GetValue(4).ToString()),
+                        Cedula = Convert.ToInt64(dataReader.GetValue(0).ToString()),
+                        NombreAlumno = dataReader.GetValue(1).ToString(),
+                        Motivo = dataReader.GetValue(2).ToString(),
+                        FechaEntrevistaString = Convert.ToDateTime(dataReader.GetValue(3).ToString()).ToString("dd/MM/yyyy"),
+                        CursoID = Convert.ToInt64(dataReader.GetValue(5).ToString()),
+                        InscripcionID = Convert.ToInt64(dataReader.GetValue(6).ToString()),
+                        Acuerdo = dataReader.GetValue(7).ToString(),
+                        Sugerencia = dataReader.GetValue(8).ToString()
+                    });
+                }
+                command.Dispose(); cnn.Close();
+            }
+            catch (Exception ex)
+            {
+
+            }
+
+            return entrevistas;
+        }
+
         public static List<SelectListItem> getAlumnosSelect2(string idInstitucion, string idcurso, string id)
         {
             var items = new List<SelectListItem>();
@@ -113,6 +160,53 @@ namespace SGEA.Repository
             return items;
         }
 
+        public static List<Alumno> getAlumnosReporteEntrevistas(string idcurso)
+        {
+            var items = new List<Alumno>();
+
+            try
+            {
+
+                NpgsqlConnection cnn;
+                cnn = new NpgsqlConnection(connectionString);
+                cnn.Open();
+
+                NpgsqlCommand command;
+                NpgsqlDataReader dataReader;
+                string sql, Output = string.Empty;
+
+                /*
+                 select i.id, a.apellido || ', ' || a.nombre as nombre  from dbo.inscripcion i
+                    join dbo.alumno a on i.idalumno = a.id
+                    join dbo.curso c on i.idcurso = c.id
+                    where c.id = 1;
+                 
+                 */
+                sql = $"select a.id,  a.cedula, a.apellido || ', ' || a.nombre as nombre  from dbo.inscripcion i " +
+                $"join dbo.alumno a on i.idalumno = a.id " +
+                $"join dbo.curso c on i.idcurso = c.id where c.id = {idcurso}";
+
+                command = new NpgsqlCommand(sql, cnn);
+
+                dataReader = command.ExecuteReader();
+
+                while (dataReader.Read())
+                {
+                    items.Add(new Alumno
+                    {
+                        ID = Convert.ToInt64(dataReader.GetValue(0).ToString()),
+                        Cedula = Convert.ToInt64(dataReader.GetValue(1).ToString()),
+                        Nombre = dataReader.GetValue(2).ToString() 
+                    });
+                };
+                command.Dispose(); cnn.Close();
+            }
+            catch (Exception ex)
+            {
+
+            };
+            return items;
+        }
 
         public static string createEntrevista(Entrevista entrevista)
         {

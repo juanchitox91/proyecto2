@@ -327,12 +327,25 @@ namespace SGEA.Areas.Gestion.Controllers
                 factura.FechaPagoFactura = DateTime.Now.ToShortDateString();
                 factura.NroFactura = facturaModel.NroFactura;
 
+                string mensaje = InscripcionRepository.cargarFactura(factura);
+
+                if (mensaje == "OK")
+                {
+                    ViewBag.mensaje = "La factura se cargó exitosamente.";
+                }
+                else
+                {
+                    ViewBag.error = "Ha ocurrido un error inesperado, favor intente nuevamente mas tarde.";
+                }
             }
             catch (Exception ex)
             {
-                return RedirectToAction("Abonar");
+                ViewBag.error = "Ha ocurrido un error inesperado, favor intente nuevamente mas tarde.";
             }
 
+            string idinstitucion = HttpContext.Session["institucion"].ToString();
+            ViewBag.tiposPago = InscripcionRepository.getTiposPagoSelect2(idinstitucion, factura.TipoPagoID.ToString());
+            ViewBag.tiposDcto = InscripcionRepository.getTiposDctoSelect2(idinstitucion, factura.TipoDctoID.ToString());
             return View(factura);
         }
 

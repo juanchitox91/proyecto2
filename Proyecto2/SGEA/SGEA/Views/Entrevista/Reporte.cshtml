@@ -16,9 +16,6 @@
 </div>
 <div class="col-md-12 col-sm-12 col-xs-12">
     <div class="x_panel">
-        <div id="buttonset" style="margin-top:5px;margin-bottom:5px;">
-            <a class="btn btn-primary" href="@Url.Action("Crear","Entrevista")">Crear Nueva Entrevista</a>
-        </div>
         <div class="x_content">
             <div class="form-group col-lg-12 col-md-12 col-lg-12 col-sm-12 col-xs-12" style="margin-top:10px;">
                 @Html.Label("Curso", new { @class = "control-label col-md-2 col-sm-6 col-xs-12" })
@@ -39,8 +36,6 @@
                                 <tr>
                                     <th>Cedula</th>
                                     <th>Nombre</th>
-                                    <th>Motivo</th>
-                                    <th>Fecha</th>
                                     <th></th>
                                 </tr>
                             </thead>
@@ -49,8 +44,6 @@
                                 <tr>
                                     <th>Cedula</th>
                                     <th>Nombre</th>
-                                    <th>Motivo</th>
-                                    <th>Fecha</th>
                                     <th></th>
                                 </tr>
                             </tfoot>
@@ -58,7 +51,7 @@
                     </div>
                     <div class="form-group" style="margin-top:10px;">
                         <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                            <a href="@Url.Action("Index", "Rol")" class="btn btn-primary" style="float:left;" type="button">Volver</a>
+                            <a href="@Url.Action("Index", "Entrevista")" class="btn btn-primary" style="float:left;" type="button">Volver</a>
                         </div>
                     </div>
                 </div>
@@ -76,7 +69,7 @@
                 "processing": true,
                 "serverSide": true,
                 "ajax": {
-                    "url": "@Url.Action("PoblarGrilla", "Entrevista")",
+                    "url": "@Url.Action("PoblarGrillaEntrevista", "Entrevista")",
                     "type": "POST",
                     "data": function (d) {
                         d.param1 = $('#CursoID').val();
@@ -84,17 +77,12 @@
                 },
                  "columns": [
                      { "data": "Cedula" },
-                     { "data": "NombreAlumno" },
-                     { "data": "Motivo" },
-                     { "data": "FechaEntrevistaString"},
+                     { "data": "Nombre" },
                      {
                         "data": "ID",
                          "render": function (data, type, row) {
-                             var urleditar = "@Url.Action("Editar", "Entrevista")/" + row.ID;
-                             var urlverDetalle = "@Url.Action("VerDetalle", "Entrevista")/" + row.ID;
-                             var urleliminar = "@Url.Action("Eliminar", "Entrevista")/" + row.ID ;
-                             return " <td><a href=" + urlverDetalle+"><span class=\"fa fa-search\"></span></a>" +
-                                 " <a href=" + urleditar+"><span class=\"fa fa-pencil\"></span></a></td>" ;
+                             var urlverDetalle = "@Url.Action("ReportePDF", "Entrevista")?idAlumno=" + row.ID;
+                             return " <td><a href=" + urlverDetalle + " target=\"_blank\"><span class=\"fa fa-search\" ></span></a>";
                         }
                      }
                 ],
