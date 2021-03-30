@@ -1,0 +1,142 @@
+﻿
+
+@{
+    ViewBag.Title = "Evaluacion";
+}
+
+@Scripts.Render("~/bundles/jquery")
+@Styles.Render("~/Datatable/css")
+
+
+<div class="page-title">
+    <div class="col-lg-12" style="margin-left:10px;">
+        <h1>Cargar Asistencia</h1>
+    </div>
+    <div class="title_right">
+    </div>
+</div>
+<div class="col-md-12 col-sm-12 col-xs-12">
+    <div class="x_panel">
+        <div class="x_content">
+                <div class="form-group col-lg-12 col-md-12 col-lg-12 col-sm-12 col-xs-12" style="margin-top:10px;">
+                    @Html.Label("Planilla", new { @class = "control-label col-md-2 col-sm-6 col-xs-12" })
+                    <div class="col-md-6 col-sm-6 col-xs-12">
+                        @Html.DropDownList("Planilla", (List<SelectListItem>)ViewBag.Planillas, new { @id = "PlanillaID", @required = "required", @class = "form-control col-md-7 col-xs-12" })
+                    </div>
+                </div>
+                <di class="form-group col-lg-12 col-md-12 col-lg-12 col-sm-12 col-xs-12" style="margin-bottom:10px;">
+                    @Html.Label("Fecha Asistencia", new { @class = "control-label col-md-2 col-sm-6 col-xs-12" })
+                    <div class="col-md-6 col-sm-6 col-xs-12">
+                        <input class="Fecha" id="FechaAsistenciaString" name="FechaAsistenciaString" required="required" type="text">
+                    </div>
+                </di>
+
+                <div class="form-group col-lg-8 col-md-8 col-lg-12 col-sm-12 col-xs-12" style="margin-bottom:10px;">
+                    <button class="btn btn-primary"style="float:right" onclick="poblarGrillaAsistencia()" >Buscar</button>
+
+                </div>
+                @*<div class="form-group col-lg-12 col-md-12 col-lg-12 col-sm-12 col-xs-12" style="margin-bottom:10px;">
+                    <label class="control-label col-md-2 col-sm-6 col-xs-12"> Puntaje Maximo </label>
+                    <div class="col-md-6 col-sm-6 col-xs-12">
+                       <input id="puntaje_maximo" disabled style="text-align:center;">
+                    </div>
+                </div>*@
+
+                <div @*id="datatable_wrapper" class="dataTables_wrapper form-inline dt-bootstrap no-footer"*@>
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <table id="example" class="table table-striped table-bordered dataTable no-footer" style="width:100%">
+                                <thead>
+                                    <tr>
+                                        <th>Cedula</th>
+                                        <th>Nombre</th>
+                                        <th>Asistió</th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                                <tfoot>
+                                    <tr>
+                                        <th>Cedula</th>
+                                        <th>Nombre</th>
+                                        <th>Asistió</th>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                        <div class="form-group" style="margin-top:10px;">
+                            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                                <a href="@Url.Action("Index", "Rol")" class="btn btn-primary" style="float:left;" type="button">Volver</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+        </div>
+    </div>
+</div>
+
+    <script type="text/javascript">
+        var tableAlumnos = null;
+        $(document).ready(function () {
+
+            $('.Fecha').datetimepicker({
+                format: 'DD/MM/YYYY',
+                //minDate: new Date()
+            });
+
+            /******** SECCION GRILLA **********/
+            tableAlumnos = $('#example').DataTable({
+                "processing": true,
+                "serverSide": true,
+                "ajax": {
+                    "url": "@Url.Action("poblarGrillaAsistencia", "Evaluacion")",
+                    "type": "POST",
+                    "data": function (d) {
+                        d.param1 = $('#PlanillaID').val();
+                        d.param2 = $('#FechaAsistenciaString').val();
+                    }
+                },
+                 "columns": [
+                    { "data": "Cedula" },
+                    { "data": "NombreAlumno" },
+                    {
+                        "data": "Presente",
+                        "render": function (data, type, row) {
+                            return "<input type='checkbox' " + (row.Presente ? "checked" : "") + " onclick=\"agregarAsistencia(this," + row.AumnoID + ")\"/>" ;
+                        }
+                    }
+                ],
+                "drawCallback": function (settings) {
+                    $('.puntaje-maximo-input').prop('disabled', true);
+                   
+                }
+            });
+            /************** FIN SECCION GRILLA *******************/
+
+            $('#ItemID').prop('disabled', 'true');
+
+        });
+
+        function poblarGrillaAsistencia()
+        {   
+            tableAlumnos.ajax.reload();
+        }
+
+        function agregarAsistencia(input, alumnoID) {
+            $.ajax({
+                type: "POST", // la variable type guarda el tipo de la peticion GET,POST,..
+                url: "@Url.Action("AgregarAsistencia", "Evaluacion")", //url guarda la ruta hacia donde se hace la peticion
+                data: {
+                    idalumno: alumnoID,
+                    presente: $(input).prop('checked') ? "P" : "A"
+                      }, // data recibe un objeto con la informacion que se enviara al servidor
+                success: function (data)
+                {
+                    
+                    if (data.mensaje == 'ERROR' ) {
+                        alert("Ha habido un error al cargar la asistencia.")
+                    } 
+                },
+            })
+        }
+
+    </script>

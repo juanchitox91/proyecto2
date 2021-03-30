@@ -76,12 +76,12 @@ INSERT INTO dbo.accion (id,nombre,fechaalta,ultmodificacion,descripcion,parent_i
 INSERT INTO dbo.accion (id,nombre,fechaalta,ultmodificacion,descripcion,parent_id) VALUES 
 (38,'detalleDocente',now(),now(),'Ver Detalle Docente',34);
 INSERT INTO dbo.accion (id,nombre,fechaalta,ultmodificacion,descripcion,parent_id) VALUES 
-(39,'verGrupoFamiliar',now(),now(),'Ver Docentes',13);
+(39,'verTutores',now(),now(),'Ver Docentes',13);
 INSERT INTO dbo.accion (id,nombre,fechaalta,ultmodificacion,descripcion,parent_id) VALUES 
-(40,'crearGrupoFamiliar',now(),now(),'Crear Docente',39);
+(40,'crearTutor',now(),now(),'Crear Docente',39);
 INSERT INTO dbo.accion (id,nombre,fechaalta,ultmodificacion,descripcion,parent_id) VALUES 
-(41,'editarGrupoFamiliar',now(),now(),'Editar Docente',39);
+(41,'editarTutor',now(),now(),'Editar Docente',39);
 INSERT INTO dbo.accion (id,nombre,fechaalta,ultmodificacion,descripcion,parent_id) VALUES 
-(42,'eliminarGrupoFamiliar',now(),now(),'Eliminar Docente',39);
+(42,'eliminarTutor',now(),now(),'Eliminar Docente',39);
 INSERT INTO dbo.accion (id,nombre,fechaalta,ultmodificacion,descripcion,parent_id) VALUES 
-(43,'detalleGrupoFamiliar',now(),now(),'Ver Detalle Docente',39);
+(43,'detalleTutor',now(),now(),'Ver Detalle Docente',39);

@@ -16,6 +16,8 @@ namespace SGEA.Models
         public Search search { get; set; }
         public List<Order> order { get; set; }
         public string param1 { get; set; }
+        public string param2 { get; set; }
+
     }
 
     public class Column

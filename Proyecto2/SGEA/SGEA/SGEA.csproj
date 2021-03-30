@@ -47,6 +47,12 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="CrystalDecisions.CrystalReports.Engine, Version=13.0.3500.0, Culture=neutral, PublicKeyToken=692fbea5521e1304, processorArchitecture=MSIL" />
+    <Reference Include="CrystalDecisions.ReportSource, Version=13.0.3500.0, Culture=neutral, PublicKeyToken=692fbea5521e1304, processorArchitecture=MSIL" />
+    <Reference Include="CrystalDecisions.Shared, Version=13.0.3500.0, Culture=neutral, PublicKeyToken=692fbea5521e1304, processorArchitecture=MSIL" />
+    <Reference Include="log4net, Version=1.2.10.0, Culture=neutral, PublicKeyToken=1b44e1d426115821, processorArchitecture=MSIL">
+      <HintPath>..\packages\log4net.1.2.10\lib\2.0\log4net.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Npgsql, Version=4.0.8.0, Culture=neutral, PublicKeyToken=5d8b90d52f46fda7, processorArchitecture=MSIL">
       <HintPath>..\packages\Npgsql.4.0.8\lib\net451\Npgsql.dll</HintPath>
@@ -153,7 +159,6 @@
     <Compile Include="Areas\Administrador\Controllers\RolController.cs" />
     <Compile Include="Areas\Administrador\Controllers\UsuarioController.cs" />
     <Compile Include="Areas\Datos\Controllers\TutorController.cs" />
-    <Compile Include="Areas\Datos\Controllers\GrupFamiliarController.cs" />
     <Compile Include="Areas\Datos\Controllers\DocenteController.cs" />
     <Compile Include="Areas\Datos\Controllers\MateriaController.cs" />
     <Compile Include="Areas\Datos\Controllers\CursoController.cs" />
@@ -174,6 +179,7 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Models\Asistencia.cs" />
     <Compile Include="Models\Resultado.cs" />
     <Compile Include="Models\DataTableAjaxPostModel.cs" />
     <Compile Include="Models\Factura.cs" />
@@ -200,6 +206,12 @@
     <Compile Include="Models\Rol.cs" />
     <Compile Include="Models\Usuario.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Reportes\EntrevistasReport.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>EntrevistasReport.rpt</DependentUpon>
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Repository\EvaluacionRepository.cs" />
     <Compile Include="Repository\GeneralRepository.cs" />
     <Compile Include="Repository\InscripcionRepository.cs" />
@@ -3482,6 +3494,9 @@
     <Content Include="Views\Entrevista\VerDetalle.cshtml" />
     <Content Include="Views\Inscripcion\Abonar.cshtml" />
     <Content Include="Views\Inscripcion\AbonarInscripcion.cshtml" />
+    <Content Include="Views\Inscripcion\CargarFactura.cshtml" />
+    <Content Include="Views\Entrevista\Reporte.cshtml" />
+    <Content Include="Views\Evaluacion\CargarAsistencia.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -3511,6 +3526,13 @@
   </ItemGroup>
   <ItemGroup>
     <Service Include="{4A0DDDB5-7A95-4FBF-97CC-616D07737A77}" />
+    <Service Include="{C0C07587-41A7-46C8-8FBD-3F9C8EBE2DDC}" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Reportes\EntrevistasReport.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>EntrevistasReport.cs</LastGenOutput>
+    </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

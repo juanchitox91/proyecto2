@@ -254,5 +254,60 @@ namespace SGEA.Repository
 
             return evaluacion;
         }
+
+
+        public static List<Asistencia> getAlumnosAsistencia(string idplanilla, string fecha)
+        {
+            List<Asistencia> alumnosAsistencia = new List<Asistencia>();
+
+            try
+            {
+
+                NpgsqlConnection cnn;
+                cnn = new NpgsqlConnection(connectionString);
+                cnn.Open();
+
+                NpgsqlCommand command;
+                NpgsqlDataReader dataReader;
+                string sql, Output = string.Empty;
+
+                /*
+                 select * from asistencia where idplanilla = 12 and fecha = '28/03/2021';
+                 */
+
+                sql = $" select al.id, al.cedula, al.apellido || ', ' || al.nombre as nombre, pl.id, pl.descripcion, coalesce(asis.presente, false) " +
+                    $" from dbo.planilla pl join dbo.curso cur on pl.idcurso = cur.id join dbo.inscripcion ins on cur.id = ins.idcurso " +
+                    $" join dbo.alumno al on ins.idalumno = al.id left join dbo.asistencia asis on asis.idplanilla = {idplanilla??"0" } "+
+                    $" and asis.idalumno = al.id and asis.fecha = '{fecha}'";
+
+                command = new NpgsqlCommand(sql, cnn);
+
+                dataReader = command.ExecuteReader();
+
+                while (dataReader.Read())
+                {
+                    var input = dataReader.GetValue(5).ToString();
+                    alumnosAsistencia.Add(new Asistencia
+                    {
+                        AumnoID = Convert.ToInt64(dataReader.GetValue(0).ToString()),
+                        Cedula = dataReader.GetValue(1).ToString(),
+                        NombreAlumno = dataReader.GetValue(2).ToString(),
+                        PlanillaID = Convert.ToInt64(dataReader.GetValue(3).ToString()),
+                        NombrePlanilla = dataReader.GetValue(4).ToString(),
+                        Presente = Convert.ToBoolean(dataReader.GetValue(5).ToString())
+                    });
+                };
+                command.Dispose(); cnn.Close();
+
+                return alumnosAsistencia;
+            }
+            catch (Exception ex)
+            {
+
+            }
+
+            return alumnosAsistencia;
+        }
+
     }
 }

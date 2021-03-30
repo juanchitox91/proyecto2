@@ -74,7 +74,7 @@ namespace SGEA.Areas.Datos.Controllers
             return RedirectToAction("Index");
         }
 
-        [Permiso(permiso = "editarAlumno")]
+        [Permiso(permiso = "detalleAlumno")]
         public ActionResult VerDetalle(string id)
         {
             var longid = Convert.ToInt64(id);
@@ -109,46 +109,5 @@ namespace SGEA.Areas.Datos.Controllers
             return RedirectToAction("Index");
         }
 
-        [Permiso(permiso = "asigarAccion")]
-        public ActionResult AsignarAccion(string id)
-        {
-            var longid = Convert.ToInt64(id);
-            List<Rol> roles = (List<Rol>)Session["roles"];
-            Rol rol = roles.Where(x => x.ID == longid).SingleOrDefault();
-            Session["rol_accion"] = rol;
-
-            List<Accion> acciones = RolRepository.getAccionesPorRoles(rol.ID);
-            Session["acciones"] = acciones;
-            ViewBag.acciones = acciones;
-            ViewBag.rol = rol;
-
-            return View();
-        }
-
-        [Permiso(permiso = "asigarAccion")]
-        public ActionResult AgregarAccionAlRol(string nombre)
-        {
-            /*List<Rol> roles = (List<Rol>)Session["roles"];
-            Rol rol = roles.Where(x => x.ID == longid).SingleOrDefault();*/
-            
-            List<Accion> acciones = (List<Accion>)Session["acciones"];
-            var accion = acciones.Where(x => x.NombreAccion == nombre).SingleOrDefault();
-            acciones[acciones.FindIndex(x => x.NombreAccion == nombre)].Activo = !accion.Activo;
-            Session["acciones"] = acciones;
-
-            return Json(new { resultado = "OK" });
-        }
-
-        [HttpPost]
-        [Permiso(permiso = "asigarAccion")]
-        public ActionResult AgregarAccion()
-        {
-            List<Accion> acciones = (List<Accion>)Session["acciones"];
-            Rol rolaccion = (Rol)Session["rol_accion"];
-            string mensaje = RolRepository.GuardarPermisos(acciones, rolaccion.ID.ToString());
-
-           
-            return RedirectToAction("Index", "Rol");
-        }
     }
 }

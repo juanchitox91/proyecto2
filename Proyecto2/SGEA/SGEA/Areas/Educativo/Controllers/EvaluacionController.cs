@@ -11,6 +11,7 @@ namespace SGEA.Areas.Educativo.Controllers
     [Autenticado]
     public class EvaluacionController : Controller
     {
+        #region Evaluaciones
         [Permiso(permiso = "verEvaluaciones")]
         public ActionResult CargarEvaluacion()
         {
@@ -66,38 +67,7 @@ namespace SGEA.Areas.Educativo.Controllers
             }
            
         }
-        /*public JsonResult CustomServerSideSearchAction(DataTableAjaxPostModel model)
-        {
-            int filteredResultsCount;
-            int totalResultsCount;
-
-
-            MainDBDataContext db = Models.DataMethods.GetDataContext();
-
-            IQueryable<Entities> allEntities = db.Entities.Where(...);
-            totalResultsCount = allEntities.Count();
-            filteredResultsCount = allEntities.Count();
-
-            var result = new List<YourCustomSearchClass>();
-
-            foreach (var en in allEntities)
-            {
-                result.Add(new YourCustomSearchClass
-                {
-                    Name = en.Name
-                });
-            }
-
-            return Json(new
-            {
-                // this is what datatables wants sending back
-                draw = model.draw,
-                recordsTotal = totalResultsCount,
-                recordsFiltered = filteredResultsCount,
-                data = result
-            });
-        }*/
-
+        
         [HttpPost]
         public JsonResult PoblarGrilla(DataTableAjaxPostModel model)
         {
@@ -119,5 +89,66 @@ namespace SGEA.Areas.Educativo.Controllers
                 data = lista
             });
         }
+
+        #endregion
+
+        #region Asistencias
+
+        [Permiso(permiso = "verAsistencias")]
+        public ActionResult CargarAsistencia()
+        {
+            Session["PlanillaAsistencia"] = null;
+            List<SelectListItem> planillas = EvaluacionRepository.getPlanillasSelect2(HttpContext.Session["institucion"].ToString(), "0");
+            ViewBag.Planillas = planillas;
+            return View();
+        }
+
+        [HttpPost]
+        public JsonResult PoblarGrillaAsistencia(DataTableAjaxPostModel model)
+        {
+            List<Asistencia> lista = new List<Asistencia>();
+
+            try
+            {
+                lista = EvaluacionRepository.getAlumnosAsistencia(model.param1, model.param2);
+                Session["PlanillaAsistencia"] = lista;
+            }
+            catch { }
+
+
+            return Json(new
+            {
+                // this is what datatables wants sending back
+                draw = model.draw,
+                recordsTotal = 100,
+                recordsFiltered = 100,
+                data = lista
+            });
+        }
+
+        public JsonResult AgregarAsistencia(string idalumno, string presente)
+        {
+            List<Asistencia> lista = new List<Asistencia>(); 
+            try
+            {
+                if (Session["PlanillaAsistencia"] != null)
+                {
+                    lista = (List<Asistencia>)Session["PlanillaAsistencia"];
+                    lista.Where(x => x.AumnoID.ToString() == idalumno).SingleOrDefault().Presente = presente.Equals("P");
+                    return Json(new { mensaje = "OK" });
+
+                }
+            }
+            catch (Exception ex)
+            {
+
+            }
+
+            return Json(new { mensaje = "ERROR" });
+        }
+
+
+        #endregion
+
     }
 }

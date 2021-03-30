@@ -74,7 +74,7 @@ namespace SGEA.Areas.Datos.Controllers
             return RedirectToAction("Index");
         }
 
-        [Permiso(permiso = "verDetalleMateria")]
+        [Permiso(permiso = "detalleMateria")]
         public ActionResult VerDetalle(string id)
         {
             var longid = Convert.ToInt64(id);

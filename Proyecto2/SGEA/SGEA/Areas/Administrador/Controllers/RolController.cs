@@ -109,7 +109,7 @@ namespace SGEA.Areas.Administrador.Controllers
             return RedirectToAction("Index");
         }
 
-        [Permiso(permiso = "asigarAccion")]
+        [Permiso(permiso = "asignarAccion")]
         public ActionResult AsignarAccion(string id)
         {
             var longid = Convert.ToInt64(id);
@@ -125,7 +125,7 @@ namespace SGEA.Areas.Administrador.Controllers
             return View();
         }
 
-        [Permiso(permiso = "asigarAccion")]
+        [Permiso(permiso = "asignarAccion")]
         public ActionResult AgregarAccionAlRol(string nombre)
         {
             /*List<Rol> roles = (List<Rol>)Session["roles"];
@@ -173,7 +173,7 @@ namespace SGEA.Areas.Administrador.Controllers
         }
 
         [HttpPost]
-        [Permiso(permiso = "asigarAccion")]
+        [Permiso(permiso = "asignarAccion")]
         public ActionResult AgregarAccion()
         {
             List<Accion> acciones = (List<Accion>)Session["acciones"];

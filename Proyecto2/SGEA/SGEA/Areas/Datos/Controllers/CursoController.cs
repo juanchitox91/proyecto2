@@ -81,7 +81,7 @@ namespace SGEA.Areas.Datos.Controllers
             return RedirectToAction("Index");
         }
 
-        [Permiso(permiso = "verDetalleCurso")]
+        [Permiso(permiso = "detalleCurso")]
         public ActionResult VerDetalle(string id)
         {
             var longid = Convert.ToInt64(id);
@@ -115,7 +115,6 @@ namespace SGEA.Areas.Datos.Controllers
 
             return RedirectToAction("Index");
         }
-
 
         public List<SelectListItem> ObtenerTurnos(string id)
         {
