@@ -255,7 +255,6 @@ namespace SGEA.Repository
             return evaluacion;
         }
 
-
         public static List<Asistencia> getAlumnosAsistencia(string idplanilla, string fecha)
         {
             List<Asistencia> alumnosAsistencia = new List<Asistencia>();
@@ -275,10 +274,10 @@ namespace SGEA.Repository
                  select * from asistencia where idplanilla = 12 and fecha = '28/03/2021';
                  */
 
-                sql = $" select al.id, al.cedula, al.apellido || ', ' || al.nombre as nombre, pl.id, pl.descripcion, coalesce(asis.presente, false) " +
-                    $" from dbo.planilla pl join dbo.curso cur on pl.idcurso = cur.id join dbo.inscripcion ins on cur.id = ins.idcurso " +
-                    $" join dbo.alumno al on ins.idalumno = al.id left join dbo.asistencia asis on asis.idplanilla = {idplanilla??"0" } "+
-                    $" and asis.idalumno = al.id and asis.fecha = '{fecha}'";
+                sql = $" select tabla.*, coalesce(asis.presente, false) from ( select al.id as idalumno, al.cedula, al.apellido || ', ' || al.nombre as nombre, " +
+                    $" pl.id as idplanilla, pl.descripcion from dbo.planilla pl join dbo.curso cur on pl.idcurso = cur.id " +
+                    $" join dbo.inscripcion ins on cur.id = ins.idcurso join dbo.alumno al on ins.idalumno = al.id where pl.id = {idplanilla}) tabla" +
+                    $" left join dbo.asistencia asis on asis.idalumno = tabla.idalumno and tabla.idplanilla = {idplanilla} and asis.fecha = '{fecha}' ";
 
                 command = new NpgsqlCommand(sql, cnn);
 
@@ -289,12 +288,13 @@ namespace SGEA.Repository
                     var input = dataReader.GetValue(5).ToString();
                     alumnosAsistencia.Add(new Asistencia
                     {
-                        AumnoID = Convert.ToInt64(dataReader.GetValue(0).ToString()),
+                        AlumnoID = Convert.ToInt64(dataReader.GetValue(0).ToString()),
                         Cedula = dataReader.GetValue(1).ToString(),
                         NombreAlumno = dataReader.GetValue(2).ToString(),
                         PlanillaID = Convert.ToInt64(dataReader.GetValue(3).ToString()),
                         NombrePlanilla = dataReader.GetValue(4).ToString(),
-                        Presente = Convert.ToBoolean(dataReader.GetValue(5).ToString())
+                        Presente = Convert.ToBoolean(dataReader.GetValue(5).ToString()),
+                        Fecha = fecha
                     });
                 };
                 command.Dispose(); cnn.Close();
@@ -307,6 +307,58 @@ namespace SGEA.Repository
             }
 
             return alumnosAsistencia;
+        }
+
+        public static string insertAsistencia(List<Asistencia> listaAsistencias, string idinstitucion)
+        {
+            string mensaje = "OK";
+            foreach(var item in listaAsistencias)
+            {
+                string sqlExist = $"select count(*) from dbo.asistencia t where t.idalumno = {item.AlumnoID} and t.idplanilla = {item.PlanillaID}";
+                string sqlUpdate = $"update dbo.asistencia set presente = {item.Presente} where idalumno = {item.AlumnoID} and idplanilla = {item.PlanillaID}";
+                string sqlInsert = $"insert into dbo.asistencia(idalumno, idplanilla, fecha, presente, idinstitucion) values ({item.AlumnoID}, " +
+                    $"{item.PlanillaID}, TO_DATE('{item.Fecha}', 'DD/MM/YYYY'), {item.Presente}, {idinstitucion})";
+                bool existe = false;
+
+                try
+                {
+
+                    NpgsqlConnection cnn;
+                    cnn = new NpgsqlConnection(connectionString);
+                    cnn.Open();
+
+                    NpgsqlCommand command;
+                    NpgsqlDataReader dataReader;
+                    string Output = string.Empty;
+
+                    //vamos a controlar si existe la asistencia en tabla
+                    command = new NpgsqlCommand(sqlExist, cnn);
+
+                    dataReader = command.ExecuteReader();
+
+                    while (dataReader.Read())
+                    {
+                        existe = Convert.ToInt32(dataReader.GetValue(0).ToString()) > 0;  
+                    };
+                    command.Dispose(); cnn.Close();
+
+                    cnn = new NpgsqlConnection(connectionString);
+                    cnn.Open();
+
+                    //si existe, hacemos el update correspondiente, si no se inserta en tabla
+                    command = new NpgsqlCommand(existe ? sqlUpdate : sqlInsert, cnn);
+
+                    command.ExecuteNonQuery();
+                    command.Dispose(); cnn.Close();
+                }
+                catch (Exception ex)
+                {
+                    mensaje = "ERROR";
+                }
+               
+            }
+
+            return mensaje;
         }
 
     }

@@ -11,11 +11,13 @@ namespace SGEA.Models
         [DisplayName("Alumno")]
         public string NombreAlumno { get; set; }
         [DisplayName("Alumno")]
-        public long AumnoID { get; set; }
+        public long AlumnoID { get; set; }
         [DisplayName("Planilla")]
         public string NombrePlanilla { get; set; }
         [DisplayName("Planilla")]
         public long PlanillaID { get; set; }
+        [DisplayName("Fecha")]
+        public string Fecha { get; set; }
         [DisplayName("Presente")]
         public bool Presente { get; set; }
     }

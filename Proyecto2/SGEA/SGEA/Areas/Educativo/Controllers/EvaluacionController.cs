@@ -134,9 +134,27 @@ namespace SGEA.Areas.Educativo.Controllers
                 if (Session["PlanillaAsistencia"] != null)
                 {
                     lista = (List<Asistencia>)Session["PlanillaAsistencia"];
-                    lista.Where(x => x.AumnoID.ToString() == idalumno).SingleOrDefault().Presente = presente.Equals("P");
+                    lista.Where(x => x.AlumnoID.ToString() == idalumno).SingleOrDefault().Presente = presente.Equals("P");
+                    Session["PlanillaAsistencia"] = lista;
                     return Json(new { mensaje = "OK" });
+                }
+            }
+            catch (Exception ex)
+            {
+            }
+            return Json(new { mensaje = "ERROR" });
+        }
 
+        public JsonResult ConfirmarAsistencia()
+        {
+            List<Asistencia> lista = new List<Asistencia>();
+            try
+            {
+                if (Session["PlanillaAsistencia"] != null)
+                {
+                    lista = (List<Asistencia>)Session["PlanillaAsistencia"];
+                    string mensaje = EvaluacionRepository.insertAsistencia(lista, HttpContext.Session["institucion"].ToString());
+                    return Json(new { mensaje });
                 }
             }
             catch (Exception ex)
@@ -146,8 +164,6 @@ namespace SGEA.Areas.Educativo.Controllers
 
             return Json(new { mensaje = "ERROR" });
         }
-
-
         #endregion
 
     }
