@@ -5,6 +5,8 @@ using System.Collections.Generic;
 using SGEA.Models;
 using System.Linq;
 using System;
+using SGEA.Reportes;
+using System.IO;
 
 namespace SGEA.Areas.Educativo.Controllers
 {
@@ -166,5 +168,30 @@ namespace SGEA.Areas.Educativo.Controllers
         }
         #endregion
 
+        #region Reportes
+
+        [Permiso(permiso = "verAsistencias")]
+        public ActionResult Reporte()
+        {
+            List<SelectListItem> planillas = EvaluacionRepository.getPlanillasSelect2(HttpContext.Session["institucion"].ToString(), "0");
+            ViewBag.Planillas = planillas;
+
+            return View();
+        }
+
+        [Permiso(permiso = "verAsistencias")]
+        public ActionResult ReportePDF(string idPlanilla, string Fecha)
+        {
+            List<Asistencia> lista = EvaluacionRepository.getAlumnosAsistencia(idPlanilla, Fecha); ;
+
+            AsistenciaReport rpt = new AsistenciaReport();
+            rpt.Load();
+            rpt.SetDataSource(lista);
+            Stream s = rpt.ExportToStream(CrystalDecisions.Shared.ExportFormatType.PortableDocFormat);
+
+
+            return File(s, "application/pdf");
+        }
+        #endregion
     }
 }

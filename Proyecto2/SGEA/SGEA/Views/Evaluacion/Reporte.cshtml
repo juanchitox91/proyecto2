@@ -1,0 +1,78 @@
+﻿
+
+@{
+    ViewBag.Title = "Evaluacion";
+}
+
+@Scripts.Render("~/bundles/jquery")
+@Styles.Render("~/Datatable/css")
+
+
+<div class="page-title">
+    <div class="col-lg-12" style="margin-left:10px;">
+        <h1>Cargar Asistencia</h1>
+    </div>
+    <div class="title_right">
+    </div>
+</div>
+<div class="col-md-12 col-sm-12 col-xs-12">
+    <div class="x_panel">
+        <div class="x_content">
+                <div class="form-group col-lg-12 col-md-12 col-lg-12 col-sm-12 col-xs-12" style="margin-top:10px;">
+                    @Html.Label("Planilla", new { @class = "control-label col-md-2 col-sm-6 col-xs-12" })
+                    <div class="col-md-6 col-sm-6 col-xs-12">
+                        @Html.DropDownList("Planilla", (List<SelectListItem>)ViewBag.Planillas, new { @id = "PlanillaID", @required = "required", @class = "form-control col-md-7 col-xs-12" })
+                    </div>
+                </div>
+                <di class="form-group col-lg-12 col-md-12 col-lg-12 col-sm-12 col-xs-12" style="margin-bottom:10px;">
+                    @Html.Label("Fecha Asistencia", new { @class = "control-label col-md-2 col-sm-6 col-xs-12" })
+                    <div class="col-md-6 col-sm-6 col-xs-12">
+                        <input class="Fecha" id="FechaAsistenciaString" name="FechaAsistenciaString" required="required" type="text">
+                    </div>
+                </di>
+
+                <div class="form-group col-lg-8 col-md-8 col-lg-12 col-sm-12 col-xs-12" style="margin-bottom:10px;">
+                    @*<a href="@Url.Action("ReportePDF","Evaluacion")?idPlanilla=&fecha=" target="_blank" class="btn btn-primary">Generar Reporte</a>*@
+                    <button class="btn btn-primary" style="float:right" onclick="generarReporte()">Generar Reporte</button>
+                </div>
+        </div>
+    </div>
+</div>
+
+    <script type="text/javascript">
+        var tableAlumnos = null;
+        $(document).ready(function () {
+
+            $('.Fecha').datetimepicker({
+                format: 'DD/MM/YYYY',
+                //minDate: new Date()
+            });
+        });
+
+        function agregarAsistencia(input, alumnoID) {
+            $.ajax({
+                type: "POST", // la variable type guarda el tipo de la peticion GET,POST,..
+                url: "@Url.Action("AgregarAsistencia", "Evaluacion")", //url guarda la ruta hacia donde se hace la peticion
+                data: {
+                    idalumno: alumnoID,
+                    presente: $(input).prop('checked') ? "P" : "A"
+                      }, // data recibe un objeto con la informacion que se enviara al servidor
+                success: function (data)
+                {
+                    
+                    if (data.mensaje == 'ERROR' ) {
+                        alert("Ha habido un error al marcar/desmarcar la asistencia.");
+                        $(input).prop('checked', !$(input).prop('checked'));
+                    } 
+                },
+            })
+        }
+
+        function generarReporte() {
+            debugger;
+            var idplanilla = $('#PlanillaID').val();
+            var fecha = $('#FechaAsistenciaString').val();
+            var urlopen = "@Url.Action("ReportePDF","Evaluacion")?idPlanilla=" + idplanilla + "&Fecha=" + fecha;
+            window.open(urlopen);
+        }
+    </script>
