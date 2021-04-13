@@ -227,7 +227,7 @@ namespace SGEA.Repository
                     $" join dbo.inscripcion i on c.id = i.idcurso " +
                     $" join dbo.alumno a on i.idalumno = a.id join dbo.unidad u on p.id = u.idplanilla " +
                     $" join dbo.subunidad su on u.id = su.idunidad join dbo.itemplanilla it on su.id = it.idsubunidad " +
-                    $" full join dbo.evaluacion e on it.id = e.iditem " +
+                    $" full join dbo.evaluacion e on it.id = e.iditem and a.id = e.idalumno " +
                     $" where it.id = {iditemplanilla}";
 
                 command = new NpgsqlCommand(sql, cnn);
@@ -277,7 +277,7 @@ namespace SGEA.Repository
                 sql = $" select tabla.*, coalesce(asis.presente, false) from ( select al.id as idalumno, al.cedula, al.apellido || ', ' || al.nombre as nombre, " +
                     $" pl.id as idplanilla, pl.descripcion from dbo.planilla pl join dbo.curso cur on pl.idcurso = cur.id " +
                     $" join dbo.inscripcion ins on cur.id = ins.idcurso join dbo.alumno al on ins.idalumno = al.id where pl.id = {idplanilla}) tabla" +
-                    $" left join dbo.asistencia asis on asis.idalumno = tabla.idalumno and tabla.idplanilla = {idplanilla} and asis.fecha = '{fecha}' ";
+                    $" left join dbo.asistencia asis on asis.idalumno = tabla.idalumno and asis.idplanilla = tabla.idplanilla and tabla.idplanilla = {idplanilla} and asis.fecha = '{fecha}' ";
 
                 command = new NpgsqlCommand(sql, cnn);
 
@@ -361,5 +361,17 @@ namespace SGEA.Repository
             return mensaje;
         }
 
+
+        /*
+         select tabla.*, coalesce(ev.puntajealcanzado, 0) from (
+        select pl.titulo as planilla, pl.descripcion as planilla_descripcion, 
+        un.titulo as unidad_titulo, su.titulo as subunidad_titulo,
+        it.titulo as titulo_item, it.descripcion as descr_item, it.puntajemaximo,
+        it.id as iditemplanilla
+        from dbo.planilla pl join dbo.unidad un on pl.id = un.idplanilla
+        join dbo.subunidad su on un.id = su.idunidad
+        join dbo.itemplanilla it on su.id = it.idsubunidad) tabla
+        left join dbo.evaluacion ev on tabla.iditemplanilla = ev.iditem
+                 */
     }
 }

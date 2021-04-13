@@ -96,7 +96,7 @@ namespace SGEA.Areas.Administrador.Controllers
         [Permiso(permiso = "eliminarRol")]
         public ActionResult Eliminar(Rol rol)
         {
-            var mensaje = UsuarioRepository.deleteUsuario(rol.ID);
+            var mensaje = RolRepository.deleteRol(rol.ID);
             if (mensaje == "OK")
             {
                 ViewBag.mensaje = "El rol se eliminó exitosamente.";

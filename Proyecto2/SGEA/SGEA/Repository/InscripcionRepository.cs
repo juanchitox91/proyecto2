@@ -412,7 +412,7 @@ namespace SGEA.Repository
             string sql, Output = string.Empty;
 
                 sql = $"select count(*) from dbo.inscripcion ins join dbo.pagare pa on ins.id = pa.idinscripcion " +
-                        $"where ins.id = {idinscripcion} and current_date < pa.fechavencimiento ";
+                        $"where ins.id = {idinscripcion} and current_date - 1 > pa.fechavencimiento";
             command = new NpgsqlCommand(sql, cnn);
             dataReader = command.ExecuteReader();
 
@@ -433,7 +433,7 @@ namespace SGEA.Repository
             NpgsqlCommand command;
             string sql, Output = string.Empty;
 
-            sql = $"update dbo.inscripcion t set t.estado = 'C' where t.id = {idinscripcion}";
+            sql = $"update dbo.inscripcion set estado = 'C' where id = {idinscripcion}";
 
             command = new NpgsqlCommand(sql, cnn);
             command.ExecuteNonQuery();

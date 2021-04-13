@@ -22,7 +22,6 @@
             @using (Html.BeginForm("Confirmar", "Inscripcion", FormMethod.Post, new { @class = "form-horizontal form-label-left", @data_parsley_validate = "" }))
             {
                 @Html.AntiForgeryToken()
-
                 <div class="form-group">
                     @Html.LabelFor(x => x.AlumnoID, new { @class = "control-label col-md-3 col-sm-3 col-xs-12" })
                     <div class="col-md-6 col-sm-6 col-xs-12">
@@ -127,6 +126,8 @@
                         <a href="@Url.Action("Index","Inscripcion")" class="btn btn-primary" type="button"> < Volver</a>
                         @if (Model.Estado != "CONFIRMADO")
                         {
+                            @Html.HiddenFor(x => x.ID)
+
                             <button type="submit" class="btn btn-success">Confirmar</button>
                         }
                     </div>

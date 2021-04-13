@@ -221,7 +221,7 @@ namespace SGEA.Areas.Gestion.Controllers
           
             CargarDatosListas(inscripcion1);
 
-            return View(inscripcion1);
+            return View(inscripcion1.ID);
         }
 
 
