@@ -202,5 +202,85 @@ namespace SGEA.Repository
             };
             return planillas;
         }
+
+        public static List<ProgramaEstudio> getProgramaEstudio(string idPlanilla)
+        {
+            var progrEstudio = new List<ProgramaEstudio>();
+
+            try
+            {
+
+                NpgsqlConnection cnn;
+                cnn = new NpgsqlConnection(connectionString);
+                cnn.Open();
+
+                NpgsqlCommand command;
+                NpgsqlDataReader dataReader;
+                string sql, Output = string.Empty;
+
+                /*
+                 select pl.id, pl.titulo as planilla, pl.descripcion as planilla_descripcion, 
+                un.id as unidadid, un.titulo as unidad_titulo, su.id as subunidadid,
+                su.titulo as subunidad_titulo, it.id as itemid,
+                it.titulo as titulo_item, it.descripcion as descr_item, it.puntajemaximo
+                    from dbo.planilla pl
+                    left join dbo.unidad un on pl.id = un.idplanilla
+                    left join dbo.subunidad su on un.id = su.idunidad
+                    left join dbo.itemplanilla it on su.id = it.idsubunidad
+                    where pl.id = 13
+                 */
+
+                sql = $"select pl.id, pl.titulo as planilla, pl.descripcion as planilla_descripcion, " +
+                    $" un.id as unidadid, un.titulo as unidad_titulo, su.id as subunidadid, " +
+                    $" su.titulo as subunidad_titulo, it.id as itemid, " +
+                    $" it.titulo as titulo_item, it.descripcion as descr_item, it.puntajemaximo, cu.id, cu.nombrecurso  " +
+                    $" from dbo.planilla pl join dbo.curso cu on pl.idcurso = cu.id left join dbo.unidad un on pl.id = un.idplanilla" +
+                    $" left join dbo.subunidad su on un.id = su.idunidad " +
+                    $" left join dbo.itemplanilla it on su.id = it.idsubunidad where pl.id = {idPlanilla}";
+
+                command = new NpgsqlCommand(sql, cnn);
+                dataReader = command.ExecuteReader();
+
+                while (dataReader.Read())
+                {
+                    progrEstudio.Add(new ProgramaEstudio
+                    {
+                        PlanillaID = Convert.ToInt64(dataReader.GetValue(0).ToString()),
+                        TituloPlanilla = dataReader.GetValue(1).ToString(),
+                        DescripcionPlanilla = dataReader.GetValue(2).ToString(),
+                        UnidadID = Convert.ToInt64(dataReader.GetValue(3).ToString()),
+                        NombreUnidad = dataReader.GetValue(4).ToString(),
+                        SubUnidadID = Convert.ToInt64(dataReader.GetValue(5).ToString()),
+                        NombreSubUnidad = dataReader.GetValue(6).ToString(),
+                        //ItemID = Convert.ToInt64(dataReader.GetValue(7)??"0".ToString()),
+                        //NombreItem = dataReader.GetValue(8).ToString(),
+                        //DescripcionItem = dataReader.GetValue(9).ToString(),
+                        //PuntajeMaximo = Convert.ToInt64(dataReader.GetValue(10)??"0".ToString()),
+                        CursoID = Convert.ToInt64(dataReader.GetValue(11).ToString()),
+                        NombreCurso = dataReader.GetValue(12).ToString(),
+                    });
+                };
+                command.Dispose(); cnn.Close();
+            }
+            catch (Exception ex)
+            {
+
+                //return resultado;
+            };
+            return progrEstudio;
+        }
+
+
+        /*
+         select pl.id, pl.titulo as planilla, pl.descripcion as planilla_descripcion, 
+        un.id as unidadid, un.titulo as unidad_titulo, su.id as subunidadid,
+        su.titulo as subunidad_titulo, it.id as itemid,
+        it.titulo as titulo_item, it.descripcion as descr_item, it.puntajemaximo
+            from dbo.planilla pl
+            left join dbo.unidad un on pl.id = un.idplanilla
+            left join dbo.subunidad su on un.id = su.idunidad
+            left join dbo.itemplanilla it on su.id = it.idsubunidad
+            where pl.id = 13
+         */
     }
 }

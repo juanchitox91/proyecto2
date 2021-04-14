@@ -30,4 +30,34 @@ namespace SGEA.Models
         [DisplayName("Descripción")]
         public string Descripcion { get; set; }
     }
+
+    public class ProgramaEstudio
+    {
+        [DisplayName("Planilla")]
+        public long PlanillaID { get; set; }
+        [DisplayName("Planilla")]
+        public string TituloPlanilla { get; set; }
+        [DisplayName("Planilla")]
+        public string DescripcionPlanilla { get; set; }
+        [DisplayName("Curso")]
+        public long CursoID { get; set; }
+        [DisplayName("Curso")]
+        public string NombreCurso { get; set; }
+        [DisplayName("Unidad")]
+        public long UnidadID { get; set; }
+        [DisplayName("Unidad")]
+        public string NombreUnidad { get; set; }
+        [DisplayName("SubUnidad")]
+        public long SubUnidadID { get; set; }
+        [DisplayName("SubUnidad")]
+        public string NombreSubUnidad { get; set; }
+        [DisplayName("Item")]
+        public long ItemID { get; set; }
+        [DisplayName("Item")]
+        public string NombreItem { get; set; }
+        [DisplayName("Item")]
+        public string DescripcionItem { get; set; }
+        [DisplayName("Puntaje Maximo")]
+        public long PuntajeMaximo { get; set; }
+    }
 }

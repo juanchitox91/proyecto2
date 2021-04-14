@@ -218,6 +218,12 @@
       <DependentUpon>EntrevistasReport.rpt</DependentUpon>
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="Reportes\ProgramaEstudioReport.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ProgramaEstudioReport.rpt</DependentUpon>
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Repository\EvaluacionRepository.cs" />
     <Compile Include="Repository\GeneralRepository.cs" />
     <Compile Include="Repository\InscripcionRepository.cs" />
@@ -3504,6 +3510,7 @@
     <Content Include="Views\Entrevista\Reporte.cshtml" />
     <Content Include="Views\Evaluacion\CargarAsistencia.cshtml" />
     <Content Include="Views\Evaluacion\Reporte.cshtml" />
+    <Content Include="Views\Planilla\Reporte.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -3543,6 +3550,10 @@
     <EmbeddedResource Include="Reportes\EntrevistasReport.rpt">
       <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
       <LastGenOutput>EntrevistasReport.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Reportes\ProgramaEstudioReport.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>ProgramaEstudioReport.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
