@@ -204,5 +204,15 @@ namespace SGEA.Repository
             };
             return aranceles;
         }
+
+        /*
+         * ojo! query para situacion financiera!
+         select al.apellido, al.nombre, pa.descripcion, pa.tipopagare, pa.estado, cab.nro_factura,
+            det.descripcion, cab.fecha from dbo.inscripcion ins join dbo.alumno al on ins.idalumno = al.id
+            join dbo.pagare pa on ins.id = pa.idinscripcion
+            left join dbo.facturadetalle det on pa.id = det.id_pagare
+            left join dbo.factura_cabecera cab on det.id_facturacabecera = cab.id
+            where al.id = 18
+         */
     }
 }
