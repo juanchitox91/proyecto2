@@ -123,13 +123,18 @@
                 <div class="ln_solid"></div>
                 <div class="form-row">
                     <div class="col-md-12 col-sm-12 col-xs-12 col-md-offset-1">
+                        @Html.HiddenFor(x => x.ID)
                         <a href="@Url.Action("Index","Inscripcion")" class="btn btn-primary" type="button"> < Volver</a>
-                        @if (Model.Estado != "CONFIRMADO")
-                        {
-                            @Html.HiddenFor(x => x.ID)
 
-                            <button type="submit" class="btn btn-success">Confirmar</button>
+                        @if (Model.Estado != "INACTIVO")
+                        {
+                            if (Model.Estado != "CONFIRMADO")
+                            {
+                                <button type="submit" class="btn btn-success">Confirmar</button>
+                            }
+                            <button type="button" onclick="AnularInscripcion()" class="btn btn-danger">Anular</button>
                         }
+
                     </div>
                 </div>
             }
@@ -180,4 +185,29 @@
             }
         });           
     }
+
+    function AnularInscripcion(objeto, id) {
+
+        var id = $("#ID").val();
+
+        $.ajax({
+            type: "POST",
+            url: "@Url.Action("AnularInscripcion", "Inscripcion")",
+            data: {
+                id: id
+            },
+            success: function (msg) {
+                if (msg == "OK") {
+                    alert("La inscripcion se ha anulado correctamente.");
+                } else
+                {
+                    alert(msg);
+                }
+            },
+            error: function () {
+                alert("Se ha producido un error, favor intente nuevamente.");
+            }
+        });           
+    }
+
 </script>

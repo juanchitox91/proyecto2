@@ -248,6 +248,46 @@ namespace SGEA.Repository
             return alumnos;
         }
 
+        public static List<Alumno> getAlumnosByIdPlanilla(string idCurso)
+        {
+            var alumnos = new List<Alumno>();
+
+            try
+            {
+
+                NpgsqlConnection cnn;
+                cnn = new NpgsqlConnection(connectionString);
+                cnn.Open();
+
+                NpgsqlCommand command;
+                NpgsqlDataReader dataReader;
+                string sql, Output = string.Empty;
+
+                sql = $" select al.id, al.apellido, al.nombre, al.cedula from  dbo.curso cu " +
+                    $" join dbo.inscripcion ins on cu.id = ins.idcurso join dbo.alumno al on ins.idalumno = al.id where cu.id = {idCurso}";
+                command = new NpgsqlCommand(sql, cnn);
+                dataReader = command.ExecuteReader();
+
+                while (dataReader.Read())
+                {
+                    alumnos.Add(new Alumno
+                    {
+                        ID = Convert.ToInt64(dataReader.GetValue(0).ToString()),
+                        Cedula = Convert.ToInt64(dataReader.GetValue(3).ToString()),
+                        Nombre = dataReader.GetValue(2).ToString(),
+                        Apellido = dataReader.GetValue(1).ToString()
+                    });
+                }
+                command.Dispose(); cnn.Close();
+                cnn.Close();
+            }
+            catch (Exception e)
+            {
+
+            }
+
+            return alumnos;
+        }
 
         public static List<Accion> getAccionesPorRoles(long idusuario)
         {

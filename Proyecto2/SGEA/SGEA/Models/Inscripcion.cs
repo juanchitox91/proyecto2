@@ -64,4 +64,27 @@ namespace SGEA.Models
         [DisplayName("Descripcion")]
         public string Descripcion { get; set; } 
     }
+
+    public class SituacionFinanciera
+    {
+        [DisplayName("Cedula")]
+        public string Cedula { get; set; }
+        [DisplayName("Nombres")]
+        public string Nombres { get; set; }
+        [DisplayName("Descripcion")]
+        public string Descripcion { get; set; }
+        [DisplayName("Tipo Pagare")]
+        public string TipoPagare { get; set; }
+        [DisplayName("Estado")]
+        public string Estado { get; set; }
+        [DisplayName("Nro Factura")]
+        public string NroFactura { get; set; }
+        [DisplayName("Monto")]
+        public decimal MontoDecimal { get; set; }
+        [DisplayName("Monto")]
+        public string MontoString { get; set; }
+        [DisplayName("FechaPago")]
+        public string FechaPagoString { get; set; }
+        public long PagareID { get; set; }
+    }
 }

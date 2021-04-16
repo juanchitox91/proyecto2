@@ -5,6 +5,8 @@ using System.Collections.Generic;
 using SGEA.Models;
 using System.Linq;
 using System;
+using SGEA.Reportes;
+using System.IO;
 
 namespace SGEA.Areas.Gestion.Controllers
 {
@@ -168,6 +170,14 @@ namespace SGEA.Areas.Gestion.Controllers
             InscripcionRepository.updatePagares(id, fecha);
 
             return Json("OK");
+        }
+
+        public JsonResult AnularInscripcion(string id)
+        {
+
+            string mensaje = InscripcionRepository.AnularInscripcion(id);
+
+            return Json(mensaje);
         }
 
         [HttpGet]
@@ -366,5 +376,51 @@ namespace SGEA.Areas.Gestion.Controllers
             ViewBag.mesHasta = GeneralRepository.getMeses(2, 11, inscripcion.MesHasta);
             ViewBag.cantidadcuotas = GeneralRepository.getCantidadCuotas(inscripcion.CantidadCuotas);
         }
+
+        #region Reporte
+        [Permiso(permiso = "verReporteSituacionFinanciera")]
+        public ActionResult ReporteSituacionFinanciera()
+        {
+            List<SelectListItem> cursos = CursoRepository.getCursosSelect2(HttpContext.Session["institucion"].ToString(), "0");
+            ViewBag.Cursos = cursos;
+            return View();
+        }
+
+        [HttpPost]
+        public JsonResult PoblarGrilla(DataTableAjaxPostModel model)
+        {
+            List<Alumno> lista = new List<Alumno>();
+
+            try
+            {
+                lista = AlumnoRepository.getAlumnosByIdPlanilla(model.param1);
+            }
+            catch { }
+
+
+            return Json(new
+            {
+                // this is what datatables wants sending back
+                draw = model.draw,
+                recordsTotal = lista.Count,
+                recordsFiltered = lista.Count,
+                data = lista
+            });
+
+        }
+        [Permiso(permiso = "verReporteSituacionFinanciera")]
+        public ActionResult ReportePDF(string idAlumno)
+        {
+            List<SituacionFinanciera> lista = InscripcionRepository.getSitaucionFinanciera(idAlumno);
+            lista = lista.OrderBy(x => x.PagareID).ToList();
+            SituacionFinancieraReport rpt = new SituacionFinancieraReport();
+            rpt.Load();
+            rpt.SetDataSource(lista);
+            Stream s = rpt.ExportToStream(CrystalDecisions.Shared.ExportFormatType.PortableDocFormat);
+
+
+            return File(s, "application/pdf");
+        }
+        #endregion
     }
 }
