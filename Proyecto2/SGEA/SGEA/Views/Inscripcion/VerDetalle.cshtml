@@ -125,14 +125,13 @@
                     <div class="col-md-12 col-sm-12 col-xs-12 col-md-offset-1">
                         @Html.HiddenFor(x => x.ID)
                         <a href="@Url.Action("Index","Inscripcion")" class="btn btn-primary" type="button"> < Volver</a>
-
                         @if (Model.Estado != "INACTIVO")
                         {
                             if (Model.Estado != "CONFIRMADO")
                             {
                                 <button type="submit" class="btn btn-success">Confirmar</button>
                             }
-                            <button type="button" onclick="AnularInscripcion()" class="btn btn-danger">Anular</button>
+                            <button type="button" onclick="AnularInscripcion()" class="btn btn-danger">Anular esta inscripcion</button>
                         }
 
                     </div>
@@ -160,54 +159,13 @@
         fechatexto.disabled = false;
     }
 
-    function confirmarFecha(objeto, id) {
 
-        var fecha = objeto.previousElementSibling.previousElementSibling;
-
-        $.ajax({
-            type: "POST",
-            url: "@Url.Action("GuardarFecha", "Inscripcion")",
-            data: {
-                fecha: fecha.value,
-                id: id
-            },
-            success: function (msg) {
-                if (msg == "OK") {
-                    fecha.disabled = true;
-                    alert("La fecha se ha guardado correctamente.");
-                } else
-                {
-                    alert(msg);
-                }
-            },
-            error: function () {
-                alert("Se ha producido un error, favor intente nuevamente.");
-            }
-        });           
-    }
-
-    function AnularInscripcion(objeto, id) {
+    function AnularInscripcion() {
 
         var id = $("#ID").val();
 
-        $.ajax({
-            type: "POST",
-            url: "@Url.Action("AnularInscripcion", "Inscripcion")",
-            data: {
-                id: id
-            },
-            success: function (msg) {
-                if (msg == "OK") {
-                    alert("La inscripcion se ha anulado correctamente.");
-                } else
-                {
-                    alert(msg);
-                }
-            },
-            error: function () {
-                alert("Se ha producido un error, favor intente nuevamente.");
-            }
-        });           
+        window.location.href = "@Url.Action("Anular", "Inscripcion")/" + id;
+       
     }
 
 </script>
