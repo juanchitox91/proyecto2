@@ -78,4 +78,9 @@
         $(document).ready(function () {
             $('#example').DataTable();
         });
+
+        if ('@ViewBag.error' != '')
+        {
+            alert('@ViewBag.error');
+        }
     </script>

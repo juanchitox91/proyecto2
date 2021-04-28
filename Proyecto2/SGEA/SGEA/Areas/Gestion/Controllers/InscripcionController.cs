@@ -19,6 +19,7 @@ namespace SGEA.Areas.Gestion.Controllers
             string idinstitucion = HttpContext.Session["institucion"].ToString();
             List<Inscripcion> inscripciones = InscripcionRepository.getInscripciones(idinstitucion);
             ViewBag.Inscripciones = inscripciones;
+            ViewBag.error = (Session["errorInscripcion"]??string.Empty).ToString();
             Session["inscripciones"] = inscripciones;
             return View();
         }
@@ -73,7 +74,7 @@ namespace SGEA.Areas.Gestion.Controllers
 
             if (inscripcion.Estado == "CONFIRMADO" || inscripcion.Estado == "INACTIVO")
             {
-                ViewBag.error = $"La inscripcion ya se encuentra en estado {inscripcion.Estado} y no puede ser modificada.";
+                Session["errorInscripcion"] = $"La inscripcion ya se encuentra en estado {inscripcion.Estado} y no puede ser modificada.";
                 return RedirectToAction("Index");
             }
             else
@@ -172,11 +173,30 @@ namespace SGEA.Areas.Gestion.Controllers
             return Json("OK");
         }
 
-        public JsonResult AnularInscripcion(string id)
+        [HttpGet]
+        [Permiso(permiso = "AnularInscripcion")]
+        public ActionResult Anular(string id)
         {
+            string idinstitucion = HttpContext.Session["institucion"].ToString();
+            List<Inscripcion> lista = (List<Inscripcion>)Session["inscripciones"];
+            Inscripcion inscripcion = lista.Where(x => x.ID == Convert.ToInt64(id)).SingleOrDefault();
+            inscripcion.listaPagares = InscripcionRepository.getPagares(inscripcion.ID.ToString());
 
-            string mensaje = InscripcionRepository.AnularInscripcion(id);
+            CargarDatosListas(inscripcion);
 
+            return View(inscripcion);
+        }
+
+        [HttpPost]
+        [Permiso(permiso = "AnularInscripcion")]
+        public JsonResult Anular(Inscripcion inscr)
+        {
+            string idinstitucion = HttpContext.Session["institucion"].ToString();
+            List<Inscripcion> lista = (List<Inscripcion>)Session["inscripciones"];
+            Inscripcion inscripcion = lista.Where(x => x.ID == Convert.ToInt64(inscr.ID)).SingleOrDefault();
+
+            string mensaje = InscripcionRepository.AnularInscripcion(inscr.ID.ToString());
+ 
             return Json(mensaje);
         }
 

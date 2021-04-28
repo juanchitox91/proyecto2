@@ -610,5 +610,90 @@ namespace SGEA.Repository
             return mensaje;
         }
 
+        //Obtener situacion financiera
+        public static List<SituacionFinanciera> getSitaucionFinanciera(string idAlumno)
+        {
+            List<SituacionFinanciera> sF = new List<SituacionFinanciera>();
+
+            try
+            {
+
+                NpgsqlConnection cnn;
+                cnn = new NpgsqlConnection(connectionString);
+                cnn.Open();
+
+                NpgsqlCommand command;
+                NpgsqlDataReader dataReader;
+                string sql, Output = string.Empty;
+
+                sql = $" select al.apellido, al.nombre, pa.descripcion, pa.tipopagare, pa.estado, cab.nro_factura, " +
+                    $" cab.fecha, pa.monto, al.cedula, pa.id from dbo.inscripcion ins join dbo.alumno al on ins.idalumno = al.id " +
+                    $" join dbo.pagare pa on ins.id = pa.idinscripcion  left join dbo.facturadetalle det on pa.id = det.id_pagare " +
+                    $" left join dbo.factura_cabecera cab on det.id_facturacabecera = cab.id " +
+                    $" where al.id = {idAlumno} ";
+
+                command = new NpgsqlCommand(sql, cnn);
+                dataReader = command.ExecuteReader();
+
+                while (dataReader.Read())
+                {
+                    sF.Add(new SituacionFinanciera
+                    {
+                        Cedula = dataReader.GetValue(8).ToString(),
+                        Nombres = dataReader.GetValue(1).ToString() + " " + dataReader.GetValue(0).ToString(),
+                        Descripcion = dataReader.GetValue(2).ToString(),
+                        TipoPagare = dataReader.GetValue(3).ToString(),
+                        Estado = dataReader.GetValue(4).ToString() == "PA" ? "PAGADO" : "PENDIENTE",
+                        NroFactura = dataReader.GetValue(5).ToString(),
+                        FechaPagoString = string.IsNullOrEmpty(dataReader.GetValue(6).ToString()) ? string.Empty : DateTime.Parse(dataReader.GetValue(6).ToString()).ToString("dd/MM/yyyy"),                        
+                        MontoString = Convert.ToDecimal(dataReader.GetValue(7)).ToString("#,###").Replace(",", "."),
+                        MontoDecimal = Convert.ToDecimal(dataReader.GetValue(7)),
+                        PagareID = Convert.ToInt64(dataReader.GetValue(9)),
+                    });
+                };
+                command.Dispose(); cnn.Close(); ;
+            }
+            catch (Exception ex)
+            {
+
+            };
+
+            return sF;
+        }
+
+        public static string AnularInscripcion(string idInscripcion)
+        {
+            string mensaje = "OK";
+            try
+            {
+                NpgsqlConnection cnn;
+                cnn = new NpgsqlConnection(connectionString);
+                cnn.Open();
+
+                NpgsqlCommand command;
+                string sql, Output = string.Empty;
+
+                sql = $"update dbo.inscripcion set estado = 'I' where id = {idInscripcion}";
+
+                command = new NpgsqlCommand(sql, cnn);
+                command.ExecuteNonQuery();
+                command.Dispose(); cnn.Close();
+            }
+            catch(Exception ex)
+            {
+                mensaje = "Ha ocurrido un error al intentar anular la inscripción.";
+            }
+
+            return mensaje;
+        }
+        /*
+ * ojo! query para situacion financiera!
+ select al.apellido, al.nombre, pa.descripcion, pa.tipopagare, pa.estado, cab.nro_factura,
+    det.descripcion, cab.fecha from dbo.inscripcion ins join dbo.alumno al on ins.idalumno = al.id
+    join dbo.pagare pa on ins.id = pa.idinscripcion
+    left join dbo.facturadetalle det on pa.id = det.id_pagare
+    left join dbo.factura_cabecera cab on det.id_facturacabecera = cab.id
+    where al.id = 18
+ */
     }
 }

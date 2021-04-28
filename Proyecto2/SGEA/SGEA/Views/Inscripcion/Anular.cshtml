@@ -1,0 +1,137 @@
+﻿@model SGEA.Models.Inscripcion
+
+@{
+    ViewBag.Title = "Ver Detalle";
+}
+
+
+<div class="page-title">
+    <div class="title_left" style="margin-left:10px;">
+        <h1>Realmente desea anular esta inscripcion?</h1>
+        <h1> @Model.Cedula.ToString("0,###,###").Replace(",", ".") -  @Model.NombreAlumno</h1>
+    </div>
+    <div class="title_left" style="margin-left:10px;">
+    
+</div>
+</div>
+
+
+<div class="col-md-12 col-sm-12 col-xs-12">
+    <div class="x_panel">
+        <div class="x_content">
+            <br>
+
+            @using (Html.BeginForm("Anular", "Inscripcion", FormMethod.Post, new { @class = "form-horizontal form-label-left", @data_parsley_validate = "" }))
+            {
+                @Html.AntiForgeryToken()
+                <div class="form-group">
+                    @Html.LabelFor(x => x.AlumnoID, new { @class = "control-label col-md-3 col-sm-3 col-xs-12" })
+                    <div class="col-md-6 col-sm-6 col-xs-12">
+                        @Html.DropDownListFor(n => n.AlumnoID, (List<SelectListItem>)ViewBag.alumnos, new { @id = "txtIDAlumno", @required = "required", @class = "form-control col-md-7 col-xs-12", @disabled = "true" })
+                    </div>
+                </div>
+                <div class="form-group">
+                    @Html.LabelFor(x => x.CursoID, new { @class = "control-label col-md-3 col-sm-3 col-xs-12" })
+                    <div class="col-md-6 col-sm-6 col-xs-12">
+                        @Html.DropDownListFor(n => n.CursoID, (List<SelectListItem>)ViewBag.cursos, new { @id = "txtIDCurso", @required = "required", @class = "form-control col-md-7 col-xs-12", @disabled = "true" })
+                    </div>
+                </div>
+                <div class="form-group">
+                    @Html.LabelFor(x => x.ArancelID, new { @class = "control-label col-md-3 col-sm-3 col-xs-12" })
+                    <div class="col-md-6 col-sm-6 col-xs-12">
+                        @Html.DropDownListFor(n => n.ArancelID, (List<SelectListItem>)ViewBag.aranceles, new { @id = "txtIDArancel", @required = "required", @class = "form-control col-md-7 col-xs-12", @disabled = "true" })
+                    </div>
+                </div>
+                <div class="form-group">
+                    @Html.LabelFor(x => x.MesDesde, new { @class = "control-label col-md-3 col-sm-3 col-xs-12" })
+                    <div class="col-md-6 col-sm-6 col-xs-12">
+                        @Html.DropDownListFor(n => n.MesDesde, (List<SelectListItem>)ViewBag.mesDesde, new { @id = "txtMesDesde", @required = "required", @class = "form-control col-md-7 col-xs-12", @disabled = "true" })
+                    </div>
+                </div>
+                <div class="form-group">
+                    @Html.LabelFor(x => x.MesHasta, new { @class = "control-label col-md-3 col-sm-3 col-xs-12" })
+                    <div class="col-md-6 col-sm-6 col-xs-12">
+                        @Html.DropDownListFor(n => n.MesHasta, (List<SelectListItem>)ViewBag.mesHasta, new { @id = "txtMesHasta", @required = "required", @class = "form-control col-md-7 col-xs-12", @disabled = "true" })
+                    </div>
+                </div>
+                <div class="form-group">
+                    @Html.LabelFor(x => x.CantidadCuotas, new { @class = "control-label col-md-3 col-sm-3 col-xs-12" })
+                    <div class="col-md-6 col-sm-6 col-xs-12">
+                        @Html.DropDownListFor(n => n.CantidadCuotas, (List<SelectListItem>)ViewBag.cantidadcuotas, new { @id = "txtCantidadCuotas", @required = "required", @class = "form-control col-md-7 col-xs-12", @disabled = "true" })
+                    </div>
+                </div>
+                <div class="form-group">
+                    @Html.LabelFor(x => x.NroComprobante, new { @class = "control-label col-md-3 col-sm-3 col-xs-12" })
+                    <div class="col-md-6 col-sm-6 col-xs-12">
+                        @Html.TextBoxFor(x => x.NroComprobante, new { @class = "form-control col-md-7 col-xs-12", @required = "required", @type = "text", @disabled = "true" })
+                    </div>
+                </div>
+                <div class="form-group">
+                    @Html.LabelFor(x => x.Estado, new { @class = "control-label col-md-3 col-sm-3 col-xs-12" })
+                    <div class="col-md-6 col-sm-6 col-xs-12">
+                        <input class="form-control col-md-7 col-xs-12" disabled="disabled" id="NroComprobante" name="NroComprobante"
+                               required="required" type="text" value="@(Model.Estado )">
+                    </div>
+                </div>
+
+                <div class="ln_solid"></div>
+                <div class="form-row">
+                    <div class="col-md-12 col-sm-12 col-xs-12 col-md-offset-1">
+                        @Html.HiddenFor(x => x.ID)
+                        <a href="@Url.Action("Index","Inscripcion")" class="btn btn-primary" type="button"> < Volver</a>
+                        <button type="button" onclick="AnularInscripcion()" class="btn btn-danger">Anular esta inscripción</button>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+@Scripts.Render("~/bundles/jquery")
+
+<script type="text/javascript">
+    $(document).ready(function () {
+
+        debugger;
+        //$('.confirmar').hide();
+        $('.Fecha').datetimepicker({
+            format: 'DD/MM/YYYY',
+            //minDate: new Date()
+        });
+
+    });
+
+    function editarFecha(objeto)
+    {      
+        var fechatexto = objeto.previousElementSibling;
+        fechatexto.disabled = false;
+    }
+
+  
+
+    function AnularInscripcion() {
+
+        var id = $("#ID").val();
+
+        $.ajax({
+            type: "POST",
+            url: "@Url.Action("Anular", "Inscripcion")",
+            data: {
+                id: id
+            },
+            success: function (msg) {
+                if (msg == "OK") {
+                    alert("La inscripcion se ha anulado correctamente.");
+                    
+                } else
+                {
+                    alert(msg);
+                }
+            },
+            error: function () {
+                alert("Se ha producido un error, favor intente nuevamente.");
+            }
+        });  
+        return false;
+    }
+
+</script>
