@@ -71,54 +71,68 @@
                                required="required" type="text" value="@(Model.Estado )">
                     </div>
                 </div>
-
-                <div class="title_left" style="margin-left:10px;">
-                    <h3>Pagares</h3>
-                </div>
-                <div class="form-group">
-                    <div class="col-sm-12 col-md-10">
-                        <table id="example" class="table table-striped table-bordered dataTable no-footer" style="width:100%">
-                            <thead>
-                                <tr>
-                                    <th>descripcion</th>
-                                    <th>Monto</th>
-                                    <th>Estado</th>
-                                    <th>Fecha Vencimiento</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @{
-                                    foreach (var u in Model.listaPagares)
-                                    {
-                                        <tr>
-                                            <td>@u.Descripcion</td>
-                                            <td>@u.Monto</td>
-                                            <td>@(u.Estado == "PE" ? "PENDIENTE" : "PAGADO")</td>
-                                            @*<td>@u.Estado</td>*@
-                                            <td>
-                                                <input class="Fecha" id="FechaVencimientoString" name="FechaVencimientoString" disabled="true" required="required" type="text" value="@u.FechaVencimientoString">
-                                                @if (Model.Estado != "CONFIRMADO")
-                                                {
-                                                    <a href="#" onclick="editarFecha(this); return false;"><span class="fa fa-pencil editar" title="Editar"></span></a>
-                                                    <a href="#" onclick="confirmarFecha(this,@u.ID); return false;"><span class="fa fa-check confirmar" title="Confirmar"></span></a>
-                                                }
-
-                                            </td>
-                                        </tr>
-                                    };
-                                }
-                            </tbody>
-                            <tfoot>
-                                <tr>
-                                    <th>descripcion</th>
-                                    <th>Monto</th>
-                                    <th>Estado</th>
-                                    <th>Fecha Vencimiento</th>
-                                </tr>
-                            </tfoot>
-                        </table>
+                if (Model.Estado == "INACTIVO")
+                {
+                    <div class="form-group">
+                        @Html.LabelFor(x => x.MotivoAnulacion, new { @class = "control-label col-md-3 col-sm-3 col-xs-12" })
+                        <div class="col-md-6 col-sm-6 col-xs-12">
+                            @Html.TextAreaFor(x => x.MotivoAnulacion, new { @class = "form-control col-md-7 col-xs-12", @required = "required", @type = "text", @maxlength = "50", @disabled="true" })
+                        </div>
                     </div>
-                </div>
+                }
+
+                if (Model.Estado != "INACTIVO")
+                {
+                    <div class="title_left" style="margin-left:10px;">
+                        <h3>Pagares</h3>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-12 col-md-10">
+                            <table id="example" class="table table-striped table-bordered dataTable no-footer" style="width:100%">
+                                <thead>
+                                    <tr>
+                                        <th>descripcion</th>
+                                        <th>Monto</th>
+                                        <th>Estado</th>
+                                        <th>Fecha Vencimiento</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @{
+                                        foreach (var u in Model.listaPagares)
+                                        {
+                                            <tr>
+                                                <td>@u.Descripcion</td>
+                                                <td>@u.Monto</td>
+                                                <td>@(u.Estado == "PE" ? "PENDIENTE" : "PAGADO")</td>
+                                                @*<td>@u.Estado</td>*@
+                                                <td>
+                                                    <input class="Fecha" id="FechaVencimientoString" name="FechaVencimientoString" disabled="true" required="required" type="text" value="@u.FechaVencimientoString">
+                                                    @if (Model.Estado != "CONFIRMADO")
+                                                    {
+                                                        <a href="#" onclick="editarFecha(this); return false;"><span class="fa fa-pencil editar" title="Editar"></span></a>
+                                                        <a href="#" onclick="confirmarFecha(this,@u.ID); return false;"><span class="fa fa-check confirmar" title="Confirmar"></span></a>
+                                                    }
+
+                                                </td>
+                                            </tr>
+                                        };
+                                    }
+                                </tbody>
+                                <tfoot>
+                                    <tr>
+                                        <th>descripcion</th>
+                                        <th>Monto</th>
+                                        <th>Estado</th>
+                                        <th>Fecha Vencimiento</th>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                    </div>
+
+                }
+
 
                 <div class="ln_solid"></div>
                 <div class="form-row">

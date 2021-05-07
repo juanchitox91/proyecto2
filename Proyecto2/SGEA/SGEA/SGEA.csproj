@@ -218,10 +218,22 @@
       <DependentUpon>EntrevistasReport.rpt</DependentUpon>
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="Reportes\ExtractoReport.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ExtractoReport.rpt</DependentUpon>
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Reportes\ProgramaEstudioReport.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>ProgramaEstudioReport.rpt</DependentUpon>
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Reportes\SituacionFinancieraReport.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>SituacionFinancieraReport.rpt</DependentUpon>
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Repository\EvaluacionRepository.cs" />
@@ -3396,6 +3408,9 @@
     <Content Include="Content\vendors\bootstrap-datetimepicker\src\sass\_bootstrap-datetimepicker.scss" />
     <Content Include="Content\vendors\jQuery-Smart-Wizard\.bower.json" />
     <Content Include="Content\vendors\jQuery-Smart-Wizard\README.md" />
+    <Content Include="log4net.config">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <None Include="Scripts\jquery-3.3.1.intellisense.js" />
     <Content Include="Scripts\jquery-3.3.1.js" />
     <Content Include="Scripts\jquery-3.3.1.min.js" />
@@ -3511,6 +3526,9 @@
     <Content Include="Views\Evaluacion\CargarAsistencia.cshtml" />
     <Content Include="Views\Evaluacion\Reporte.cshtml" />
     <Content Include="Views\Planilla\Reporte.cshtml" />
+    <Content Include="Views\Inscripcion\ReporteSituacionFinanciera.cshtml" />
+    <Content Include="Views\Inscripcion\Anular.cshtml" />
+    <Content Include="Views\Inscripcion\ReporteExtractoPagos.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -3551,9 +3569,17 @@
       <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
       <LastGenOutput>EntrevistasReport.cs</LastGenOutput>
     </EmbeddedResource>
+    <EmbeddedResource Include="Reportes\ExtractoReport.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>ExtractoReport.cs</LastGenOutput>
+    </EmbeddedResource>
     <EmbeddedResource Include="Reportes\ProgramaEstudioReport.rpt">
       <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
       <LastGenOutput>ProgramaEstudioReport.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Reportes\SituacionFinancieraReport.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>SituacionFinancieraReport.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

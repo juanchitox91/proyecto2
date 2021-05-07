@@ -19,7 +19,7 @@ namespace SGEA.Areas.Gestion.Controllers
             string idinstitucion = HttpContext.Session["institucion"].ToString();
             List<Inscripcion> inscripciones = InscripcionRepository.getInscripciones(idinstitucion);
             ViewBag.Inscripciones = inscripciones;
-            ViewBag.error = (Session["errorInscripcion"]??string.Empty).ToString();
+            ViewBag.error = (Session["errorInscripcion"] ?? string.Empty).ToString();
             Session["inscripciones"] = inscripciones;
             return View();
         }
@@ -47,14 +47,14 @@ namespace SGEA.Areas.Gestion.Controllers
                 ViewBag.mensaje = "La carga se realizó exitosamente.";
                 Session["inscripcion"] = null;
                 CargarDatosListas(new Inscripcion());
-                
+
                 /*aquí recuperamos de nuevo las inscripciones actualizadas y cargamos ya los pagares */
                 List<Inscripcion> inscripciones = InscripcionRepository.getInscripciones(Session["institucion"].ToString());
                 Session["inscripciones"] = inscripciones;
                 Inscripcion inscripcioncargada = inscripciones.Where(x => x.AlumnoID == inscripcion.AlumnoID &&
                 x.ArancelID == inscripcion.ArancelID && x.CursoID == inscripcion.CursoID).FirstOrDefault();
                 InscripcionRepository.createPagares(inscripcioncargada);
-                return RedirectToAction("VerDetalle","Inscripcion", new { id = inscripcioncargada.ID.ToString() });
+                return RedirectToAction("VerDetalle", "Inscripcion", new { id = inscripcioncargada.ID.ToString() });
 
             }
             else
@@ -131,7 +131,7 @@ namespace SGEA.Areas.Gestion.Controllers
         {
 
             var mensaje = InscripcionRepository.deleteInscripcion(inscripcion.ID);
-           
+
             if (mensaje == "OK")
             {
                 ViewBag.mensaje = "La inscripcion se elimino exitosamente.";
@@ -189,14 +189,14 @@ namespace SGEA.Areas.Gestion.Controllers
 
         [HttpPost]
         [Permiso(permiso = "AnularInscripcion")]
-        public JsonResult Anular(Inscripcion inscr)
+        public JsonResult Anular(string id, string motivo)
         {
             string idinstitucion = HttpContext.Session["institucion"].ToString();
             List<Inscripcion> lista = (List<Inscripcion>)Session["inscripciones"];
-            Inscripcion inscripcion = lista.Where(x => x.ID == Convert.ToInt64(inscr.ID)).SingleOrDefault();
+            Inscripcion inscripcion = lista.Where(x => x.ID == Convert.ToInt64(id)).SingleOrDefault();
+            inscripcion.MotivoAnulacion = motivo;
+            string mensaje = InscripcionRepository.AnularInscripcion(inscripcion);
 
-            string mensaje = InscripcionRepository.AnularInscripcion(inscr.ID.ToString());
- 
             return Json(mensaje);
         }
 
@@ -208,7 +208,7 @@ namespace SGEA.Areas.Gestion.Controllers
             List<Inscripcion> lista = (List<Inscripcion>)Session["inscripciones"];
             Inscripcion inscripcion = lista.Where(x => x.ID == Convert.ToInt64(id)).SingleOrDefault();
 
-            if(inscripcion.Estado == "CONFIRMADO" || inscripcion.Estado == "INACTIVO")
+            if (inscripcion.Estado == "CONFIRMADO" || inscripcion.Estado == "INACTIVO")
             {
                 ViewBag.error = $"La inscripcion ya se encuentra en estado {inscripcion.Estado} y no puede ser modificada.";
                 return RedirectToAction("Index");
@@ -248,7 +248,7 @@ namespace SGEA.Areas.Gestion.Controllers
             {
                 ViewBag.error = "Ha ocurrido un error inesperado, favor intente nuevamente mas tarde.";
             }
-          
+
             CargarDatosListas(inscripcion1);
 
             return View(inscripcion1.ID);
@@ -386,7 +386,7 @@ namespace SGEA.Areas.Gestion.Controllers
             string idinstitucion = HttpContext.Session["institucion"].ToString();
 
             ViewBag.cursos = CursoRepository.getCursosSelect2(idinstitucion, inscripcion.CursoID.ToString());
-            ViewBag.alumnos = AlumnoRepository.getAlumnosSelect2(idinstitucion, inscripcion.AlumnoID.ToString() );
+            ViewBag.alumnos = AlumnoRepository.getAlumnosSelect2(idinstitucion, inscripcion.AlumnoID.ToString());
             List<SelectListItem> aranceles = ArancelRepository.getArancelSelect2(idinstitucion, inscripcion.ArancelID.ToString(), DateTime.Now.Year);
             aranceles.AddRange(ArancelRepository.getArancelSelect2(idinstitucion, inscripcion.ArancelID.ToString(), (DateTime.Now.Year + 1)));
             aranceles = aranceles.Distinct().ToList();
@@ -428,12 +428,56 @@ namespace SGEA.Areas.Gestion.Controllers
             });
 
         }
+
         [Permiso(permiso = "verReporteSituacionFinanciera")]
         public ActionResult ReportePDF(string idAlumno)
         {
             List<SituacionFinanciera> lista = InscripcionRepository.getSitaucionFinanciera(idAlumno);
             lista = lista.OrderBy(x => x.PagareID).ToList();
             SituacionFinancieraReport rpt = new SituacionFinancieraReport();
+            rpt.Load();
+            rpt.SetDataSource(lista);
+            Stream s = rpt.ExportToStream(CrystalDecisions.Shared.ExportFormatType.PortableDocFormat);
+
+
+            return File(s, "application/pdf");
+        }
+
+        [Permiso(permiso = "verReporteExtractoPagos")]
+        public ActionResult ReporteExtractoPagos()
+        {
+            List<SelectListItem> cursos = CursoRepository.getCursosSelect2(HttpContext.Session["institucion"].ToString(), "0");
+            ViewBag.Cursos = cursos;
+            return View();
+        }
+
+        [HttpPost]
+        public JsonResult PoblarGrillaExtractoPagos(DataTableAjaxPostModel model)
+        {
+            List<ExtractoPago> lista = new List<ExtractoPago>();
+            try
+            {
+                lista = InscripcionRepository.getExtractoPagos(model.param1);
+            }
+            catch { }
+
+
+            return Json(new
+            {
+                // this is what datatables wants sending back
+                draw = model.draw,
+                recordsTotal = lista.Count,
+                recordsFiltered = lista.Count,
+                data = lista
+            });
+        }
+
+        [Permiso(permiso = "verReporteExtractoPagos")]
+        public ActionResult ReportePDFExtractos(string idCurso)
+        {
+            List<ExtractoPago> lista = InscripcionRepository.getExtractoPagos(idCurso);
+            lista = lista.OrderBy(x => x.Nombres).ToList();
+            ExtractoReport rpt = new ExtractoReport();
             rpt.Load();
             rpt.SetDataSource(lista);
             Stream s = rpt.ExportToStream(CrystalDecisions.Shared.ExportFormatType.PortableDocFormat);

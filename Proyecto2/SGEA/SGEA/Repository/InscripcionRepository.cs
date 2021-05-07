@@ -10,6 +10,8 @@ namespace SGEA.Repository
 {
     public class InscripcionRepository
     {
+        private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+
         public static string connectionString = System.Configuration.ConfigurationManager.
                                      ConnectionStrings["SGEAContext"].ConnectionString;
 
@@ -28,7 +30,7 @@ namespace SGEA.Repository
                 string sql, Output = string.Empty;
 
                 sql = $"select i.id, a.id, a.nombre || ' ' || a.apellido as nombrealumno, c.id, c.nombrecurso, ar.id, ar.nombre_arancel, " +
-                    $"i.anho, i.mesdesde, i.meshasta, i.fecha_inscripcion, i.estado, i.cantidad_cuotas, i.idinstitucion, i.nrocomprobante, a.cedula " +
+                    $"i.anho, i.mesdesde, i.meshasta, i.fecha_inscripcion, i.estado, i.cantidad_cuotas, i.idinstitucion, i.nrocomprobante, a.cedula, i.motivo_anulacion " +
                     $"FROM dbo.inscripcion i join dbo.alumno a on i.idalumno= a.id " +
                     $"join dbo.curso c on i.idcurso = c.id join dbo.arancel ar on i.idarancel = ar.id " +
                     $"where i.idinstitucion = {idInstitucion}";
@@ -54,7 +56,8 @@ namespace SGEA.Repository
                         CantidadCuotas = Convert.ToInt16(dataReader.GetValue(12).ToString()),
                         InstitucionID = Convert.ToInt64(dataReader.GetValue(13).ToString()),
                         NroComprobante = dataReader.GetValue(14).ToString(),
-                        Cedula = Convert.ToInt64(dataReader.GetValue(15).ToString())
+                        Cedula = Convert.ToInt64(dataReader.GetValue(15).ToString()),
+                        MotivoAnulacion = dataReader.GetValue(16).ToString()
                     });
                 }
                 command.Dispose(); cnn.Close();
@@ -661,8 +664,9 @@ namespace SGEA.Repository
             return sF;
         }
 
-        public static string AnularInscripcion(string idInscripcion)
+        public static string AnularInscripcion(Inscripcion inscr)
         {
+            log.Debug("Vamos a anular la inscripcion con ID: " + inscr.ID);
             string mensaje = "OK";
             try
             {
@@ -673,7 +677,7 @@ namespace SGEA.Repository
                 NpgsqlCommand command;
                 string sql, Output = string.Empty;
 
-                sql = $"update dbo.inscripcion set estado = 'I' where id = {idInscripcion}";
+                sql = $"update dbo.inscripcion set estado = 'I', motivo_anulacion = '{inscr.MotivoAnulacion}' where id = {inscr.ID}";
 
                 command = new NpgsqlCommand(sql, cnn);
                 command.ExecuteNonQuery();
@@ -681,19 +685,67 @@ namespace SGEA.Repository
             }
             catch(Exception ex)
             {
+                log.Error("Error al intentar anular la inscripción", ex);
                 mensaje = "Ha ocurrido un error al intentar anular la inscripción.";
             }
 
             return mensaje;
         }
         /*
- * ojo! query para situacion financiera!
- select al.apellido, al.nombre, pa.descripcion, pa.tipopagare, pa.estado, cab.nro_factura,
-    det.descripcion, cab.fecha from dbo.inscripcion ins join dbo.alumno al on ins.idalumno = al.id
-    join dbo.pagare pa on ins.id = pa.idinscripcion
-    left join dbo.facturadetalle det on pa.id = det.id_pagare
-    left join dbo.factura_cabecera cab on det.id_facturacabecera = cab.id
-    where al.id = 18
- */
+         * ojo! query para extracto de pagos por curso!
+         select al.apellido, al.nombre, sum(pa.monto) as monto_pagare, coalesce(sum(det.monto), 0) as monto_pagado, al.cedula from dbo.inscripcion ins 
+         join dbo.curso cu on ins.idcurso = cu.id join dbo.alumno al on ins.idalumno = al.id 
+         join dbo.pagare pa on ins.id = pa.idinscripcion  left join dbo.facturadetalle det on pa.id = det.id_pagare 
+         left join dbo.factura_cabecera cab on det.id_facturacabecera = cab.id 
+         where cu.id = 9 and pa.fechavencimiento between '2021-01-01' and '2021-05-01' or pa.fechavencimiento is null group by apellido, nombre, cedula
+         */
+
+        public static List<ExtractoPago> getExtractoPagos(string idCurso)
+        {
+            List<ExtractoPago> eP = new List<ExtractoPago>();
+
+            try
+            {
+                NpgsqlConnection cnn;
+                cnn = new NpgsqlConnection(connectionString);
+                cnn.Open();
+
+                NpgsqlCommand command;
+                NpgsqlDataReader dataReader;
+                string sql, Output = string.Empty;
+
+                //ver fecha vencimiento!
+                sql = $" select al.apellido, al.nombre, sum(pa.monto) as monto_pagare, coalesce(sum(det.monto), 0) as monto_pagado, al.cedula, al.id, cu.nombrecurso from dbo.inscripcion ins " +
+                    $" join dbo.curso cu on ins.idcurso = cu.id join dbo.alumno al on ins.idalumno = al.id " +
+                    $" join dbo.pagare pa on ins.id = pa.idinscripcion  left join dbo.facturadetalle det on pa.id = det.id_pagare " +
+                    $" left join dbo.factura_cabecera cab on det.id_facturacabecera = cab.id " +
+                    $" where cu.id = {idCurso} group by apellido, nombre, cedula, al.id, cu.nombrecurso ";
+
+                command = new NpgsqlCommand(sql, cnn);
+                dataReader = command.ExecuteReader();
+
+                while (dataReader.Read())
+                {
+                    eP.Add(new ExtractoPago
+                    {
+                        AlumnoID = Convert.ToInt64(dataReader.GetValue(5)),
+                        Cedula = Convert.ToDecimal(dataReader.GetValue(4)).ToString("#,###").Replace(",", "."),
+                        Nombres = dataReader.GetValue(0).ToString() + ", " + dataReader.GetValue(1).ToString(),
+                        MontoStringPagare = Convert.ToDecimal(dataReader.GetValue(2)).ToString("#,###").Replace(",", "."),
+                        MontoDecimalPagare = Convert.ToDecimal(dataReader.GetValue(2)),
+                        MontoStringPagado = Convert.ToDecimal(dataReader.GetValue(3)).ToString("#,###").Replace(",", "."),
+                        MontoDecimalPagado = Convert.ToDecimal(dataReader.GetValue(3)),
+                        NombreCurso = dataReader.GetValue(6).ToString()
+                    });
+                };
+                command.Dispose(); cnn.Close(); ;
+            }
+            catch (Exception ex)
+            {
+
+            };
+
+            return eP;
+        }
     }
 }

@@ -11,8 +11,8 @@
         <h1> @Model.Cedula.ToString("0,###,###").Replace(",", ".") -  @Model.NombreAlumno</h1>
     </div>
     <div class="title_left" style="margin-left:10px;">
-    
-</div>
+
+    </div>
 </div>
 
 
@@ -21,7 +21,7 @@
         <div class="x_content">
             <br>
 
-            @using (Html.BeginForm("Anular", "Inscripcion", FormMethod.Post, new { @class = "form-horizontal form-label-left", @data_parsley_validate = "" }))
+            @using (Html.BeginForm("Anular", "Inscripcion", FormMethod.Post, new { @id = "formAnular", @class = "form-horizontal form-label-left", @data_parsley_validate = "" }))
             {
                 @Html.AntiForgeryToken()
                 <div class="form-group">
@@ -73,7 +73,12 @@
                                required="required" type="text" value="@(Model.Estado )">
                     </div>
                 </div>
-
+                <div class="form-group">
+                    @Html.LabelFor(x => x.MotivoAnulacion, new { @class = "control-label col-md-3 col-sm-3 col-xs-12" })
+                    <div class="col-md-6 col-sm-6 col-xs-12">
+                        @Html.TextAreaFor(x => x.MotivoAnulacion, new { @class = "form-control col-md-7 col-xs-12", @required = "required", @type = "text", @maxlength = "50" })
+                    </div>
+                </div>
                 <div class="ln_solid"></div>
                 <div class="form-row">
                     <div class="col-md-12 col-sm-12 col-xs-12 col-md-offset-1">
@@ -91,37 +96,23 @@
 <script type="text/javascript">
     $(document).ready(function () {
 
-        debugger;
-        //$('.confirmar').hide();
-        $('.Fecha').datetimepicker({
-            format: 'DD/MM/YYYY',
-            //minDate: new Date()
-        });
-
     });
-
-    function editarFecha(objeto)
-    {      
-        var fechatexto = objeto.previousElementSibling;
-        fechatexto.disabled = false;
-    }
-
-  
 
     function AnularInscripcion() {
 
         var id = $("#ID").val();
-
+        var motivo = $("#MotivoAnulacion").val();
         $.ajax({
             type: "POST",
             url: "@Url.Action("Anular", "Inscripcion")",
             data: {
-                id: id
+                id: id,
+                motivo: motivo
             },
             success: function (msg) {
                 if (msg == "OK") {
                     alert("La inscripcion se ha anulado correctamente.");
-                    
+
                 } else
                 {
                     alert(msg);
@@ -130,7 +121,7 @@
             error: function () {
                 alert("Se ha producido un error, favor intente nuevamente.");
             }
-        });  
+        });
         return false;
     }
 

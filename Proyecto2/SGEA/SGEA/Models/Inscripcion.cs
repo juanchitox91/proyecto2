@@ -40,6 +40,8 @@ namespace SGEA.Models
         public string NroComprobante { get; set; }
         [DisplayName("Confirmado")]
         public bool Confirmado { get; set; }
+        [DisplayName("Motivo")]
+        public string MotivoAnulacion { get; set; }
         public List<PagareViewModel> listaPagares = new List<PagareViewModel>();
     }
 
@@ -86,5 +88,24 @@ namespace SGEA.Models
         [DisplayName("FechaPago")]
         public string FechaPagoString { get; set; }
         public long PagareID { get; set; }
+    }
+
+    public class ExtractoPago
+    {
+        public long AlumnoID { get; set; }
+        [DisplayName("Cedula")]
+        public string Cedula { get; set; }
+        [DisplayName("Nombres")]
+        public string Nombres { get; set; }
+        [DisplayName("Monto Pagare")]
+        public decimal MontoDecimalPagare { get; set; }
+        [DisplayName("Monto Pagare")]
+        public string MontoStringPagare { get; set; }
+        [DisplayName("Monto Pagado")]
+        public decimal MontoDecimalPagado { get; set; }
+        [DisplayName("Monto Pagado")]
+        public string MontoStringPagado { get; set; }
+        [DisplayName("Curso")]
+        public string NombreCurso { get; set; }
     }
 }
