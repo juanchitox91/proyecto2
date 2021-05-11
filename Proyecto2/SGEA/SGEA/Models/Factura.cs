@@ -47,22 +47,4 @@ namespace SGEA.Models
         [DisplayName("Descripcion")]
         public string Descripcion { get; set; } 
     }
-
-    public class ExtractoPago
-    {
-        [DisplayName("Apellido")]
-        public string Apellido { get; set; }
-        [DisplayName("Nombre")]
-        public string Nombre{ get; set; }
-        [DisplayName("Descripcion")]
-        public string Descripcion { get; set; }
-        [DisplayName("Tipo Pagare")]
-        public string TipoPagare { get; set; }
-        [DisplayName("Estado")]
-        public string Estado { get; set; }
-        [DisplayName("Nro Factura")]
-        public string NroFactura { get; set; }
-        [DisplayName("Fecha")]
-        public string Fecha { get; set; }
-    }
 }

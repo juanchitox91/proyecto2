@@ -18,50 +18,74 @@
 <div class="col-md-12 col-sm-12 col-xs-12">
     <div class="x_panel">
         <div class="x_content">
-                <div class="form-group col-lg-12 col-md-12 col-lg-12 col-sm-12 col-xs-12" style="margin-top:10px;">
-                    @Html.Label("Curso", new { @class = "control-label col-md-2 col-sm-6 col-xs-12" })
-                    <div class="col-md-6 col-sm-6 col-xs-12">
-                        @Html.DropDownList("Curso", (List<SelectListItem>)ViewBag.Cursos, new { @id = "CursoID", @required = "required", @class = "form-control col-md-7 col-xs-12" })
+            <div class="form-group col-lg-12 col-md-12 col-lg-12 col-sm-12 col-xs-12" style="margin-top:10px;">
+                @Html.Label("Curso", new { @class = "control-label col-md-2 col-sm-6 col-xs-12" })
+                <div class="col-md-6 col-sm-6 col-xs-12">
+                    @Html.DropDownList("Curso", (List<SelectListItem>)ViewBag.Cursos, new { @id = "CursoID", @required = "required", @class = "form-control col-md-7 col-xs-12" })
+                </div>
+            </div>
+            <di class="form-group col-lg-12 col-md-12 col-lg-12 col-sm-12 col-xs-12" style="margin-bottom:10px;">
+                @Html.Label("Fecha Hasta", new { @class = "control-label col-md-2 col-sm-6 col-xs-12" })
+                <div class="col-md-6 col-sm-6 col-xs-12">
+                    <input class="Fecha" id="FechaHastaString" name="FechaHastaString" required="required" type="text">
+                </div>
+            </di>
+            <div class="form-group col-lg-8 col-md-8 col-lg-12 col-sm-12 col-xs-12" style="margin-bottom:10px;">
+                <button class="btn btn-primary" style="float:right" onclick="poblarGrilla()">Buscar</button>
+            </div>
+
+            <div @*id="datatable_wrapper" class="dataTables_wrapper form-inline dt-bootstrap no-footer"*@>
+                <div class="row">
+                    <div class="col-sm-12" id="tabla1">
+                        <table id="example" class="table table-striped table-bordered dataTable no-footer" style="width:100%">
+                            <thead>
+                                <tr>
+                                    <th>Cedula</th>
+                                    <th>Nombre</th>
+                                    <th>Monto Pagaré</th>
+                                    <th>Monto Pagado</th>
+                                    <th>Detalle</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                            <tfoot>
+                                <tr>
+                                    <th>Cedula</th>
+                                    <th>Nombre</th>
+                                    <th>Monto Pagaré</th>
+                                    <th>Monto Pagado</th>
+                                    <th>Detalle</th>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                    <div class="col-sm-12" id="tabla2">
+                        <table id="example2" class="table table-striped table-bordered dataTable no-footer" style="width:100%">
+                            <thead>
+                                <tr>
+                                    <th>Curso</th>
+                                    <th>Monto Pagaré</th>
+                                    <th>Monto Pagado</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                            <tfoot>
+                                <tr>
+                                    <th>Curso</th>
+                                    <th>Monto Pagaré</th>
+                                    <th>Monto Pagado</th>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                    <div class="form-group" style="margin-top:10px;">
+                        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                            <a href="@Url.Action("Index", "Home")" class="btn btn-primary" style="float:left;" type="button">Volver</a>
+                            <button class="btn btn-primary" style="float:left;" type="button" onclick="VerReporte()">Ver Reporte PDF</button>
+                        </div>
                     </div>
                 </div>
-
-                <div class="form-group col-lg-8 col-md-8 col-lg-12 col-sm-12 col-xs-12" style="margin-bottom:10px;">
-                    <button class="btn btn-primary"style="float:right" onclick="poblarGrilla()" >Buscar</button>
-                </div>
-
-                <div @*id="datatable_wrapper" class="dataTables_wrapper form-inline dt-bootstrap no-footer"*@>
-                    <div class="row">
-                        <div class="col-sm-12">
-                            <table id="example" class="table table-striped table-bordered dataTable no-footer" style="width:100%">
-                                <thead>
-                                    <tr>
-                                        <th>Cedula</th>
-                                        <th>Nombre</th>
-                                        <th>Monto Pagaré</th>
-                                        <th>Monto Pagado</th>
-                                        <th>Detalle</th>
-                                    </tr>
-                                </thead>
-                                <tbody></tbody>
-                                <tfoot>
-                                    <tr>
-                                        <th>Cedula</th>
-                                        <th>Nombre</th>
-                                        <th>Monto Pagaré</th>
-                                        <th>Monto Pagado</th>
-                                        <th>Detalle</th>
-                                    </tr>
-                                </tfoot>
-                            </table>
-                        </div>
-                        <div class="form-group" style="margin-top:10px;">
-                            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                                <a href="@Url.Action("Index", "Home")" class="btn btn-primary" style="float:left;" type="button">Volver</a>
-                                <button  class="btn btn-primary" style="float:left;" type="button" onclick="VerReporte()">Ver Reporte PDF</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+            </div>
         </div>
     </div>
 </div>
@@ -71,6 +95,11 @@
 
         $(document).ready(function () {
 
+            $('.Fecha').datetimepicker({
+                format: 'YYYY-MM-DD',
+                //minDate: new Date()
+            });
+
             /******** SECCION GRILLA **********/
             tableAlumnos = $('#example').DataTable({
                 "processing": true,
@@ -79,7 +108,8 @@
                     "url": "@Url.Action("PoblarGrillaExtractoPagos", "Inscripcion")",
                     "type": "POST",
                     "data": function (d) {
-                        d.param1 = $('#CursoID').val();
+                        d.param1 = $('#CursoID').val(),
+                        d.param2 = $('#FechaHastaString').val()
                     }
                 },
                 "columns": [
@@ -99,16 +129,52 @@
 
                 }
             });
-            /************** FIN SECCION GRILLA *******************/
 
+            tableAlumnos2 = $('#example2').DataTable({
+                "processing": true,
+                "serverSide": true,
+                "ajax": {
+                    "url": "@Url.Action("PoblarGrillaExtractoPagos", "Inscripcion")",
+                    "type": "POST",
+                    "data": function (d) {
+                        d.param1 = $('#CursoID').val(),
+                        d.param2 = $('#FechaHastaString').val()
+                    }
+                },
+                "columns": [
+                    { "data": "NombreCurso" },
+                    { "data": "MontoStringPagare" },
+                    { "data": "MontoStringPagado" },
+                ],
+                "drawCallback": function (settings) {
+
+                }
+            });
+            /************** FIN SECCION GRILLA *******************/
+            $('#tabla2').hide();
         });
 
-        function poblarGrilla() {
-            tableAlumnos.ajax.reload();
+        function poblarGrilla()
+        {
+            var curso = $('#CursoID').val();
+            if (curso == '0')
+            {
+                $('#tabla1').hide();
+                $('#tabla2').show();
+                tableAlumnos2.ajax.reload();
+
+            }
+            else
+            {
+                $('#tabla2').hide();
+                $('#tabla1').show();
+                tableAlumnos.ajax.reload();
+            }
         }
 
-        function VerReporte() {
-            window.open("@Url.Action("ReportePDFExtractos","Inscripcion")?idCurso=" + $('#CursoID').val());
+        function VerReporte()
+        {
+            window.open("@Url.Action("ReportePDFExtractos","Inscripcion")?idCurso=" + $('#CursoID').val() + "fechaHasta=" + $('#FechaHastaString').val());
         }
 
 </script>

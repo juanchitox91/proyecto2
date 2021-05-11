@@ -188,6 +188,55 @@ namespace SGEA.Repository
             return cursos;
         }
 
+        public static List<SelectListItem> getCursosSelect2WithAll(string idInstitucion)
+        {
+            var cursos = new List<SelectListItem>();
+
+            try
+            {
+
+                NpgsqlConnection cnn;
+                cnn = new NpgsqlConnection(connectionString);
+                cnn.Open();
+
+                NpgsqlCommand command;
+                NpgsqlDataReader dataReader;
+                string sql, Output = string.Empty;
+
+                sql = $"select  r.id, r.nombrecurso FROM dbo.curso r where r.idinstitucion = {idInstitucion}";
+                command = new NpgsqlCommand(sql, cnn);
+                dataReader = command.ExecuteReader();
+
+                cursos.Add(new SelectListItem
+                {
+                    Value = "",
+                    Text = "Seleccione un valor",
+                    Selected = true 
+                });
+
+                cursos.Add(new SelectListItem
+                {
+                    Value = "0",
+                    Text = "Todos los cursos",
+                });
+
+                while (dataReader.Read())
+                {
+                    cursos.Add(new SelectListItem
+                    {
+                        Value = dataReader.GetValue(0).ToString(),
+                        Text = dataReader.GetValue(1).ToString(),
+                    });
+                };
+                command.Dispose(); cnn.Close(); ;
+            }
+            catch (Exception)
+            {
+
+            };
+            return cursos;
+        }
+
         public static List<SelectListItem> getTurnosSelect2(string idInstitucion, string id)
         {
             var items = new List<SelectListItem>();

@@ -69,7 +69,6 @@
         }
 
         function generarReporte() {
-            debugger;
             var idplanilla = $('#PlanillaID').val();
             var fecha = $('#FechaAsistenciaString').val();
             var urlopen = "@Url.Action("ReportePDF","Evaluacion")?idPlanilla=" + idplanilla + "&Fecha=" + fecha;

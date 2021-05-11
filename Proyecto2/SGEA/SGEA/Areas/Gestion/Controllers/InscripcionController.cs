@@ -446,7 +446,8 @@ namespace SGEA.Areas.Gestion.Controllers
         [Permiso(permiso = "verReporteExtractoPagos")]
         public ActionResult ReporteExtractoPagos()
         {
-            List<SelectListItem> cursos = CursoRepository.getCursosSelect2(HttpContext.Session["institucion"].ToString(), "0");
+            List<SelectListItem> opciones = new List<SelectListItem> { new SelectListItem { Value = "0", Text = "" } };
+            List<SelectListItem> cursos = CursoRepository.getCursosSelect2WithAll(HttpContext.Session["institucion"].ToString());
             ViewBag.Cursos = cursos;
             return View();
         }
@@ -457,7 +458,7 @@ namespace SGEA.Areas.Gestion.Controllers
             List<ExtractoPago> lista = new List<ExtractoPago>();
             try
             {
-                lista = InscripcionRepository.getExtractoPagos(model.param1);
+                lista = InscripcionRepository.getExtractoPagos(model.param1, model.param2);
             }
             catch { }
 
@@ -473,9 +474,9 @@ namespace SGEA.Areas.Gestion.Controllers
         }
 
         [Permiso(permiso = "verReporteExtractoPagos")]
-        public ActionResult ReportePDFExtractos(string idCurso)
+        public ActionResult ReportePDFExtractos(string idCurso, string fechaHasta)
         {
-            List<ExtractoPago> lista = InscripcionRepository.getExtractoPagos(idCurso);
+            List<ExtractoPago> lista = InscripcionRepository.getExtractoPagos(idCurso, fechaHasta);
             lista = lista.OrderBy(x => x.Nombres).ToList();
             ExtractoReport rpt = new ExtractoReport();
             rpt.Load();

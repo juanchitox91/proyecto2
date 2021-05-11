@@ -166,7 +166,7 @@ namespace SGEA.Repository
 
             }
 
-            return pagares;
+            return pagares.OrderBy(x => x.ID).ToList();
         }
 
         public static PagareViewModel getPagareById(string idPagare)
@@ -700,7 +700,7 @@ namespace SGEA.Repository
          where cu.id = 9 and pa.fechavencimiento between '2021-01-01' and '2021-05-01' or pa.fechavencimiento is null group by apellido, nombre, cedula
          */
 
-        public static List<ExtractoPago> getExtractoPagos(string idCurso)
+        public static List<ExtractoPago> getExtractoPagos(string idCurso, string fechaHasta)
         {
             List<ExtractoPago> eP = new List<ExtractoPago>();
 
@@ -714,31 +714,63 @@ namespace SGEA.Repository
                 NpgsqlDataReader dataReader;
                 string sql, Output = string.Empty;
 
-                //ver fecha vencimiento!
-                sql = $" select al.apellido, al.nombre, sum(pa.monto) as monto_pagare, coalesce(sum(det.monto), 0) as monto_pagado, al.cedula, al.id, cu.nombrecurso from dbo.inscripcion ins " +
-                    $" join dbo.curso cu on ins.idcurso = cu.id join dbo.alumno al on ins.idalumno = al.id " +
-                    $" join dbo.pagare pa on ins.id = pa.idinscripcion  left join dbo.facturadetalle det on pa.id = det.id_pagare " +
-                    $" left join dbo.factura_cabecera cab on det.id_facturacabecera = cab.id " +
-                    $" where cu.id = {idCurso} group by apellido, nombre, cedula, al.id, cu.nombrecurso ";
-
-                command = new NpgsqlCommand(sql, cnn);
-                dataReader = command.ExecuteReader();
-
-                while (dataReader.Read())
+                if(idCurso == "0")
                 {
-                    eP.Add(new ExtractoPago
+                    sql = $" select coalesce(sum(pa.monto), 0) as monto_pagare, coalesce(sum(det.monto), 0) as monto_pagado, cu.nombrecurso from dbo.curso cu " +
+                        $" left join dbo.inscripcion ins  on cu.id = ins.idcurso " +
+                        $" left join dbo.pagare pa on ins.id = pa.idinscripcion left join dbo.facturadetalle det on pa.id = det.id_pagare " +
+                        $" left join dbo.factura_cabecera cab on det.id_facturacabecera = cab.id " +
+                        $" where cab is null or cab.fecha <= '{fechaHasta}' group by cu.nombrecurso ";
+
+                        command = new NpgsqlCommand(sql, cnn);
+                        dataReader = command.ExecuteReader();
+
+                        while (dataReader.Read())
+                        {
+                            eP.Add(new ExtractoPago
+                            {
+                                MontoStringPagare = Convert.ToDecimal(dataReader.GetValue(0)).ToString("#,###").Replace(",", "."),
+                                MontoDecimalPagare = Convert.ToDecimal(dataReader.GetValue(0)),
+                                MontoStringPagado = Convert.ToDecimal(dataReader.GetValue(1)).ToString("#,###").Replace(",", "."),
+                                MontoDecimalPagado = Convert.ToDecimal(dataReader.GetValue(1)),
+                                NombreCurso = dataReader.GetValue(2).ToString()
+                            });
+                        };
+                        command.Dispose(); cnn.Close(); ;
+                }
+                else
+                {
+                    //ver fecha vencimiento!
+                    sql = $"  select  al.apellido, al.nombre, al.cedula, al.id, (ar.matricula_anual + ar.monto_inscripcion) as montoTotal, " +
+                        $" coalesce(sum(det.monto), 0) as monto_pagado, cu.nombrecurso from dbo.inscripcion ins " +
+                        $" join dbo.curso cu on ins.idcurso = cu.id join dbo.alumno al on ins.idalumno = al.id join dbo.arancel ar on ins.idarancel = ar.id" +
+                        $" join dbo.pagare pa on ins.id = pa.idinscripcion  left join dbo.facturadetalle det on pa.id = det.id_pagare  left join dbo.factura_cabecera cab on det.id_facturacabecera = cab.id" +
+                        $" where cu.id = {idCurso} and (cab is null or cab.fecha <= '{fechaHasta}') " +
+                        $" group by apellido, nombre, cedula, al.id, cu.nombrecurso, ar.matricula_anual, ar.monto_inscripcion";
+
+                    command = new NpgsqlCommand(sql, cnn);
+                    dataReader = command.ExecuteReader();
+
+                    while (dataReader.Read())
                     {
-                        AlumnoID = Convert.ToInt64(dataReader.GetValue(5)),
-                        Cedula = Convert.ToDecimal(dataReader.GetValue(4)).ToString("#,###").Replace(",", "."),
-                        Nombres = dataReader.GetValue(0).ToString() + ", " + dataReader.GetValue(1).ToString(),
-                        MontoStringPagare = Convert.ToDecimal(dataReader.GetValue(2)).ToString("#,###").Replace(",", "."),
-                        MontoDecimalPagare = Convert.ToDecimal(dataReader.GetValue(2)),
-                        MontoStringPagado = Convert.ToDecimal(dataReader.GetValue(3)).ToString("#,###").Replace(",", "."),
-                        MontoDecimalPagado = Convert.ToDecimal(dataReader.GetValue(3)),
-                        NombreCurso = dataReader.GetValue(6).ToString()
-                    });
-                };
-                command.Dispose(); cnn.Close(); ;
+                        string montoPagare = string.IsNullOrEmpty(dataReader.GetValue(4).ToString()) ? "0" : dataReader.GetValue(4).ToString();
+                        string montoPagado = string.IsNullOrEmpty(dataReader.GetValue(5).ToString()) ? "0" : dataReader.GetValue(5).ToString();
+
+                        eP.Add(new ExtractoPago
+                        {
+                            AlumnoID = Convert.ToInt64(dataReader.GetValue(3)),
+                            Cedula = Convert.ToDecimal(dataReader.GetValue(2)).ToString("#,###").Replace(",", "."),
+                            Nombres = dataReader.GetValue(0).ToString() + ", " + dataReader.GetValue(1).ToString(),
+                            MontoStringPagare = Convert.ToDecimal(montoPagare).ToString("#,###").Replace(",", "."),
+                            MontoDecimalPagare = Convert.ToDecimal(montoPagare),
+                            MontoStringPagado = Convert.ToDecimal(montoPagado).ToString("#,###").Replace(",", "."),
+                            MontoDecimalPagado = Convert.ToDecimal(montoPagado),
+                            NombreCurso = dataReader.GetValue(6).ToString()
+                        });
+                    };
+                    command.Dispose(); cnn.Close(); ;
+                }
+                
             }
             catch (Exception ex)
             {
